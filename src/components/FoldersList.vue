@@ -1,5 +1,5 @@
 <template>
-  <div class="my-component">
+  <div class="folders">
     <h1>Hello from Vue!</h1>
     <button @click="handleClick">Click me</button>
   </div>
@@ -12,7 +12,7 @@ const handleClick = () => {
 </script>
 
 <style scoped>
-.my-component {
+.folders {
   border: 1px solid #ccc;
   padding: 10px;
   background-color: #f9f9f9;
