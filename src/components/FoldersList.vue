@@ -1,20 +1,8 @@
 <template>
   <div class="folders">
-    <h1>Hello from Vue!</h1>
-    <button @click="handleClick">Click me</button>
+    <button class="new-folder">New folder</button>
+    <ul class="folders__list"></ul>
   </div>
 </template>
 
-<script setup>
-const handleClick = () => {
-  alert('Button clicked!');
-};
-</script>
-
-<style scoped>
-.folders {
-  border: 1px solid #ccc;
-  padding: 10px;
-  background-color: #f9f9f9;
-}
-</style>
+<script setup></script>

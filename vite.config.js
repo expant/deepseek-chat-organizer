@@ -28,6 +28,7 @@ export default defineConfig({
         content: "src/content.js",
         popup: "src/popup/popup.html",
         background: "src/background.js",
+        styles: "src/styles.css",
       },
       output: {
         entryFileNames: "[name].js",

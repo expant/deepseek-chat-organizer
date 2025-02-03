@@ -1,0 +1,13 @@
+.folders {
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+.new-folder {
+  font-size: 18px;
+  padding: 10px 15px;
+  background-color: #eee;
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+}

@@ -1,6 +1,12 @@
 import { createApp } from "vue";
 import FoldersList from "./components/FoldersList.vue";
+// Подключаем CSS-файл
+const link = document.createElement("link");
+link.rel = "stylesheet";
+link.href = chrome.runtime.getURL("assets/styles.css");
+document.head.appendChild(link);
 
+const DEEPSEEK_SELECTOR = ".fb0a63fb";
 const targetEl = document.querySelector("#root");
 const appContainer = document.createElement("div");
 appContainer.id = "folders-list";
@@ -12,8 +18,9 @@ const insertAppToDeepseek = (deepseekContainer) => {
   }
 };
 
+// TODO: Добавить условие для очистки setTimeOut
 const watchForDeepseekEl = (cb) => {
-  const existingDeepseek = targetEl.querySelector(".fb0a63fb");
+  const existingDeepseek = targetEl.querySelector(DEEPSEEK_SELECTOR);
   if (!existingDeepseek) {
     setTimeout(() => watchForDeepseekEl(cb), 500);
     return;
@@ -26,7 +33,7 @@ const callback = (mutationsList, observer) => {
   for (let mutation of mutationsList) {
     if (mutation.type === "childList" && mutation.addedNodes.length) {
       const deepseekContainer =
-        mutation.addedNodes[0].querySelector(".fb0a63fb");
+        mutation.addedNodes[0].querySelector(DEEPSEEK_SELECTOR);
       insertAppToDeepseek(deepseekContainer);
     }
   }
