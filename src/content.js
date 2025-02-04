@@ -7,7 +7,7 @@ link.href = chrome.runtime.getURL("assets/styles.css");
 document.head.appendChild(link);
 
 const DEEPSEEK_SELECTOR = ".fb0a63fb";
-const targetEl = document.querySelector("#root");
+const targetEl = document.querySelector(".dc04ec1d");
 const appContainer = document.createElement("div");
 appContainer.id = "folders-list";
 

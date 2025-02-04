@@ -1,13 +1,50 @@
+#folders-list * {
+  box-sizing: border-box;
+}
+
+ul {
+  padding: 0;
+}
+
 .folders {
   padding: 20px;
   background-color: #f9f9f9;
 }
 
-.new-folder {
+.new-folder,
+.clear-folders {
   font-size: 18px;
+  margin-bottom: 10px;
   padding: 10px 15px;
   background-color: #eee;
   border: 0;
   border-radius: 10px;
   cursor: pointer;
+}
+
+.folders__item {
+  list-style-type: none;
+}
+
+.folder-name {
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  margin: 5px;
+  border-radius: 5px;
+  transition: background-color 0.1s ease-in;
+}
+
+.folder-name:hover {
+  background-color: #ddd;
+  cursor: pointer;
+}
+
+.icon-arrow {
+  transition: transform 0.2s;
+}
+
+.folders__list.nested {
+  /* display: none; */
+  margin-left: 20px;
 }
