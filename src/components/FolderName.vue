@@ -1,32 +1,34 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import IconArrow from "./icons/IconArrow.vue";
 
-defineProps({
+const props = defineProps({
   name: {
     type: String,
     required: true,
   },
+  isFolderOpen: {
+    type: Boolean,
+    required: true,
+  },
 });
-const emit = defineEmits(["toggleFolder"]);
 
-const isFolderOpen = ref(false);
-const rotationStyles = ref({
-  transform: isFolderOpen.value ? "rotate(90deg)" : "rotate(0deg)",
-});
+const emit = defineEmits(['update:isFolderOpen']);
 
 const toggleFolder = () => {
-  isFolderOpen.value = !isFolderOpen.value;
-  rotationStyles.value = {
-    transform: isFolderOpen.value ? "rotate(90deg)" : "rotate(0deg)",
-  };
-  emit("toggleFolder");
+  console.log(props.isFolderOpen);
+  emit('update:isFolderOpen', !props.isFolderOpen);
 };
+
+const rotationStyles = computed(() => ({
+  transform: props.isFolderOpen ? "rotate(90deg)" : "rotate(0deg)",
+}));
 </script>
 
 <template>
   <div class="folder-name" @click="toggleFolder">
     <IconArrow class="icon-arrow" :style="rotationStyles" />
-    <span>{{ name }}</span>
+    <span>{{ props.name }}</span>
   </div>
 </template>
+ё

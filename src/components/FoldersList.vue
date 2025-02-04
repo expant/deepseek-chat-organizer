@@ -7,16 +7,18 @@ const folders = [
   {
     type: "folder",
     name: "frontend",
+    isOpen: false,
     children: ["Chat1", "Chat2", "Chat3"],
   },
   {
     type: "folder",
     name: "backend",
+    isOpen: false,
     children: ["Chat1", "Chat2", "Chat3"],
   },
 ];
 
-// const isEditing = ref(false);
+const isFolderOpen = ref(false);
 const folderList = ref([]);
 
 const clearFolders = () =>
@@ -30,7 +32,6 @@ onMounted(() => {
       Object.keys(items).forEach((key) => {
         chrome.storage.local.get([key], (result) => {
           folderList.value.push(result);
-          console.log(folderList.value);
         });
       });
     });
@@ -43,15 +44,20 @@ onMounted(() => {
     <button @click="addNewFolder" class="new-folder">New folder</button>
     <button @click="clearFolders" class="clear-folders">Clear folders</button>
     <ul class="folders__list">
-      <li
-        class="folders__item"
-        v-for="(node, i) in folderList[0].folders"
-        :key="i"
-      >
-        <FolderName :name="node.name" />
-        <span v-if="typeof node === 'string'">{{ node }}</span>
-        <nested-list v-else :items="node.children" />
-      </li>
+      <template v-if="folderList.length > 0 && folderList[0].folders">
+        <li
+          class="folders__item"
+          v-for="(node, i) in folderList[0].folders"
+          :key="i"
+        >
+          <FolderName :name="node.name" v-model:is-folder-open="isFolderOpen" />
+          <span v-if="typeof node === 'string'">{{ node }}</span>
+          <nested-list v-else v-model:is-folder-open="isFolderOpen" :items="node.children" />
+        </li>
+      </template>
+      <template v-else>
+        <li>Нет данных</li>
+      </template>
     </ul>
   </div>
 </template>
