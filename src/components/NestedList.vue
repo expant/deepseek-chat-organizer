@@ -1,8 +1,6 @@
 <script setup>
-import { ref, provide } from "vue";
 import FolderName from "./FolderName.vue";
 import NestedListItem from "./NestedListItem.vue";
-import ContextMenu from "./ContextMenu.vue";
 
 const props = defineProps({
   items: {
@@ -10,14 +8,6 @@ const props = defineProps({
     required: true,
   },
 });
-
-const openContextMenuId = ref(null);
-const setOpenContextMenuId = (id) => {
-  openContextMenuId.value = id;
-};
-
-provide("setOpenContextMenuId", setOpenContextMenuId);
-provide("openContextMenuId", openContextMenuId);
 </script>
 
 <template>
@@ -29,5 +19,4 @@ provide("openContextMenuId", openContextMenuId);
       <li>Нет данных</li>
     </template>
   </ul>
-  <ContextMenu />
 </template>
