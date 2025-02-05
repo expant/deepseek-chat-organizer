@@ -1,5 +1,5 @@
 import { createApp } from "vue";
-import FoldersList from "./components/FoldersList.vue";
+import App from "./App.vue";
 // Подключаем CSS-файл
 const link = document.createElement("link");
 link.rel = "stylesheet";
@@ -14,7 +14,7 @@ appContainer.id = "folders-list";
 const insertAppToDeepseek = (deepseekContainer) => {
   if (deepseekContainer) {
     deepseekContainer.prepend(appContainer);
-    createApp(FoldersList).mount("#folders-list");
+    createApp(App).mount("#folders-list");
   }
 };
 

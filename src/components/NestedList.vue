@@ -1,29 +1,33 @@
 <script setup>
-import { ref, watch } from "vue";
+import { ref, provide } from "vue";
 import FolderName from "./FolderName.vue";
+import NestedListItem from "./NestedListItem.vue";
+import ContextMenu from "./ContextMenu.vue";
 
 const props = defineProps({
   items: {
     type: Array,
     required: true,
   },
-  isFolderOpen: {
-    type: Boolean,
-    required: true,
-  },
 });
 
-const emit = defineEmits(['update:isFolderOpen']);
+const openContextMenuId = ref(null);
+const setOpenContextMenuId = (id) => {
+  openContextMenuId.value = id;
+};
+
+provide("setOpenContextMenuId", setOpenContextMenuId);
+provide("openContextMenuId", openContextMenuId);
 </script>
 
 <template>
-  <ul class="folders__list nested" v-show="props.isFolderOpen">
-    <li class="folders__item" v-for="(item, i) in props.items" :key="i">
-      <span v-if="typeof item === 'string'">{{ item }}</span>
-      <template v-else>
-        <FolderName v-model:is-folder-open="props.isFolderOpen" :name="item.name" />
-        <NestedList v-model:is-folder-open="props.isFolderOpen" :items="item.children" />
-      </template>
-    </li>
+  <ul class="folders__list">
+    <template v-if="props.items.length > 0 && props.items">
+      <NestedListItem v-for="(node, i) in props.items" :key="i" :node="node" />
+    </template>
+    <template v-else>
+      <li>Нет данных</li>
+    </template>
   </ul>
+  <ContextMenu />
 </template>
