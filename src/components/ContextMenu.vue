@@ -1,5 +1,6 @@
 <script setup>
-import { onMounted, onUnmounted } from "vue";
+import { onMounted, onUnmounted, inject } from "vue";
+import ContextMenuButton from "./buttons/ContextMenuButton.vue";
 
 const props = defineProps({
   position: {
@@ -7,8 +8,11 @@ const props = defineProps({
     required: true,
   },
 });
-
 const emit = defineEmits(["close"]);
+const contextMenu = inject("contextMenu");
+const setContextMenu = inject("setContextMenu");
+const isEditingFolderName = inject("isEditingFolderName");
+const setEditingFolderName = inject("setEditingFolderName");
 
 const handleClickOutside = (event) => {
   const contextMenu = document.querySelector(".context-menu");
@@ -17,17 +21,26 @@ const handleClickOutside = (event) => {
   }
 };
 
+const renameFolder = () => {
+  setEditingFolderName(true);
+  setContextMenu({ ...contextMenu.value, isOpen: false });
+};
+
 onMounted(() => document.addEventListener("click", handleClickOutside));
 onUnmounted(() => document.removeEventListener("click", handleClickOutside));
 </script>
 
 <template>
-  <div class="context-menu"
-    :style="{
-      top: `${position.top}px`,
-      left: `${position.left}px`,
-  }">
-    <button>Rename</button>
-    <button>Delete</button>
-  </div>
+  <transition name="fade">
+    <div
+      class="context-menu"
+      :style="{
+        top: `${position.top}px`,
+        left: `${position.left}px`,
+      }"
+    >
+      <ContextMenuButton name="Rename" @click="renameFolder" />
+      <ContextMenuButton name="Delete" />
+    </div>
+  </transition>
 </template>

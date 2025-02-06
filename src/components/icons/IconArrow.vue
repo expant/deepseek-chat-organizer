@@ -1,5 +1,20 @@
+<script setup>
+import { computed } from "vue";
+
+const arrowDirection = { down: "rotate(90deg)", right: "rotate(0deg)" };
+const props = defineProps({
+  isFolderOpen: { type: Boolean, required: true },
+});
+
+const rotationStyles = computed(() => ({
+  transform: props.isFolderOpen ? arrowDirection.down : arrowDirection.right,
+}));
+</script>
+
 <template>
   <svg
+    :style="rotationStyles"
+    class="icon-arrow"
     width="20px"
     height="20px"
     viewBox="0 0 24 24"

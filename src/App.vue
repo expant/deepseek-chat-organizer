@@ -2,7 +2,7 @@
 import { ref, onMounted, provide } from "vue";
 import NestedList from "./components/NestedList.vue";
 import FolderName from "./components/FolderName.vue";
-import ContextMenu from "./ContextMenu.vue";
+import ContextMenu from "./components/ContextMenu.vue";
 
 const folders = [
   {
@@ -45,21 +45,25 @@ const folders = [
     ],
   },
 ];
-
-// const isFolderOpen = ref(false);
 const folderList = ref([]);
-const contextMenuPosition = ref({ top: 0, left: 0 });
-const openContextMenuId = ref(null);
-const setOpenContextMenuId = (id) => {
-  openContextMenuId.value = id;
-};
-const setContextMenuPosition = (possition) => {
-  contextMenuPosition.value = position;
-}
+const isEditingFolderName = ref(false);
+const contextMenu = ref({
+  isOpen: false,
+  position: { top: 0, left: 0 },
+  folderId: null,
+});
 
-provide("setOpenContextMenuId", setOpenContextMenuId);
-provide("setContextMenuPosition", setContextMenuPosition);
-provide("openContextMenuId", openContextMenuId);
+const setContextMenu = (newContextMenu) => {
+  contextMenu.value = newContextMenu;
+};
+const setEditingFolderName = (newState) => {
+  isEditingFolderName.value = newState;
+};
+
+provide("contextMenu", contextMenu);
+provide("setContextMenu", setContextMenu);
+provide("isEditingFolderName", isEditingFolderName);
+provide("setEditingFolderName", setEditingFolderName);
 
 const clearFolders = () =>
   chrome.storage.local.clear(() => {
@@ -87,10 +91,10 @@ onMounted(() => {
     <div class="first-nested-list">
       <NestedList :items="folderList" />
     </div>
-    <ContextMenu 
-      v-show="openContextMenuId" 
-      @close="openContextMenuId = null" 
-      :position="contextMenuPosition" 
+    <ContextMenu
+      v-show="contextMenu.isOpen"
+      @close="contextMenu.isOpen = false"
+      :position="contextMenu.position"
     />
   </div>
 </template>

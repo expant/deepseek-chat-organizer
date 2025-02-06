@@ -8,7 +8,7 @@ ul {
 
 .folders {
   padding: 20px;
-  background-color: #f9f9f9;
+  background-color: #f9fbff;
 }
 
 .new-folder,
@@ -95,29 +95,73 @@ ul {
   border-radius: 5px;
 }
 
-.icon-dots:hover {
+.icon-dots:hover,
+.context-menu,
+.context-menu button {
   background-color: #fff;
 }
 
 .context-menu {
   position: fixed;
   padding: 5px;
-  border-radius: 5px;
+  border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   z-index: 100;
 }
 
-.context-menu button {
-  display: block;
+.context-menu__btn {
+  display: flex;
+  justify-content: flex-start;
   width: 100%;
-  font-size: 18px;
-  padding: 5px 10px;
+  gap: 10px;
+  font-size: 14px;
+  padding: 10px;
   border: none;
   border-radius: 5px;
-  background-color: #fff;
+  color: #262626;
   transition: background-color 0.1s ease-in;
+  opacity: 0.9;
 }
 
-.context-menu button:hover {
-  background-color: #ddd;
+.context-menu__btn:hover {
+  background-color: #eee;
+  cursor: pointer;
+}
+
+.context-menu-icon {
+  width: 16px;
+  height: 16px;
+  fill: #262626;
+}
+
+.btn-name.delete {
+  color: #f44336;
+}
+
+.context-menu__btn .icon-delete {
+  fill: #f44336;
+}
+
+/* Стили для анимации fade */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+/* Стили для анимации fade */
+.fade-list-enter-active,
+.fade-list-leave-active {
+  transition: opacity 0.1s ease, transform 0.1s ease;
+}
+
+.fade-list-enter-from,
+.fade-list-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }

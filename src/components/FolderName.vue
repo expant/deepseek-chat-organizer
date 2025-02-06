@@ -20,52 +20,61 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["update:isFolderOpen"]);
+const contextMenu = inject("contextMenu");
+const setContextMenu = inject("setContextMenu");
+const isEditingFolderName = inject("isEditingFolderName");
+const setEditingFolderName = inject("setEditingFolderName");
 const showDots = ref(false);
-
-// Внедряем предоставленные значения
-const setOpenContextMenuId = inject("setOpenContextMenuId");
-const setContextMenuPosition = inject("setContextMenuPosition");
-const openContextMenuId = inject("openContextMenuId");
 
 const toggleFolder = () => emit("update:isFolderOpen", !props.isFolderOpen);
 
-const rotationStyles = computed(() => ({
-  transform: props.isFolderOpen ? "rotate(90deg)" : "rotate(0deg)",
-}));
-
 const openContextMenu = (event) => {
-  // Сообщаем родительскому компоненту, что это меню открыто
-  setOpenContextMenuId(props.id);
+  if (contextMenu.value.isOpen) {
+    setContextMenu({ ...contextMenu.value, isOpen: false });
+    return;
+  }
 
   // Получаем координаты кнопки
   const buttonRect = event.target.getBoundingClientRect();
   const position = {
-    top: buttonRect.bottom + window.scrollY,
+    top: buttonRect.bottom + window.scrollY + 10,
     left: buttonRect.left + window.scrollX,
   };
-  setContextMenuPosition(position);
+  setContextMenu({ isOpen: true, position, folderId: props.id });
 };
 
-const isContextMenuOpen = computed(() => openContextMenuId.value === props.id);
+const onFolderNameEdit = (event) => {
+  const folderNameEl = event.target;
+  folderNameEl.focus();
+  console.log(folderNameEl);
+  setEditingFolderName(false);
+};
 </script>
 
 <template>
   <div
     class="folder-name"
+    :data-id="id"
     @click="toggleFolder"
     @mouseover="showDots = true"
     @mouseleave="showDots = false"
   >
-    <IconArrow class="icon-arrow" :style="rotationStyles" />
-    <span class="folder-name__text">{{ props.name }}</span>
+    <IconArrow :isFolderOpen="isFolderOpen" />
 
-    <div
-      class="icon-dots"
-      v-show="showDots || isContextMenuOpen"
-      @click.stop="openContextMenu"
-    >
-      <IconDots />
-    </div>
-    <!-- <ContextMenu v-show="showContextMenu" /> -->
+    <template v-if="isEditingFolderName && id === contextMenu.folderId">
+      <input
+        class="folder-name__input"
+        type="text"
+        :value="name"
+        @blur="onFolderNameEdit"
+        @keydown.enter="onFolderNameEdit"
+      />
+    </template>
+    <template v-else>
+      <span class="folder-name__text">{{ props.name }}</span>
+      <div class="icon-dots" v-show="showDots" @click.stop="openContextMenu">
+        <IconDots />
+      </div>
+    </template>
   </div>
 </template>

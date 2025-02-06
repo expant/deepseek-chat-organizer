@@ -11,12 +11,18 @@ const props = defineProps({
 </script>
 
 <template>
-  <ul class="folders__list">
-    <template v-if="props.items.length > 0 && props.items">
-      <NestedListItem v-for="(node, i) in props.items" :key="i" :node="node" />
-    </template>
-    <template v-else>
-      <li>Нет данных</li>
-    </template>
-  </ul>
+  <transition name="fade-list">
+    <ul class="folders__list">
+      <template v-if="props.items.length > 0 && props.items">
+        <NestedListItem
+          v-for="(node, i) in props.items"
+          :key="i"
+          :node="node"
+        />
+      </template>
+      <template v-else>
+        <li>Нет данных</li>
+      </template>
+    </ul>
+  </transition>
 </template>
