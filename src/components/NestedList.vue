@@ -13,9 +13,9 @@ const props = defineProps({
 <template>
   <transition name="fade-list">
     <ul class="folders__list">
-      <template v-if="props.items.length > 0 && props.items">
+      <template v-if="items.length > 0 && items">
         <NestedListItem
-          v-for="(node, i) in props.items"
+          v-for="(node, i) in items"
           :key="i"
           :node="node"
         />

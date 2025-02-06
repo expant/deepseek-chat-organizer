@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, inject } from "vue";
+import { ref, computed, inject, watch, nextTick } from "vue";
 import IconArrow from "./icons/IconArrow.vue";
 import IconDots from "./icons/IconDots.vue";
 import ContextMenu from "./ContextMenu.vue";
@@ -21,13 +21,14 @@ const props = defineProps({
 
 const emit = defineEmits(["update:isFolderOpen"]);
 const contextMenu = inject("contextMenu");
-const setContextMenu = inject("setContextMenu");
+const folderList = inject("folderList");
 const isEditingFolderName = inject("isEditingFolderName");
+const setContextMenu = inject("setContextMenu");
 const setEditingFolderName = inject("setEditingFolderName");
 const showDots = ref(false);
+const inputRef = ref(null);
 
 const toggleFolder = () => emit("update:isFolderOpen", !props.isFolderOpen);
-
 const openContextMenu = (event) => {
   if (contextMenu.value.isOpen) {
     setContextMenu({ ...contextMenu.value, isOpen: false });
@@ -43,16 +44,51 @@ const openContextMenu = (event) => {
   setContextMenu({ isOpen: true, position, folderId: props.id });
 };
 
-const onFolderNameEdit = (event) => {
-  const folderNameEl = event.target;
-  folderNameEl.focus();
-  console.log(folderNameEl);
+const handleRename = async () => {
+  // const result = await chrome.storage.local.get('folders');
+  const inputValue = inputRef.value.value.trim();
+
+  const rename = (items) => {
+    let renamed = false;
+
+    items.some((item) => {
+      if (!item?.children) {
+        return false;
+      }
+
+      if (props.id !== item.id) {
+        return rename(item.children);
+      }
+
+      if (item.name !== inputValue && inputValue) {
+        item.name = inputValue;
+        renamed = true;
+      }
+      return true;
+    });
+    return renamed;
+  };
+
+  if (rename(folderList)) {
+    await chrome.storage.local.set({ folders: folderList });
+  }
   setEditingFolderName(false);
 };
 </script>
 
 <template>
+  <input 
+    v-if="isEditingFolderName && id === contextMenu.folderId"
+    ref="inputRef"
+    class="folder-name__input"
+    type="text"
+    name="folder-name"
+    :value="name"
+    @blur="handleRename"
+    @keydown.enter="handleRename"
+  />
   <div
+    v-else
     class="folder-name"
     :data-id="id"
     @click="toggleFolder"
@@ -60,21 +96,9 @@ const onFolderNameEdit = (event) => {
     @mouseleave="showDots = false"
   >
     <IconArrow :isFolderOpen="isFolderOpen" />
-
-    <template v-if="isEditingFolderName && id === contextMenu.folderId">
-      <input
-        class="folder-name__input"
-        type="text"
-        :value="name"
-        @blur="onFolderNameEdit"
-        @keydown.enter="onFolderNameEdit"
-      />
-    </template>
-    <template v-else>
-      <span class="folder-name__text">{{ props.name }}</span>
-      <div class="icon-dots" v-show="showDots" @click.stop="openContextMenu">
-        <IconDots />
-      </div>
-    </template>
+    <span class="folder-name__text">{{ props.name }}</span>
+    <div class="icon-dots" v-show="showDots" @click.stop="openContextMenu">
+      <IconDots />
+    </div>
   </div>
 </template>

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, provide } from "vue";
+import { ref, onMounted, provide, reactive } from "vue";
 import NestedList from "./components/NestedList.vue";
 import FolderName from "./components/FolderName.vue";
 import ContextMenu from "./components/ContextMenu.vue";
@@ -45,7 +45,7 @@ const folders = [
     ],
   },
 ];
-const folderList = ref([]);
+const folderList = reactive([]);
 const isEditingFolderName = ref(false);
 const contextMenu = ref({
   isOpen: false,
@@ -60,6 +60,7 @@ const setEditingFolderName = (newState) => {
   isEditingFolderName.value = newState;
 };
 
+provide("folderList", folderList);
 provide("contextMenu", contextMenu);
 provide("setContextMenu", setContextMenu);
 provide("isEditingFolderName", isEditingFolderName);
@@ -67,7 +68,7 @@ provide("setEditingFolderName", setEditingFolderName);
 
 const clearFolders = () =>
   chrome.storage.local.clear(() => {
-    folderList.value = [];
+    folderList = [];
   });
 
 onMounted(() => {
@@ -76,7 +77,7 @@ onMounted(() => {
       Object.keys(items).forEach((key) => {
         chrome.storage.local.get([key], (result) => {
           const { folders } = result;
-          folderList.value.push(...folders);
+          folderList.push(...folders);
         });
       });
     });

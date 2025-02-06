@@ -29,6 +29,7 @@ ul {
 .folder-name {
   position: relative;
   display: flex;
+  width: 100%;
   height: 32px;
   align-items: center;
   font-size: 15px;
@@ -41,6 +42,21 @@ ul {
 .folder-name:hover {
   background-color: #ddd;
   cursor: pointer;
+}
+
+.folder-name__input {
+  width: 100%;
+  height: 32px;
+  font-size: 15px;
+  margin: 5px;
+  padding: 0 5px;
+  border: none;
+  border-radius: 5px;
+  outline: none;
+}
+
+.folder-name__input:focus {
+  border: 2px solid #B3E5FC;
 }
 
 .folder-name__text {

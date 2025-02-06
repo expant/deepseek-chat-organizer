@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onUnmounted, inject } from "vue";
+import { onMounted, onUnmounted, inject, nextTick } from "vue";
 import ContextMenuButton from "./buttons/ContextMenuButton.vue";
 
 const props = defineProps({
@@ -21,9 +21,11 @@ const handleClickOutside = (event) => {
   }
 };
 
-const renameFolder = () => {
+const renameFolder = async () => {
   setEditingFolderName(true);
   setContextMenu({ ...contextMenu.value, isOpen: false });
+  await nextTick();
+  document.querySelector('.folder-name__input').focus();
 };
 
 onMounted(() => document.addEventListener("click", handleClickOutside));
