@@ -9,10 +9,9 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(["close"]);
+const folderList = inject("folderList");
 const contextMenu = inject("contextMenu");
-const setContextMenu = inject("setContextMenu");
 const isEditingFolderName = inject("isEditingFolderName");
-const setEditingFolderName = inject("setEditingFolderName");
 
 const handleClickOutside = (event) => {
   const contextMenu = document.querySelector(".context-menu");
@@ -21,11 +20,37 @@ const handleClickOutside = (event) => {
   }
 };
 
-const renameFolder = async () => {
-  setEditingFolderName(true);
-  setContextMenu({ ...contextMenu.value, isOpen: false });
+const onRenameFolder = async () => {
+  isEditingFolderName.value = true;
+  contextMenu.value = { ...contextMenu.value, isOpen: false };
   await nextTick();
-  document.querySelector('.folder-name__input').focus();
+  document.querySelector(".folder-name__input").focus();
+};
+
+const deleteFolder = (folders, id) => {
+  const index = folders.findIndex((folder) => {
+    if (typeof folder === "string") {
+      return false;
+    }
+    return folder.id !== id ? deleteFolder(folder.children, id) : true;
+  });
+
+  if (index >= 0) {
+    folders.splice(index, 1);
+    return true;
+  }
+  return false;
+};
+
+const onDeleteFolder = async () => {
+  const id = contextMenu.value.folderId;
+
+  if (deleteFolder(folderList, id)) {
+    await chrome.storage.local.set({ folders: folderList });
+  } else {
+    console.log("Не удалось удалить папку!");
+  }
+  contextMenu.value = { ...contextMenu.value, isOpen: false };
 };
 
 onMounted(() => document.addEventListener("click", handleClickOutside));
@@ -41,8 +66,8 @@ onUnmounted(() => document.removeEventListener("click", handleClickOutside));
         left: `${position.left}px`,
       }"
     >
-      <ContextMenuButton name="Rename" @click="renameFolder" />
-      <ContextMenuButton name="Delete" />
+      <ContextMenuButton name="Rename" @click="onRenameFolder" />
+      <ContextMenuButton name="Delete" @click="onDeleteFolder" />
     </div>
   </transition>
 </template>

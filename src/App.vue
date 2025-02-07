@@ -6,20 +6,20 @@ import ContextMenu from "./components/ContextMenu.vue";
 
 const folders = [
   {
-    id: 1,
+    id: Date.now(),
     type: "folder",
     name: "frontend html/css/js sdasdas",
     isOpen: false,
     children: ["Chat1", "Chat2", "Chat3"],
   },
   {
-    id: 2,
+    id: Date.now(),
     type: "folder",
     name: "backend",
     isOpen: false,
     children: [
       {
-        id: 3,
+        id: Date.now(),
         type: "folder",
         name: "Node.js",
         isOpen: false,
@@ -27,7 +27,7 @@ const folders = [
           "Асинхронность",
           "Express и прочее прочее",
           {
-            id: 4,
+            id: Date.now(),
             type: "folder",
             name: "Routers",
             isOpen: false,
@@ -45,7 +45,7 @@ const folders = [
     ],
   },
 ];
-const folderList = reactive([]);
+const folderList = ref([]);
 const isEditingFolderName = ref(false);
 const contextMenu = ref({
   isOpen: false,
@@ -53,22 +53,13 @@ const contextMenu = ref({
   folderId: null,
 });
 
-const setContextMenu = (newContextMenu) => {
-  contextMenu.value = newContextMenu;
-};
-const setEditingFolderName = (newState) => {
-  isEditingFolderName.value = newState;
-};
-
 provide("folderList", folderList);
 provide("contextMenu", contextMenu);
-provide("setContextMenu", setContextMenu);
 provide("isEditingFolderName", isEditingFolderName);
-provide("setEditingFolderName", setEditingFolderName);
 
 const clearFolders = () =>
   chrome.storage.local.clear(() => {
-    folderList = [];
+    folderList.value = [];
   });
 
 onMounted(() => {
@@ -77,7 +68,7 @@ onMounted(() => {
       Object.keys(items).forEach((key) => {
         chrome.storage.local.get([key], (result) => {
           const { folders } = result;
-          folderList.push(...folders);
+          folderList.value.push(...folders);
         });
       });
     });

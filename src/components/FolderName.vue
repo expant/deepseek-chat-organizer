@@ -23,15 +23,13 @@ const emit = defineEmits(["update:isFolderOpen"]);
 const contextMenu = inject("contextMenu");
 const folderList = inject("folderList");
 const isEditingFolderName = inject("isEditingFolderName");
-const setContextMenu = inject("setContextMenu");
-const setEditingFolderName = inject("setEditingFolderName");
 const showDots = ref(false);
 const inputRef = ref(null);
 
 const toggleFolder = () => emit("update:isFolderOpen", !props.isFolderOpen);
 const openContextMenu = (event) => {
   if (contextMenu.value.isOpen) {
-    setContextMenu({ ...contextMenu.value, isOpen: false });
+    contextMenu.value = { ...contextMenu.value, isOpen: false };
     return;
   }
 
@@ -41,43 +39,32 @@ const openContextMenu = (event) => {
     top: buttonRect.bottom + window.scrollY + 10,
     left: buttonRect.left + window.scrollX,
   };
-  setContextMenu({ isOpen: true, position, folderId: props.id });
+  contextMenu.value = { isOpen: true, position, folderId: props.id };
 };
 
+const rename = (folders, inputValue) =>
+  folders.value.map((folder) => {
+    if (typeof folder === "string") {
+      return folder;
+    }
+    if (props.id !== folder.id) {
+      return rename(folder.children, inputValue);
+    }
+    if (folder.name !== inputValue && inputValue) {
+      return { ...folder, name: inputValue };
+    }
+  });
+
 const handleRename = async () => {
-  // const result = await chrome.storage.local.get('folders');
   const inputValue = inputRef.value.value.trim();
-
-  const rename = (items) => {
-    let renamed = false;
-
-    items.some((item) => {
-      if (!item?.children) {
-        return false;
-      }
-
-      if (props.id !== item.id) {
-        return rename(item.children);
-      }
-
-      if (item.name !== inputValue && inputValue) {
-        item.name = inputValue;
-        renamed = true;
-      }
-      return true;
-    });
-    return renamed;
-  };
-
-  if (rename(folderList)) {
-    await chrome.storage.local.set({ folders: folderList });
-  }
-  setEditingFolderName(false);
+  folderList.value = rename(folderList, inputValue);
+  await chrome.storage.local.set({ folders: folderList });
+  isEditingFolderName.value = false;
 };
 </script>
 
 <template>
-  <input 
+  <input
     v-if="isEditingFolderName && id === contextMenu.folderId"
     ref="inputRef"
     class="folder-name__input"
