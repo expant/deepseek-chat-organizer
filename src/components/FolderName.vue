@@ -42,23 +42,26 @@ const openContextMenu = (event) => {
   contextMenu.value = { isOpen: true, position, folderId: props.id };
 };
 
-const rename = (folders, inputValue) =>
-  folders.value.map((folder) => {
-    if (typeof folder === "string") {
-      return folder;
-    }
-    if (props.id !== folder.id) {
-      return rename(folder.children, inputValue);
-    }
-    if (folder.name !== inputValue && inputValue) {
-      return { ...folder, name: inputValue };
-    }
-  });
+const rename = (folders, inputValue) => folders.map((folder) => {
+  if (typeof folder === "string") {
+    return folder;
+  }
+
+  if (props.id !== folder.id) {
+    folder.children = rename(folder.children, inputValue);
+    return folder;
+  }
+  
+  if (folder.name !== inputValue && inputValue) {
+    return { ...folder, name: inputValue };
+  }
+  return folder;
+});
 
 const handleRename = async () => {
   const inputValue = inputRef.value.value.trim();
-  folderList.value = rename(folderList, inputValue);
-  await chrome.storage.local.set({ folders: folderList });
+  folderList.value = rename(folderList.value, inputValue);
+  await chrome.storage.local.set({ folders: folderList.value });
   isEditingFolderName.value = false;
 };
 </script>

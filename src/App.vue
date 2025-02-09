@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted, provide, reactive } from "vue";
 import NestedList from "./components/NestedList.vue";
-import FolderName from "./components/FolderName.vue";
 import ContextMenu from "./components/ContextMenu.vue";
 
 const folders = [
