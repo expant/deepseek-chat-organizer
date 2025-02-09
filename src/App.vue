@@ -6,20 +6,20 @@ import ContextMenu from "./components/ContextMenu.vue";
 
 const folders = [
   {
-    id: Date.now(),
+    id: 234234,
     type: "folder",
     name: "frontend html/css/js sdasdas",
     isOpen: false,
     children: ["Chat1", "Chat2", "Chat3"],
   },
   {
-    id: Date.now(),
+    id: 724556245,
     type: "folder",
     name: "backend",
     isOpen: false,
     children: [
       {
-        id: Date.now(),
+        id: 134513,
         type: "folder",
         name: "Node.js",
         isOpen: false,
@@ -27,7 +27,7 @@ const folders = [
           "Асинхронность",
           "Express и прочее прочее",
           {
-            id: Date.now(),
+            id: 8546452,
             type: "folder",
             name: "Routers",
             isOpen: false,

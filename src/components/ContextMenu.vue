@@ -13,7 +13,7 @@ const folderList = inject("folderList");
 const contextMenu = inject("contextMenu");
 const isEditingFolderName = inject("isEditingFolderName");
 
-const handleClickOutside = (event) => {
+const onOutsideClick = (event) => {
   const contextMenu = document.querySelector(".context-menu");
   if (contextMenu && !contextMenu.contains(event.target)) {
     emit("close");
@@ -27,34 +27,27 @@ const onRenameFolder = async () => {
   document.querySelector(".folder-name__input").focus();
 };
 
-const deleteFolder = (folders, id) => {
-  const index = folders.findIndex((folder) => {
-    if (typeof folder === "string") {
-      return false;
-    }
-    return folder.id !== id ? deleteFolder(folder.children, id) : true;
-  });
-
-  if (index >= 0) {
-    folders.splice(index, 1);
+const deleteFolder = (folders, id) => folders.filter((folder) => {
+  if (typeof folder === "string") {
     return true;
   }
-  return false;
-};
+  if (folder.id === id) {
+    return false;
+  }
+
+  folder.children = deleteFolder(folder.children, id);
+  return true;
+});
 
 const onDeleteFolder = async () => {
   const id = contextMenu.value.folderId;
-
-  if (deleteFolder(folderList, id)) {
-    await chrome.storage.local.set({ folders: folderList });
-  } else {
-    console.log("Не удалось удалить папку!");
-  }
+  folderList.value = deleteFolder(folderList.value, id);
+  await chrome.storage.local.set({ folders: folderList });
   contextMenu.value = { ...contextMenu.value, isOpen: false };
 };
 
-onMounted(() => document.addEventListener("click", handleClickOutside));
-onUnmounted(() => document.removeEventListener("click", handleClickOutside));
+onMounted(() => document.addEventListener("click", onOutsideClick));
+onUnmounted(() => document.removeEventListener("click", onOutsideClick));
 </script>
 
 <template>
