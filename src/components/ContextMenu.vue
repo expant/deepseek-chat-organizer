@@ -1,4 +1,5 @@
 <script setup>
+import _ from 'lodash';
 import { onMounted, onUnmounted, inject, nextTick, ref, watch } from "vue";
 import ContextMenuButton from "./buttons/ContextMenuButton.vue";
 
@@ -48,36 +49,67 @@ const onDeleteFolder = async () => {
   contextMenu.value = { ...contextMenu.value, isOpen: false };
 };
 
-// const createFolder = (folders, id) => {
-//   // Здесь должен находится код для проверки
-//   // folder.name - 'Untitled, Untitled 1, Untitled 2, ...'
-//   const name =
+const createFolder = (folders, id) => {
+  const addNewUntitled = (arr) => {
+    const nums = arr.map((item) => {
+      const match = item.match(/\d+/);
+      return match ? parseInt(match[0]) : 0;
+    });
 
-//   // folders.forEach((folder) => {
-//   //   if (typeof folder === "string") {
-//   //     return;
-//   //   }
-//   //   if (folder.id === id) {
-//   //     folder.children.push({
-//   //       id: Date.now(),
-//   //       type: "folder",
-//   //       name: "Untitled",
-//   //       isOpen: false,
-//   //       children: [],
-//   //     });
-//   //     return;
-//   //   }
-//   //   folder.children = createFolder(folder.children, id);
-//   // });
-// };
+    let missingNum = 0;
+    while (nums.includes(missingNum)) {
+      missingNum += 1;
+    }
+
+    return missingNum ? `Untitled ${missingNum}` : 'Untitled';
+  };
+
+  if (baseFolderNames.value.length === 0) {
+    baseFolderNames.value.push('Untitled');  
+  } else {
+    baseFolderNames.value.push(addNewUntitled(baseFolderNames.value))
+  }
+
+  const name = baseFolderNames.value[baseFolderNames.value.length - 1];
+  let newFolderId = 0;
+
+  folders.forEach((folder) => {
+    if (typeof folder === "string") {
+      return;
+    }
+    if (folder.id === id) {
+      const newFolder = {
+        id: Date.now(),
+        type: "folder",
+        isOpen: false,
+        children: [],
+        name,
+      };
+      folder.isOpen = true;
+      folder.children.push(newFolder);
+      newFolderId = newFolder.id;
+      return;
+    }
+    folder.children = createFolder(folder.children, id);
+  });
+
+  return [folders, newFolderId];
+};
 
 const onCreateFolder = async () => {
   const id = contextMenu.value.folderId;
-  folderList.value = createFolder(folderList.value, id);
-  isEditingFolderName.value = true;
-  contextMenu.value = { ...contextMenu.value, isOpen: false };
-  await nextTick();
-  document.querySelector(".folder-name__input").focus();
+  const [folders, newFolderId] = createFolder(_.cloneDeep(folderList.value), id);
+
+  folderList.value = folders;
+  // contextMenu.value = { ...contextMenu.value, isOpen: false, folderId: newFolderId };
+
+  console.log(folderList.value, newFolderId);
+
+  // console.log(folders, newFolderId);
+  // console.log(folderList.value, newFolderId);
+  // isEditingFolderName.value = true;
+  // await nextTick();
+  // document.querySelector(".folder-name__input").focus();
 };
 
 onMounted(async () => document.addEventListener("click", onOutsideClick));

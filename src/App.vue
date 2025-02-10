@@ -7,7 +7,7 @@ const folders = [
   {
     id: 234234,
     type: "folder",
-    name: "Untitled",
+    name: "Untitled 4",
     isOpen: false,
     children: ["Chat1", "Chat2", "Chat3"],
   },
@@ -37,6 +37,18 @@ const folders = [
               "Очень длинное название чата",
             ],
           },
+          {
+            id: 85421452,
+            type: "folder",
+            name: "sdfsdfsd",
+            isOpen: false,
+            children: [
+              "Роутинг",
+              "Маршрутизация",
+              "Примеры",
+              "Очень длинное название чата",
+            ],
+          },
         ],
       },
       "Chat2",
@@ -58,6 +70,15 @@ provide("contextMenu", contextMenu);
 provide("isEditingFolderName", isEditingFolderName);
 provide("baseFolderNames", baseFolderNames);
 
+const sortBaseNames = (a, b) => {
+  if (a === "Untitled") return -1;
+  if (b === "Untitled") return 1;
+
+  const numA = parseInt(a.split(' ')[1] || 0);
+  const numB = parseInt(b.split(' ')[1] || 0);
+  return numA - numB;
+};
+
 const getBaseNames = (items, acc) =>
   items.reduce((names, item) => {
     if (typeof item === "string") {
@@ -77,11 +98,9 @@ onMounted(async () => {
   await chrome.storage.local.set({ folders });
   const items = await chrome.storage.local.get(["folders"]);
   folderList.value = items.folders;
-  baseFolderNames.value = getBaseNames(folderList.value, []);
-  baseFolderNames.value = baseFolderNames.value.sort((a, b) => {
-    if ()
-    console.log(a, b);
-  });
+  const baseNames = getBaseNames(folderList.value, []);
+  baseFolderNames.value = baseNames.sort(sortBaseNames);
+  console.log(baseFolderNames.value);
 });
 </script>
 
