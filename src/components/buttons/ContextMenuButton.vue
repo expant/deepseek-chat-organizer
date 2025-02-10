@@ -1,6 +1,7 @@
 <script setup>
 import IconRename from "../icons/IconRename.vue";
 import IconDelete from "../icons/IconDelete.vue";
+import IconFolder from "../icons/IconFolder.vue";
 
 const props = defineProps({
   name: String,
@@ -10,6 +11,10 @@ const props = defineProps({
 
 <template>
   <button class="context-menu__btn">
+    <template v-if="name === 'New folder'">
+      <IconFolder />
+      <span class="btn-name create">{{ name }}</span>
+    </template>
     <template v-if="name === 'Rename'">
       <IconRename />
       <span class="btn-name rename">{{ name }}</span>

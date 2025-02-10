@@ -7,14 +7,14 @@ const folders = [
   {
     id: 234234,
     type: "folder",
-    name: "frontend html/css/js sdasdas",
+    name: "Untitled",
     isOpen: false,
     children: ["Chat1", "Chat2", "Chat3"],
   },
   {
     id: 724556245,
     type: "folder",
-    name: "backend",
+    name: "Untitled 2",
     isOpen: false,
     children: [
       {
@@ -28,7 +28,7 @@ const folders = [
           {
             id: 8546452,
             type: "folder",
-            name: "Routers",
+            name: "Untitled 3",
             isOpen: false,
             children: [
               "Роутинг",
@@ -45,6 +45,7 @@ const folders = [
   },
 ];
 const folderList = ref([]);
+const baseFolderNames = ref([]);
 const isEditingFolderName = ref(false);
 const contextMenu = ref({
   isOpen: false,
@@ -55,30 +56,37 @@ const contextMenu = ref({
 provide("folderList", folderList);
 provide("contextMenu", contextMenu);
 provide("isEditingFolderName", isEditingFolderName);
+provide("baseFolderNames", baseFolderNames);
 
-const clearFolders = () =>
-  chrome.storage.local.clear(() => {
-    folderList.value = [];
-  });
+const getBaseNames = (items, acc) =>
+  items.reduce((names, item) => {
+    if (typeof item === "string") {
+      return names;
+    }
 
-onMounted(() => {
-  chrome.storage.local.set({ folders }, () => {
-    chrome.storage.local.get(null, (items) => {
-      Object.keys(items).forEach((key) => {
-        chrome.storage.local.get([key], (result) => {
-          const { folders } = result;
-          folderList.value.push(...folders);
-        });
-      });
-    });
+    const [text] = item.name.split(" ");
+    if (text === "Untitled") {
+      const newNames = [...names, item.name];
+      return item.children ? getBaseNames(item.children, newNames) : newNames;
+    }
+
+    return getBaseNames(item.children, names);
+  }, acc);
+
+onMounted(async () => {
+  await chrome.storage.local.set({ folders });
+  const items = await chrome.storage.local.get(["folders"]);
+  folderList.value = items.folders;
+  baseFolderNames.value = getBaseNames(folderList.value, []);
+  baseFolderNames.value = baseFolderNames.value.sort((a, b) => {
+    if ()
+    console.log(a, b);
   });
 });
 </script>
 
 <template>
   <div class="folders">
-    <button @click="addNewFolder" class="new-folder">New folder</button>
-    <button @click="clearFolders" class="clear-folders">Clear folders</button>
     <div class="first-nested-list">
       <NestedList :items="folderList" />
     </div>
