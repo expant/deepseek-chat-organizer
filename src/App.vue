@@ -84,16 +84,13 @@ const sortBaseNames = (a, b) => {
 
 const getBaseNames = (items, acc) =>
   items.reduce((names, item) => {
-    if (typeof item === "string") {
-      return names;
-    }
+    if (typeof item === "string") return names;
 
     const [text] = item.name.split(" ");
     if (text === "Untitled") {
       const newNames = [...names, item.name];
       return item.children ? getBaseNames(item.children, newNames) : newNames;
     }
-
     return getBaseNames(item.children, names);
   }, acc);
 

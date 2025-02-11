@@ -1,8 +1,10 @@
 <script setup>
 import { ref, computed, inject, watch, nextTick, onMounted } from "vue";
+import _ from "lodash";
 import IconArrow from "./icons/IconArrow.vue";
 import IconDots from "./icons/IconDots.vue";
 import ContextMenu from "./ContextMenu.vue";
+// import BaseNotification from "./BaseNotification.vue";
 
 const props = defineProps({
   name: {
@@ -26,6 +28,7 @@ const isEditingFolderName = inject("isEditingFolderName");
 const baseFolderNames = inject("baseFolderNames");
 const showDots = ref(false);
 const inputRef = ref(null);
+const showNotification = ref(false);
 
 const toggleFolder = () => emit("update:isFolderOpen", !props.isFolderOpen);
 const openContextMenu = (event) => {
@@ -43,37 +46,45 @@ const openContextMenu = (event) => {
   contextMenu.value = { isOpen: true, position, folderId: props.id };
 };
 
-const rename = (folders, inputValue) =>
-  folders.map((folder) => {
-    if (typeof folder === "string") {
-      return folder;
-    }
+const isNameNotUnique  = (items, id, name) => items.some((item) => {
+  if (typeof item === 'string') return false;
+  if (item.name === name) return item.id === id ? false : true;
+  if (item.children) return isNameNotUnique(item.children, id, name);
+});
 
-    if (props.id !== folder.id) {
-      folder.children = rename(folder.children, inputValue);
-      return folder;
-    }
-
-    if (folder.name !== inputValue && inputValue) {
-      return { ...folder, name: inputValue };
-    }
-    return folder;
-  });
-
-const handleRename = async () => {
-  const inputValue = inputRef.value.value.trim();
-  const lastUntitled = baseFolderNames.value.at(-1);
-  if (lastUntitled !== inputValue) {
-    baseFolderNames.value = baseFolderNames.value.slice(0, -1);
+const rename = (items, id, name) => items.map((item) => {
+  if (typeof item === 'string') return item;
+  if (id !== item.id) {
+    if (item.children) return { ...item, children: rename(item.children, id, name) };
+    return item;
   }
+  if (item.name !== name && name) return { ...item, name };
+  return item;
+});
 
-  folderList.value = rename(folderList.value, inputValue);
+const handleRename = async (event) => {
+  // const lastUntitled = baseFolderNames.value.at(-1);
+  const inputValue = inputRef.value.value.trim();
+  const clonedFolders = _.cloneDeep(folderList.value);
+
+  if (isNameNotUnique(clonedFolders, props.id, inputValue)) {
+    // baseFolderNames.value = 
+    console.log('Папка с таким именем уже существует');
+  } else {
+    folderList.value = rename(clonedFolders, props.id, inputValue);
+  }
   await chrome.storage.local.set({ folders: folderList.value });
   isEditingFolderName.value = false;
+  
+  // if (lastUntitled !== inputValue) {
+  //   baseFolderNames.value = baseFolderNames.value.slice(0, -1);
+  // }
+
 };
 </script>
 
 <template>
+  <!-- <base-notification class="noti" v-if="showNotification">There's already a folder with the same name</base-notification> -->
   <input
     v-if="isEditingFolderName && id === contextMenu.folderId"
     ref="inputRef"
