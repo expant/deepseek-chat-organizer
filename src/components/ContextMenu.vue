@@ -1,5 +1,5 @@
 <script setup>
-import _ from 'lodash';
+import _ from "lodash";
 import { onMounted, onUnmounted, inject, nextTick, ref, watch } from "vue";
 import ContextMenuButton from "./buttons/ContextMenuButton.vue";
 
@@ -29,11 +29,16 @@ const onRenameFolder = async () => {
   document.querySelector(".folder-name__input").focus();
 };
 
-const deleteFolder = (folders, id) =>
+const deleteFolder = (folders, id, deletedBaseNames) =>
   folders.filter((folder) => {
     if (typeof folder === "string") {
       return true;
     }
+
+    if (folder.name.includes("Untitled")) {
+      deletedBaseNames.push(folder.name);
+    }
+
     if (folder.id === id) {
       return false;
     }
@@ -44,7 +49,12 @@ const deleteFolder = (folders, id) =>
 
 const onDeleteFolder = async () => {
   const id = contextMenu.value.folderId;
-  folderList.value = deleteFolder(folderList.value, id);
+  const deletedBaseNames = [];
+  folderList.value = deleteFolder(folderList.value, id, deletedBaseNames);
+  baseFolderNames.value = baseFolderNames.value.filter(
+    (name) => !deletedBaseNames.includes(name)
+  );
+  console.log(baseFolderNames.value);
   await chrome.storage.local.set({ folders: folderList });
   contextMenu.value = { ...contextMenu.value, isOpen: false };
 };
@@ -61,55 +71,59 @@ const createFolder = (folders, id) => {
       missingNum += 1;
     }
 
-    return missingNum ? `Untitled ${missingNum}` : 'Untitled';
+    return missingNum ? `Untitled ${missingNum}` : "Untitled";
   };
 
   if (baseFolderNames.value.length === 0) {
-    baseFolderNames.value.push('Untitled');  
+    baseFolderNames.value.push("Untitled");
   } else {
-    baseFolderNames.value.push(addNewUntitled(baseFolderNames.value))
+    baseFolderNames.value.push(addNewUntitled(baseFolderNames.value));
   }
 
   const name = baseFolderNames.value[baseFolderNames.value.length - 1];
   let newFolderId = 0;
 
-  folders.forEach((folder) => {
-    if (typeof folder === "string") {
-      return;
-    }
-    if (folder.id === id) {
-      const newFolder = {
-        id: Date.now(),
-        type: "folder",
-        isOpen: false,
-        children: [],
-        name,
-      };
-      folder.isOpen = true;
-      folder.children.push(newFolder);
-      newFolderId = newFolder.id;
-      return;
-    }
-    folder.children = createFolder(folder.children, id);
-  });
+  const updateFolders = (items) => {
+    items.forEach((item) => {
+      if (typeof item === "string") {
+        return;
+      }
+      if (item.id === id) {
+        const newFolder = {
+          id: Date.now(),
+          type: "folder",
+          isOpen: false,
+          children: [],
+          name,
+        };
+        item.isOpen = true;
+        item.children.unshift(newFolder);
+        newFolderId = newFolder.id;
+        return;
+      }
+      updateFolders(item.children, id);
+    });
+  };
 
+  updateFolders(folders);
   return [folders, newFolderId];
 };
 
 const onCreateFolder = async () => {
   const id = contextMenu.value.folderId;
-  const [folders, newFolderId] = createFolder(_.cloneDeep(folderList.value), id);
-
+  const [folders, newFolderId] = createFolder(
+    _.cloneDeep(folderList.value),
+    id
+  );
   folderList.value = folders;
-  // contextMenu.value = { ...contextMenu.value, isOpen: false, folderId: newFolderId };
-
-  console.log(folderList.value, newFolderId);
-
-  // console.log(folders, newFolderId);
-  // console.log(folderList.value, newFolderId);
-  // isEditingFolderName.value = true;
-  // await nextTick();
-  // document.querySelector(".folder-name__input").focus();
+  contextMenu.value = {
+    ...contextMenu.value,
+    isOpen: false,
+    folderId: newFolderId,
+  };
+  isEditingFolderName.value = true;
+  await nextTick();
+  document.querySelector(".folder-name__input").focus();
 };
 
 onMounted(async () => document.addEventListener("click", onOutsideClick));

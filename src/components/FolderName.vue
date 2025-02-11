@@ -23,6 +23,7 @@ const emit = defineEmits(["update:isFolderOpen"]);
 const contextMenu = inject("contextMenu");
 const folderList = inject("folderList");
 const isEditingFolderName = inject("isEditingFolderName");
+const baseFolderNames = inject("baseFolderNames");
 const showDots = ref(false);
 const inputRef = ref(null);
 
@@ -61,6 +62,11 @@ const rename = (folders, inputValue) =>
 
 const handleRename = async () => {
   const inputValue = inputRef.value.value.trim();
+  const lastUntitled = baseFolderNames.value.at(-1);
+  if (lastUntitled !== inputValue) {
+    baseFolderNames.value = baseFolderNames.value.slice(0, -1);
+  }
+
   folderList.value = rename(folderList.value, inputValue);
   await chrome.storage.local.set({ folders: folderList.value });
   isEditingFolderName.value = false;

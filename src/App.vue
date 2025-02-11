@@ -57,6 +57,9 @@ const folders = [
   },
 ];
 const folderList = ref([]);
+
+// FIXME: Нужно перебирать folderList и
+// обновлять baseFolderList каждый раз когда удаляется любая папка
 const baseFolderNames = ref([]);
 const isEditingFolderName = ref(false);
 const contextMenu = ref({
@@ -74,8 +77,8 @@ const sortBaseNames = (a, b) => {
   if (a === "Untitled") return -1;
   if (b === "Untitled") return 1;
 
-  const numA = parseInt(a.split(' ')[1] || 0);
-  const numB = parseInt(b.split(' ')[1] || 0);
+  const numA = parseInt(a.split(" ")[1] || 0);
+  const numB = parseInt(b.split(" ")[1] || 0);
   return numA - numB;
 };
 
