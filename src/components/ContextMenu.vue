@@ -1,8 +1,9 @@
 <script setup>
 import _ from "lodash";
 import { onMounted, onUnmounted, inject, nextTick, ref, watch } from "vue";
+import { getNewUntitled, getBaseNames, sortBaseNames } from "@/utils/helpers.js";
+import { deleteFolder, createFolder } from "@/background.js";
 import ContextMenuButton from "./buttons/ContextMenuButton.vue";
-import { getNewUntitled } from "@/utils/helpers.js";
 
 const props = defineProps({
   position: {
@@ -30,78 +31,34 @@ const onRenameFolder = async () => {
   document.querySelector(".folder-name__input").focus();
 };
 
-const deleteFolder = (folders, id, deletedBaseNames) =>
-  folders.filter((folder) => {
-    if (typeof folder === "string") {
-      return true;
-    }
-
-    if (folder.name.includes("Untitled")) {
-      deletedBaseNames.push(folder.name);
-    }
-
-    if (folder.id === id) {
-      return false;
-    }
-
-    folder.children = deleteFolder(folder.children, id);
-    return true;
-  });
-
 const onDeleteFolder = async () => {
   const id = contextMenu.value.folderId;
-  const deletedBaseNames = [];
-  folderList.value = deleteFolder(folderList.value, id, deletedBaseNames);
-  baseFolderNames.value = baseFolderNames.value.filter(
-    (name) => !deletedBaseNames.includes(name)
-  );
-  console.log(baseFolderNames.value);
+  folderList.value = deleteFolder(folderList.value, id);
+  const baseNames = getBaseNames(folderList.value, []);
+  baseFolderNames.value = baseNames.sort(sortBaseNames);
   await chrome.storage.local.set({ folders: folderList });
   contextMenu.value = { ...contextMenu.value, isOpen: false };
 };
 
-const createFolder = (folders, id) => {
-  baseFolderNames.value.push(getNewUntitled(baseFolderNames.value));
-  const name = baseFolderNames.value[baseFolderNames.value.length - 1];
-  let newFolderId = 0;
-
-  const updateFolders = (items) => {
-    items.forEach((item) => {
-      if (typeof item === "string") {
-        return;
-      }
-      if (item.id === id) {
-        const newFolder = {
-          id: Date.now(),
-          type: "folder",
-          isOpen: false,
-          children: [],
-          name,
-        };
-        item.isOpen = true;
-        item.children.unshift(newFolder);
-        newFolderId = newFolder.id;
-        return;
-      }
-      updateFolders(item.children, id);
-    });
-  };
-  updateFolders(folders);
-  return [folders, newFolderId];
-};
-
 const onCreateFolder = async () => {
   const id = contextMenu.value.folderId;
-  const [folders, newFolderId] = createFolder(
-    _.cloneDeep(folderList.value),
-    id
-  );
+
+  // folderList.value = folderList.value.forEach((item) => {
+  //   if (typeof item === "string") return;
+  //   if (item.id === id) {
+  //     item.isOpen = true;
+  //     return
+  //   }
+  //   if (item.children) return getFolderById(item.children, id);
+  // });
+  
+
+  const [folders, newFolderId] = createFolder(_.cloneDeep(folderList.value), id, baseFolderNames.value);
   folderList.value = folders;
-  contextMenu.value = {
-    ...contextMenu.value,
-    isOpen: false,
-    folderId: newFolderId,
-  };
+  console.log(folderList.value);
+  const baseNames = getBaseNames(folderList.value, []);
+  baseFolderNames.value = baseNames.sort(sortBaseNames);
+  contextMenu.value = { ...contextMenu.value, isOpen: false, folderId: newFolderId };
   isEditingFolderName.value = true;
   await nextTick();
   document.querySelector(".folder-name__input").focus();

@@ -4,8 +4,6 @@ import { getBaseNames, sortBaseNames } from "./utils/helpers.js";
 import NestedList from "./components/NestedList.vue";
 import ContextMenu from "./components/ContextMenu.vue";
 
-// FIXME: Нужно перебирать folderList и
-// обновлять baseFolderList каждый раз когда удаляется любая папка
 const folders = [
   {
     id: 234234,
@@ -79,7 +77,7 @@ onMounted(async () => {
   folderList.value = items.folders;
   const baseNames = getBaseNames(folderList.value, []);
   baseFolderNames.value = baseNames.sort(sortBaseNames);
-  console.log(baseFolderNames.value);
+  console.log(folderList.value);
 });
 </script>
 

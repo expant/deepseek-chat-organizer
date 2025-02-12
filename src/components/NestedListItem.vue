@@ -1,7 +1,7 @@
 <script setup>
 import NestedList from "./NestedList.vue";
 import FolderName from "./FolderName.vue";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 
 const props = defineProps({
   node: {
@@ -11,6 +11,10 @@ const props = defineProps({
 });
 
 const isFolderOpen = ref(props.node?.isOpen);
+
+onMounted(() => {
+  console.log(isFolderOpen.value, props.node);
+});
 </script>
 
 <template>

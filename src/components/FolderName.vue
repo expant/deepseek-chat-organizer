@@ -49,17 +49,14 @@ const openContextMenu = (event) => {
 };
 
 const handleRename = async () => {
-  const inputValue = inputRef.value.value.trim();
+  if (!inputRef.value) return
+  const inputValue = inputRef.value.value.trim(); 
   const clonedFolders = _.cloneDeep(folderList.value);
 
   if (isNameNotUnique(clonedFolders, inputValue)) {
     console.log("Папка с таким именем уже существует");
     isEditingFolderName.value = false;
     return;
-
-    // baseFolderNames.value.push(getNewUntitled(baseFolderNames.value));
-    // const newValue = baseFolderNames.value.at(-1);
-    // folderList.value = renameFolder(clonedFolders, props.id, newValue);
   }
 
   folderList.value = renameFolder(clonedFolders, props.id, inputValue);
