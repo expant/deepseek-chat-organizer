@@ -1,6 +1,8 @@
 <script setup>
-import { ref, computed, inject, watch, nextTick, onMounted } from "vue";
 import _ from "lodash";
+import { ref, computed, inject, watch, nextTick, onMounted } from "vue";
+import { isNameNotUnique, getNewUntitled } from "@/utils/helpers.js";
+import { renameFolder } from "@/background.js";
 import IconArrow from "./icons/IconArrow.vue";
 import IconDots from "./icons/IconDots.vue";
 import ContextMenu from "./ContextMenu.vue";
@@ -46,40 +48,23 @@ const openContextMenu = (event) => {
   contextMenu.value = { isOpen: true, position, folderId: props.id };
 };
 
-const isNameNotUnique  = (items, id, name) => items.some((item) => {
-  if (typeof item === 'string') return false;
-  if (item.name === name) return item.id === id ? false : true;
-  if (item.children) return isNameNotUnique(item.children, id, name);
-});
-
-const rename = (items, id, name) => items.map((item) => {
-  if (typeof item === 'string') return item;
-  if (id !== item.id) {
-    if (item.children) return { ...item, children: rename(item.children, id, name) };
-    return item;
-  }
-  if (item.name !== name && name) return { ...item, name };
-  return item;
-});
-
-const handleRename = async (event) => {
-  // const lastUntitled = baseFolderNames.value.at(-1);
+const handleRename = async () => {
   const inputValue = inputRef.value.value.trim();
   const clonedFolders = _.cloneDeep(folderList.value);
 
-  if (isNameNotUnique(clonedFolders, props.id, inputValue)) {
-    // baseFolderNames.value = 
-    console.log('Папка с таким именем уже существует');
-  } else {
-    folderList.value = rename(clonedFolders, props.id, inputValue);
+  if (isNameNotUnique(clonedFolders, inputValue)) {
+    console.log("Папка с таким именем уже существует");
+    isEditingFolderName.value = false;
+    return;
+
+    // baseFolderNames.value.push(getNewUntitled(baseFolderNames.value));
+    // const newValue = baseFolderNames.value.at(-1);
+    // folderList.value = renameFolder(clonedFolders, props.id, newValue);
   }
+
+  folderList.value = renameFolder(clonedFolders, props.id, inputValue);
   await chrome.storage.local.set({ folders: folderList.value });
   isEditingFolderName.value = false;
-  
-  // if (lastUntitled !== inputValue) {
-  //   baseFolderNames.value = baseFolderNames.value.slice(0, -1);
-  // }
-
 };
 </script>
 

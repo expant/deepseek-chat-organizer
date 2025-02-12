@@ -2,6 +2,7 @@
 import _ from "lodash";
 import { onMounted, onUnmounted, inject, nextTick, ref, watch } from "vue";
 import ContextMenuButton from "./buttons/ContextMenuButton.vue";
+import { getNewUntitled } from "@/utils/helpers.js";
 
 const props = defineProps({
   position: {
@@ -60,26 +61,7 @@ const onDeleteFolder = async () => {
 };
 
 const createFolder = (folders, id) => {
-  const addNewUntitled = (arr) => {
-    const nums = arr.map((item) => {
-      const match = item.match(/\d+/);
-      return match ? parseInt(match[0]) : 0;
-    });
-
-    let missingNum = 0;
-    while (nums.includes(missingNum)) {
-      missingNum += 1;
-    }
-
-    return missingNum ? `Untitled ${missingNum}` : "Untitled";
-  };
-
-  if (baseFolderNames.value.length === 0) {
-    baseFolderNames.value.push("Untitled");
-  } else {
-    baseFolderNames.value.push(addNewUntitled(baseFolderNames.value));
-  }
-
+  baseFolderNames.value.push(getNewUntitled(baseFolderNames.value));
   const name = baseFolderNames.value[baseFolderNames.value.length - 1];
   let newFolderId = 0;
 
@@ -104,7 +86,6 @@ const createFolder = (folders, id) => {
       updateFolders(item.children, id);
     });
   };
-
   updateFolders(folders);
   return [folders, newFolderId];
 };

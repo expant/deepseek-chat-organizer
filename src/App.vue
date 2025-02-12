@@ -1,8 +1,11 @@
 <script setup>
 import { ref, onMounted, provide, reactive } from "vue";
+import { getBaseNames, sortBaseNames } from "./utils/helpers.js";
 import NestedList from "./components/NestedList.vue";
 import ContextMenu from "./components/ContextMenu.vue";
 
+// FIXME: Нужно перебирать folderList и
+// обновлять baseFolderList каждый раз когда удаляется любая папка
 const folders = [
   {
     id: 234234,
@@ -57,9 +60,6 @@ const folders = [
   },
 ];
 const folderList = ref([]);
-
-// FIXME: Нужно перебирать folderList и
-// обновлять baseFolderList каждый раз когда удаляется любая папка
 const baseFolderNames = ref([]);
 const isEditingFolderName = ref(false);
 const contextMenu = ref({
@@ -72,27 +72,6 @@ provide("folderList", folderList);
 provide("contextMenu", contextMenu);
 provide("isEditingFolderName", isEditingFolderName);
 provide("baseFolderNames", baseFolderNames);
-
-const sortBaseNames = (a, b) => {
-  if (a === "Untitled") return -1;
-  if (b === "Untitled") return 1;
-
-  const numA = parseInt(a.split(" ")[1] || 0);
-  const numB = parseInt(b.split(" ")[1] || 0);
-  return numA - numB;
-};
-
-const getBaseNames = (items, acc) =>
-  items.reduce((names, item) => {
-    if (typeof item === "string") return names;
-
-    const [text] = item.name.split(" ");
-    if (text === "Untitled") {
-      const newNames = [...names, item.name];
-      return item.children ? getBaseNames(item.children, newNames) : newNames;
-    }
-    return getBaseNames(item.children, names);
-  }, acc);
 
 onMounted(async () => {
   await chrome.storage.local.set({ folders });
