@@ -25,18 +25,24 @@ export const deleteFolder = (folders, id) =>
 export const createFolder = (folders, id, baseNames) => {
   let newFolderId = 0;
   const name = getNewUntitled(baseNames);
+  const newFolder = {
+    id: Date.now(),
+    type: "folder",
+    isOpen: false,
+    children: [],
+    name,
+  };
+
+  if (!id) {
+    newFolderId = newFolder.id;
+    folders.push(newFolder);
+    return [folders, newFolderId];
+  }
 
   const getNewFolders = (items) =>
     items.map((item) => {
       if (item.type === "chat") return item;
       if (item.id === id) {
-        const newFolder = {
-          id: Date.now(),
-          type: "folder",
-          isOpen: false,
-          children: [],
-          name,
-        };
         item = { ...item, id: Date.now() + 1, isOpen: true };
         item.children.unshift(newFolder);
         newFolderId = newFolder.id;

@@ -1,68 +1,12 @@
 <script setup>
-import { ref, onMounted, provide, onBeforeUpdate } from "vue";
+import _ from "lodash";
+import { ref, onMounted, provide, nextTick } from "vue";
 import { getBaseNames, sortBaseNames } from "./utils/helpers.js";
 import NestedList from "./components/NestedList.vue";
 import ContextMenu from "./components/ContextMenu.vue";
+import IconFolder from "./components/icons/IconFolder.vue";
+import { createFolder } from "@/background.js";
 
-const folders = [
-  {
-    id: 234234,
-    type: "folder",
-    name: "Untitled 4",
-    isOpen: true,
-    children: [
-      { id: 4829, name: "Chat1", type: "chat"},
-      { id: 4824, name: "Chat2", type: "chat"},
-      { id: 4821, name: "Chat3", type: "chat"},
-    ],
-  },
-  {
-    id: 724556245,
-    type: "folder",
-    name: "Untitled 2",
-    isOpen: true,
-    children: [
-      {
-        id: 134513,
-        type: "folder",
-        name: "Node.js",
-        isOpen: false,
-        children: [],
-        // children: [
-        //   "Асинхронность",
-        //   "Express и прочее прочее",
-        //   {
-        //     id: 8546452,
-        //     type: "folder",
-        //     name: "Untitled 3",
-        //     isOpen: false,
-        //     children: [
-        //       "Роутинг",
-        //       "Маршрутизация",
-        //       "Примеры",
-        //       "Очень длинное название чата",
-        //     ],
-        //   },
-        //   {
-        //     id: 85421452,
-        //     type: "folder",
-        //     name: "sdfsdfsd",
-        //     isOpen: false,
-        //     children: [
-        //       "Роутинг",
-        //       "Маршрутизация",
-        //       "Примеры",
-        //       "Очень длинное название чата",
-        //     ],
-        //   },
-        // ],
-      },
-      { id: 48203, name: "Chat1", type: "chat"},
-      { id: 17593, name: "Chat2", type: "chat"},
-      { id: 86372, name: "Chat3", type: "chat"},
-    ],
-  },
-];
 const folderList = ref([]);
 const baseFolderNames = ref([]);
 const isEditingFolderName = ref(false);
@@ -77,16 +21,29 @@ provide("contextMenu", contextMenu);
 provide("isEditingFolderName", isEditingFolderName);
 provide("baseFolderNames", baseFolderNames);
 
+const onCreateFolder = async () => {
+  const newFolderArgs = [_.cloneDeep(folderList.value), 0, baseFolderNames.value];
+  const [folders, newFolderId] = createFolder(...newFolderArgs);
+  folderList.value = folders;
+  const baseNames = getBaseNames(folderList.value, []);
+  baseFolderNames.value = baseNames.sort(sortBaseNames);
+  contextMenu.value = {
+    ...contextMenu.value,
+    isOpen: false,
+    folderId: newFolderId,
+  };
+  isEditingFolderName.value = true;
+  await nextTick();
+  document.querySelector(".folder-name__input").focus();
+};
+
 onMounted(async () => {
-  await chrome.storage.local.set({ folders });
   const items = await chrome.storage.local.get(["folders"]);
+  if (!items.folders) return;
+
   folderList.value = items.folders;
   const baseNames = getBaseNames(folderList.value, []);
   baseFolderNames.value = baseNames.sort(sortBaseNames);
-});
-
-onBeforeUpdate(() => {
-  console.log(folderList.value);
 });
 </script>
 
@@ -94,6 +51,10 @@ onBeforeUpdate(() => {
   <div class="folders">
     <div class="first-nested-list">
       <NestedList :items="folderList" />
+      <button class="new-folder-app" @click="onCreateFolder">
+        <IconFolder />
+        <span>New folder</span>
+      </button>
     </div>
     <ContextMenu
       v-show="contextMenu.isOpen"

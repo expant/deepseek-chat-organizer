@@ -5,7 +5,7 @@ import { isNameNotUnique } from "@/utils/helpers.js";
 import { renameFolder } from "@/background.js";
 import IconArrow from "./icons/IconArrow.vue";
 import IconDots from "./icons/IconDots.vue";
-// import BaseNotification from "./BaseNotification.vue";
+import BaseNotification from "./BaseNotification.vue";
 
 const props = defineProps({
   name: {
@@ -61,6 +61,7 @@ const handleRename = async () => {
 
   folderList.value = renameFolder(clonedFolders, props.id, inputValue);
   await chrome.storage.local.set({ folders: folderList.value });
+  chrome.storage.local.get("folders", () => console.log(folders));
   isEditingFolderName.value = false;
 };
 </script>

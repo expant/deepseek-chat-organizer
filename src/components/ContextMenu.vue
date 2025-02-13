@@ -46,7 +46,6 @@ const onDeleteFolder = async () => {
 
 const onCreateFolder = async () => {
   const id = contextMenu.value.folderId;
-
   const [folders, newFolderId] = createFolder(
     _.cloneDeep(folderList.value),
     id,

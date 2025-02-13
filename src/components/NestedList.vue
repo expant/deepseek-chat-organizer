@@ -7,8 +7,6 @@ const props = defineProps({
     required: true,
   },
 });
-
-console.log("NestedList items:", props.items);
 </script>
 
 <template>

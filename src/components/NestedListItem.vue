@@ -11,8 +11,6 @@ const props = defineProps({
 });
 
 const isFolderOpen = ref(props.node?.isOpen);
-
-console.log("NestedListItem node:", props.node);
 </script>
 
 <template>

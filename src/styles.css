@@ -15,6 +15,33 @@ ul {
   list-style-type: none;
 }
 
+.new-folder-app {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  font-size: 15px;
+  font-weight: 600;
+  background-color: #dbeafe;
+  border: none;
+  border-radius: 10px;
+  color: #4d6dfe;
+  padding: 10px;
+  transition: background-color 0.1s ease-in;
+}
+
+.new-folder-app:hover {
+  background-color: #c6dcf8;
+  cursor: pointer;
+}
+
+.new-folder-app .context-menu-icon {
+  width: 17px;
+  height: 17px;
+  fill: #4d6dfe;
+}
+
 .folder-name {
   position: relative;
   display: flex;
@@ -22,6 +49,7 @@ ul {
   height: 32px;
   align-items: center;
   font-size: 15px;
+  font-weight: 600;
   margin: 5px;
   padding-right: 5px;
   border-radius: 5px;
@@ -65,6 +93,11 @@ ul {
   border-left: 1px solid rgba(128, 0, 128, 0.1);
   user-select: none;
   transition: display 0.2s ease-in;
+}
+
+.first-nested-list > .folders__list {
+  margin-left: 0;
+  border-left: none;
 }
 
 .first-nested-list {
