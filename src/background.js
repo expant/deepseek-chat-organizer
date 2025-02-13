@@ -2,7 +2,7 @@ import { getNewUntitled } from "./utils/helpers.js";
 
 export const renameFolder = (folders, id, name) =>
   folders.map((item) => {
-    if (typeof item === "string") return item;
+    if (item.type === "chat") return item;
     if (id !== item.id) {
       if (item.children)
         return { ...item, children: renameFolder(item.children, id, name) };
@@ -14,7 +14,7 @@ export const renameFolder = (folders, id, name) =>
 
 export const deleteFolder = (folders, id) =>
   folders.filter((item) => {
-    if (typeof item === "string") return true;
+    if (item.type === "chat") return true;
     if (item.id === id) return false;
     if (item.children) {
       item.children = deleteFolder(item.children, id);
@@ -28,7 +28,7 @@ export const createFolder = (folders, id, baseNames) => {
 
   const getNewFolders = (items) =>
     items.map((item) => {
-      if (typeof item === "string") return item;
+      if (item.type === "chat") return item;
       if (item.id === id) {
         const newFolder = {
           id: Date.now(),
@@ -37,7 +37,7 @@ export const createFolder = (folders, id, baseNames) => {
           children: [],
           name,
         };
-        item.isOpen = true;
+        item = { ...item, id: Date.now() + 1, isOpen: true };
         item.children.unshift(newFolder);
         newFolderId = newFolder.id;
         return item;

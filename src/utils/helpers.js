@@ -15,7 +15,7 @@ export const getNewUntitled = (arr) => {
 
 export const getBaseNames = (items, acc) =>
   items.reduce((names, item) => {
-    if (typeof item === "string") return names;
+    if (item.type === "chat") return names;
 
     const [text] = item.name.split(" ");
     if (text === "Untitled") {
@@ -36,7 +36,7 @@ export const sortBaseNames = (a, b) => {
 
 export const isNameNotUnique = (items, name) =>
   items.some((item) => {
-    if (typeof item === "string") return false;
+    if (item.type === "chat") return false;
     if (item.name === name) return true;
     if (item.children) return isNameNotUnique(item.children, name);
   });

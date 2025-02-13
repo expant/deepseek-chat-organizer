@@ -86,7 +86,7 @@ const handleRename = async () => {
     @mouseleave="showDots = false"
   >
     <IconArrow :isFolderOpen="isFolderOpen" />
-    <span class="folder-name__text">{{ props.name }}</span>
+    <span class="folder-name__text">{{ name }}</span>
     <div class="icon-dots" v-show="showDots" @click.stop="openContextMenu">
       <IconDots />
     </div>

@@ -7,12 +7,14 @@ const props = defineProps({
     required: true,
   },
 });
+
+console.log("NestedList items:", props.items);
 </script>
 
 <template>
   <transition name="fade-list">
     <ul class="folders__list">
-      <NestedListItem v-for="(node, i) in items" :key="i" :node="node" />
+      <NestedListItem v-for="node in items" :key="node.id" :node="node" />
     </ul>
   </transition>
 </template>
