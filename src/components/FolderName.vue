@@ -1,11 +1,10 @@
 <script setup>
 import _ from "lodash";
-import { ref, computed, inject, watch, nextTick, onMounted } from "vue";
-import { isNameNotUnique, getNewUntitled } from "@/utils/helpers.js";
+import { ref, inject } from "vue";
+import { isNameNotUnique } from "@/utils/helpers.js";
 import { renameFolder } from "@/background.js";
 import IconArrow from "./icons/IconArrow.vue";
 import IconDots from "./icons/IconDots.vue";
-import ContextMenu from "./ContextMenu.vue";
 // import BaseNotification from "./BaseNotification.vue";
 
 const props = defineProps({
@@ -49,11 +48,12 @@ const openContextMenu = (event) => {
 };
 
 const handleRename = async () => {
-  if (!inputRef.value) return
-  const inputValue = inputRef.value.value.trim(); 
+  if (!inputRef.value) return;
+  const inputValue = inputRef.value.value.trim();
   const clonedFolders = _.cloneDeep(folderList.value);
 
   if (isNameNotUnique(clonedFolders, inputValue)) {
+    // TODO: Активация showNotification и рендеринг соответствующего компонента
     console.log("Папка с таким именем уже существует");
     isEditingFolderName.value = false;
     return;

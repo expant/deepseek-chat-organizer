@@ -1,5 +1,4 @@
 <script setup>
-import FolderName from "./FolderName.vue";
 import NestedListItem from "./NestedListItem.vue";
 
 const props = defineProps({

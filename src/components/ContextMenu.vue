@@ -1,7 +1,11 @@
 <script setup>
 import _ from "lodash";
 import { onMounted, onUnmounted, inject, nextTick, ref, watch } from "vue";
-import { getNewUntitled, getBaseNames, sortBaseNames } from "@/utils/helpers.js";
+import {
+  getNewUntitled,
+  getBaseNames,
+  sortBaseNames,
+} from "@/utils/helpers.js";
 import { deleteFolder, createFolder } from "@/background.js";
 import ContextMenuButton from "./buttons/ContextMenuButton.vue";
 
@@ -43,22 +47,19 @@ const onDeleteFolder = async () => {
 const onCreateFolder = async () => {
   const id = contextMenu.value.folderId;
 
-  // folderList.value = folderList.value.forEach((item) => {
-  //   if (typeof item === "string") return;
-  //   if (item.id === id) {
-  //     item.isOpen = true;
-  //     return
-  //   }
-  //   if (item.children) return getFolderById(item.children, id);
-  // });
-  
-
-  const [folders, newFolderId] = createFolder(_.cloneDeep(folderList.value), id, baseFolderNames.value);
+  const [folders, newFolderId] = createFolder(
+    _.cloneDeep(folderList.value),
+    id,
+    baseFolderNames.value
+  );
   folderList.value = folders;
-  console.log(folderList.value);
   const baseNames = getBaseNames(folderList.value, []);
   baseFolderNames.value = baseNames.sort(sortBaseNames);
-  contextMenu.value = { ...contextMenu.value, isOpen: false, folderId: newFolderId };
+  contextMenu.value = {
+    ...contextMenu.value,
+    isOpen: false,
+    folderId: newFolderId,
+  };
   isEditingFolderName.value = true;
   await nextTick();
   document.querySelector(".folder-name__input").focus();

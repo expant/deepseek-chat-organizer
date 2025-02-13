@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, provide, reactive } from "vue";
+import { ref, onMounted, provide, onBeforeUpdate } from "vue";
 import { getBaseNames, sortBaseNames } from "./utils/helpers.js";
 import NestedList from "./components/NestedList.vue";
 import ContextMenu from "./components/ContextMenu.vue";
@@ -9,14 +9,14 @@ const folders = [
     id: 234234,
     type: "folder",
     name: "Untitled 4",
-    isOpen: false,
+    isOpen: true,
     children: ["Chat1", "Chat2", "Chat3"],
   },
   {
     id: 724556245,
     type: "folder",
     name: "Untitled 2",
-    isOpen: false,
+    isOpen: true,
     children: [
       {
         id: 134513,
@@ -77,6 +77,9 @@ onMounted(async () => {
   folderList.value = items.folders;
   const baseNames = getBaseNames(folderList.value, []);
   baseFolderNames.value = baseNames.sort(sortBaseNames);
+});
+
+onBeforeUpdate(() => {
   console.log(folderList.value);
 });
 </script>

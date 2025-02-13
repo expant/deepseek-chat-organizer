@@ -26,22 +26,25 @@ export const createFolder = (folders, id, baseNames) => {
   let newFolderId = 0;
   const name = getNewUntitled(baseNames);
 
-  const getNewFolders = (items) => items.map((item) => {
-    if (typeof item === "string") return item;
-    if (item.id === id) {
-      const newFolder = {
-        id: Date.now(),
-        type: "folder",
-        isOpen: false,
-        children: [],
-        name,
-      };
-      item.isOpen = true;
-      item.children.unshift(newFolder);
-      newFolderId = newFolder.id;
-      return item;
-    };
-    return item.children ? { ...item, children: getNewFolders(item.children) } : item;
-  });
+  const getNewFolders = (items) =>
+    items.map((item) => {
+      if (typeof item === "string") return item;
+      if (item.id === id) {
+        const newFolder = {
+          id: Date.now(),
+          type: "folder",
+          isOpen: false,
+          children: [],
+          name,
+        };
+        item.isOpen = true;
+        item.children.unshift(newFolder);
+        newFolderId = newFolder.id;
+        return item;
+      }
+      return item.children
+        ? { ...item, children: getNewFolders(item.children) }
+        : item;
+    });
   return [getNewFolders(folders), newFolderId];
 };
