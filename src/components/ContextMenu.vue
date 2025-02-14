@@ -40,7 +40,7 @@ const onDeleteFolder = async () => {
   folderList.value = deleteFolder(folderList.value, id);
   const baseNames = getBaseNames(folderList.value, []);
   baseFolderNames.value = baseNames.sort(sortBaseNames);
-  await chrome.storage.local.set({ folders: folderList });
+  await chrome.storage.local.set({ folders: folderList.value });
   contextMenu.value = { ...contextMenu.value, isOpen: false };
 };
 
@@ -60,6 +60,7 @@ const onCreateFolder = async () => {
     folderId: newFolderId,
   };
   isEditingFolderName.value = true;
+  await chrome.storage.local.set({ folders });
   await nextTick();
   document.querySelector(".folder-name__input").focus();
 };

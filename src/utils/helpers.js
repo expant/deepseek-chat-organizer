@@ -40,3 +40,12 @@ export const isNameNotUnique = (items, name) =>
     if (item.name === name) return true;
     if (item.children) return isNameNotUnique(item.children, name);
   });
+
+export const convertObjToArrDeep = (object) => {
+  const arr = Object.values(object);
+  return arr.map((item) => {
+    if (item.type === "chat") return item;
+    item.children = convertObjToArrDeep(item.children);
+    return item;
+  });
+};

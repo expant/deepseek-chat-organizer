@@ -8,6 +8,7 @@ ul {
 
 .folders {
   padding: 20px;
+  padding-right: 0;
   background-color: #f9fbff;
 }
 
@@ -98,6 +99,11 @@ ul {
 .first-nested-list > .folders__list {
   margin-left: 0;
   border-left: none;
+}
+
+.first-nested-list > * > * > .folder-name {
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .first-nested-list {

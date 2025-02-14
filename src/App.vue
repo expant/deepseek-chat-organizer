@@ -1,7 +1,11 @@
 <script setup>
 import _ from "lodash";
 import { ref, onMounted, provide, nextTick } from "vue";
-import { getBaseNames, sortBaseNames } from "./utils/helpers.js";
+import {
+  getBaseNames,
+  sortBaseNames,
+  convertObjToArrDeep,
+} from "./utils/helpers.js";
 import NestedList from "./components/NestedList.vue";
 import ContextMenu from "./components/ContextMenu.vue";
 import IconFolder from "./components/icons/IconFolder.vue";
@@ -22,7 +26,11 @@ provide("isEditingFolderName", isEditingFolderName);
 provide("baseFolderNames", baseFolderNames);
 
 const onCreateFolder = async () => {
-  const newFolderArgs = [_.cloneDeep(folderList.value), 0, baseFolderNames.value];
+  const newFolderArgs = [
+    _.cloneDeep(folderList.value),
+    0,
+    baseFolderNames.value,
+  ];
   const [folders, newFolderId] = createFolder(...newFolderArgs);
   folderList.value = folders;
   const baseNames = getBaseNames(folderList.value, []);
@@ -33,6 +41,7 @@ const onCreateFolder = async () => {
     folderId: newFolderId,
   };
   isEditingFolderName.value = true;
+  await chrome.storage.local.set({ folders });
   await nextTick();
   document.querySelector(".folder-name__input").focus();
 };
@@ -41,7 +50,8 @@ onMounted(async () => {
   const items = await chrome.storage.local.get(["folders"]);
   if (!items.folders) return;
 
-  folderList.value = items.folders;
+  folderList.value = convertObjToArrDeep(items.folders);
+  console.log(folderList.value);
   const baseNames = getBaseNames(folderList.value, []);
   baseFolderNames.value = baseNames.sort(sortBaseNames);
 });

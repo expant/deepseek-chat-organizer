@@ -59,9 +59,9 @@ const handleRename = async () => {
     return;
   }
 
+  console.log(inputValue);
   folderList.value = renameFolder(clonedFolders, props.id, inputValue);
   await chrome.storage.local.set({ folders: folderList.value });
-  chrome.storage.local.get("folders", () => console.log(folders));
   isEditingFolderName.value = false;
 };
 </script>
