@@ -6,13 +6,15 @@ import {
   sortBaseNames,
   convertObjToArrDeep,
 } from "./utils/helpers.js";
-import NestedList from "./components/NestedList.vue";
-import ContextMenu from "./components/ContextMenu.vue";
-import IconFolder from "./components/icons/IconFolder.vue";
 import { createFolder } from "@/background.js";
+import ContextMenu from "./components/ContextMenu.vue";
+import SearchChats from "./components/SearchChats.vue";
+import NestedList from "./components/NestedList.vue";
+import IconFolder from "./components/icons/IconFolder.vue";
 
 const folderList = ref([]);
 const baseFolderNames = ref([]);
+const showSearchChats = ref(false);
 const isEditingFolderName = ref(false);
 const contextMenu = ref({
   isOpen: false,
@@ -22,8 +24,9 @@ const contextMenu = ref({
 
 provide("folderList", folderList);
 provide("contextMenu", contextMenu);
-provide("isEditingFolderName", isEditingFolderName);
 provide("baseFolderNames", baseFolderNames);
+provide("showSearchChats", showSearchChats);
+provide("isEditingFolderName", isEditingFolderName);
 
 const onCreateFolder = async () => {
   const newFolderArgs = [
@@ -70,6 +73,11 @@ onMounted(async () => {
       v-show="contextMenu.isOpen"
       @close="contextMenu.isOpen = false"
       :position="contextMenu.position"
+    />
+    <SearchChats
+      v-if="showSearchChats"
+      @close="showSearchChats = false"
+      :isOpen="showSearchChats"
     />
   </div>
 </template>

@@ -7,23 +7,23 @@ link.href = chrome.runtime.getURL("assets/styles.css");
 document.head.appendChild(link);
 
 const DEEPSEEK_SELECTOR = ".fb0a63fb";
+const CHAT_CLASS_NAMES = ".c08e6e93";
 const targetEl = document.querySelector(".dc04ec1d");
 const appContainer = document.createElement("div");
 appContainer.id = "folders-list";
-
 
 // TODO: STOPDRAGFILE
 
 // let draggedElement = null;
 
-const stopDragFiles = (event) => {
-  event.preventDefault();
-  event.stopPropagation();
-};
+// const stopDragFiles = (event) => {
+//   event.preventDefault();
+//   event.stopPropagation();
+// };
 
-['dragstart', 'dragover', 'dragenter', 'drop'].forEach((eventName) => {
-  document.addEventListener(eventName, stopDragFiles, { capture: true });
-});
+// ['dragstart', 'dragover', 'dragenter', 'drop'].forEach((eventName) => {
+//   document.addEventListener(eventName, stopDragFiles, { capture: true });
+// });
 
 const insertAppToDeepseek = (deepseekContainer) => {
   if (deepseekContainer) {

@@ -18,8 +18,9 @@ const props = defineProps({
 const emit = defineEmits(["close"]);
 const folderList = inject("folderList");
 const contextMenu = inject("contextMenu");
-const isEditingFolderName = inject("isEditingFolderName");
 const baseFolderNames = inject("baseFolderNames");
+const showSearchChats = inject("showSearchChats");
+const isEditingFolderName = inject("isEditingFolderName");
 
 const onOutsideClick = (event) => {
   const contextMenu = document.querySelector(".context-menu");
@@ -65,6 +66,11 @@ const onCreateFolder = async () => {
   document.querySelector(".folder-name__input").focus();
 };
 
+const onAddChat = () => {
+  showSearchChats.value = true;
+  contextMenu.value = { ...contextMenu.value, isOpen: false };
+};
+
 onMounted(async () => document.addEventListener("click", onOutsideClick));
 onUnmounted(() => document.removeEventListener("click", onOutsideClick));
 </script>
@@ -78,6 +84,7 @@ onUnmounted(() => document.removeEventListener("click", onOutsideClick));
         left: `${position.left}px`,
       }"
     >
+      <ContextMenuButton name="Add chat" @click="onAddChat" />
       <ContextMenuButton name="New folder" @click="onCreateFolder" />
       <div class="line"></div>
       <ContextMenuButton name="Rename" @click="onRenameFolder" />

@@ -178,6 +178,12 @@ ul {
   fill: #262626;
 }
 
+.context-menu-icon.icon-chat {
+  fill: none;
+  stroke-width: 2;
+  stroke: #262626;
+}
+
 .btn-name.delete {
   color: #f44336;
 }
@@ -227,3 +233,67 @@ ul {
   color: #fff;
   transition: background-color 0.2s ease-in;
 } */
+
+.search-chats-wrap {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  z-index: 100;
+}
+
+.search-chats {
+  width: 600px;
+  height: 700px;
+  max-width: 600px;
+  margin-top: 100px;
+  background-color: #f9fbff;
+  border-radius: 10px;
+}
+
+.search-chats__header {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px;
+  border-bottom: 1px solid #4d6dfe;
+}
+
+.search-chats__input {
+  flex: 1 1 80%;
+}
+
+.search-chats__header input {
+  width: 100%;
+  font-size: 16px;
+  padding: 10px 5px;
+  border: 0;
+  background-color: transparent;
+}
+
+.search-chats__header input:focus {
+  outline: none;
+}
+
+.search-chats__icon {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: #4d6dfe;
+  stroke-width: 1.5;
+}
+
+.exit-icon {
+  width: 30px;
+  fill: none;
+  stroke: #4d6dfe;
+  cursor: pointer;
+}
