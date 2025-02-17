@@ -241,7 +241,10 @@ ul {
   top: 0;
   bottom: 0;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.5);
@@ -251,8 +254,8 @@ ul {
 
 .search-chats {
   width: 600px;
-  height: 700px;
   max-width: 600px;
+  max-height: fit-content;
   margin-top: 100px;
   background-color: #f9fbff;
   border-radius: 10px;
@@ -264,7 +267,7 @@ ul {
   align-items: center;
   gap: 10px;
   padding: 10px 15px;
-  border-bottom: 1px solid #4d6dfe;
+  border-bottom: 1px solid #dbeafe;
 }
 
 .search-chats__input {
@@ -273,7 +276,7 @@ ul {
 
 .search-chats__header input {
   width: 100%;
-  font-size: 16px;
+  font-size: 15px;
   padding: 10px 5px;
   border: 0;
   background-color: transparent;
@@ -281,6 +284,42 @@ ul {
 
 .search-chats__header input:focus {
   outline: none;
+}
+
+.search-chats__list {
+  max-height: 500px;
+  overflow-y: scroll;
+}
+
+.search-chats__list li {
+  list-style-type: none;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.search-chats__list li input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+.search-chats__list li:hover {
+  background-color: #dbeafe;
+}
+
+.search-chats__btn {
+  font-size: 16px;
+  font-weight: 600;
+  background-color: #dbeafe;
+  border: none;
+  border-radius: 10px;
+  color: #4d6dfe;
+  padding: 10px 20px;
+  transition: background-color .1s ease-in;
+}
+
+.search-chats__btn:hover {
+  background-color: #c6dcf8;
+  cursor: pointer;
 }
 
 .search-chats__icon {
@@ -297,3 +336,5 @@ ul {
   stroke: #4d6dfe;
   cursor: pointer;
 }
+
+

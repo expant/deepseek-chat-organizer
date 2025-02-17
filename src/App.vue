@@ -6,12 +6,14 @@ import {
   sortBaseNames,
   convertObjToArrDeep,
 } from "./utils/helpers.js";
+import { initChatsInStorage } from "./storage.js"
 import { createFolder } from "@/background.js";
 import ContextMenu from "./components/ContextMenu.vue";
 import SearchChats from "./components/SearchChats.vue";
 import NestedList from "./components/NestedList.vue";
 import IconFolder from "./components/icons/IconFolder.vue";
 
+const chatList = ref([]);
 const folderList = ref([]);
 const baseFolderNames = ref([]);
 const showSearchChats = ref(false);
@@ -22,6 +24,7 @@ const contextMenu = ref({
   folderId: null,
 });
 
+provide("chatList", chatList);
 provide("folderList", folderList);
 provide("contextMenu", contextMenu);
 provide("baseFolderNames", baseFolderNames);
@@ -50,13 +53,25 @@ const onCreateFolder = async () => {
 };
 
 onMounted(async () => {
-  const items = await chrome.storage.local.get(["folders"]);
-  if (!items.folders) return;
+  const { folders } = await chrome.storage.local.get(["folders"]);
+  const { chats } = await chrome.storage.local.get(["chats"]);
 
-  folderList.value = convertObjToArrDeep(items.folders);
-  console.log(folderList.value);
+  if (!folders) return;
+  folderList.value = convertObjToArrDeep(folders, "folders");
   const baseNames = getBaseNames(folderList.value, []);
   baseFolderNames.value = baseNames.sort(sortBaseNames);
+  console.log('Папки имеются!');
+
+  if (chats) {
+    await initChatsInStorage(convertObjToArrDeep(chats, "chats"));
+  } else {
+    await initChatsInStorage([]);
+  }
+
+  
+  const { chats: newChats } = await chrome.storage.local.get(["chats"]);
+  chatList.value = newChats;
+  console.log('chatList: ', chatList.value);
 });
 </script>
 

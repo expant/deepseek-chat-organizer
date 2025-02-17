@@ -1,4 +1,5 @@
 import { createApp } from "vue";
+import { LIST_ROOT_CLASS_NAME } from "./variables.js";
 import App from "./App.vue";
 // Подключаем CSS-файл
 const link = document.createElement("link");
@@ -6,8 +7,6 @@ link.rel = "stylesheet";
 link.href = chrome.runtime.getURL("assets/styles.css");
 document.head.appendChild(link);
 
-const DEEPSEEK_SELECTOR = ".fb0a63fb";
-const CHAT_CLASS_NAMES = ".c08e6e93";
 const targetEl = document.querySelector(".dc04ec1d");
 const appContainer = document.createElement("div");
 appContainer.id = "folders-list";
@@ -34,7 +33,7 @@ const insertAppToDeepseek = (deepseekContainer) => {
 
 // TODO: Добавить условие для очистки setTimeOut
 const watchForDeepseekEl = (cb) => {
-  const existingDeepseek = targetEl.querySelector(DEEPSEEK_SELECTOR);
+  const existingDeepseek = targetEl.querySelector(LIST_ROOT_CLASS_NAME);
   if (!existingDeepseek) {
     setTimeout(() => watchForDeepseekEl(cb), 500);
     return;
@@ -47,7 +46,7 @@ const callback = (mutationsList, observer) => {
   for (let mutation of mutationsList) {
     if (mutation.type === "childList" && mutation.addedNodes.length) {
       const deepseekContainer =
-        mutation.addedNodes[0].querySelector(DEEPSEEK_SELECTOR);
+        mutation.addedNodes[0].querySelector(LIST_ROOT_CLASS_NAME);
       insertAppToDeepseek(deepseekContainer);
     }
   }

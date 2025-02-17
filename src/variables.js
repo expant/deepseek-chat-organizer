@@ -1,0 +1,4 @@
+const LIST_ROOT_CLASS_NAME = ".fb0a63fb";
+const CHAT_EL_CLASS_NAME = ".c08e6e93";
+
+export { LIST_ROOT_CLASS_NAME, CHAT_EL_CLASS_NAME };

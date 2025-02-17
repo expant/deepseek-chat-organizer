@@ -41,11 +41,18 @@ export const isNameNotUnique = (items, name) =>
     if (item.children) return isNameNotUnique(item.children, name);
   });
 
-export const convertObjToArrDeep = (object) => {
+export const convertObjToArrDeep = (object, type) => {
   const arr = Object.values(object);
-  return arr.map((item) => {
-    if (item.type === "chat") return item;
-    item.children = convertObjToArrDeep(item.children);
-    return item;
-  });
+
+  switch (type) {
+    case "folders": {
+      return arr.map((item) => {
+        if (item.type === "chat") return item;
+        item.children = convertObjToArrDeep(item.children, "folders");
+        return item;
+      });
+    }
+    case "chats": return arr;
+    default: throw new Error(`Unkown array type: ${type}`);
+  }
 };
