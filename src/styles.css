@@ -302,6 +302,10 @@ ul {
   margin-right: 10px;
 }
 
+.search-chats__list label {
+  width: 100%;
+}
+
 .search-chats__list li:hover {
   background-color: #dbeafe;
 }
@@ -314,7 +318,7 @@ ul {
   border-radius: 10px;
   color: #4d6dfe;
   padding: 10px 20px;
-  transition: background-color .1s ease-in;
+  transition: background-color 0.1s ease-in;
 }
 
 .search-chats__btn:hover {
@@ -336,5 +340,3 @@ ul {
   stroke: #4d6dfe;
   cursor: pointer;
 }
-
-

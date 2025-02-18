@@ -84,7 +84,7 @@ onUnmounted(() => document.removeEventListener("click", onOutsideClick));
         left: `${position.left}px`,
       }"
     >
-      <ContextMenuButton name="Add chat" @click="onAddChat" />
+      <ContextMenuButton name="Add chat(s)" @click="onAddChat" />
       <ContextMenuButton name="New folder" @click="onCreateFolder" />
       <div class="line"></div>
       <ContextMenuButton name="Rename" @click="onRenameFolder" />

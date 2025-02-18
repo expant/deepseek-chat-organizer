@@ -42,8 +42,11 @@ const watchForDeepseekEl = (cb) => {
 };
 watchForDeepseekEl(insertAppToDeepseek);
 
+// TODO: Отслеживать переименование и удаление чатов
 const callback = (mutationsList, observer) => {
   for (let mutation of mutationsList) {
+    if (mutation.addedNodes[0] instanceof Comment) return;
+
     if (mutation.type === "childList" && mutation.addedNodes.length) {
       const deepseekContainer =
         mutation.addedNodes[0].querySelector(LIST_ROOT_CLASS_NAME);

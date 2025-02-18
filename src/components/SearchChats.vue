@@ -10,13 +10,13 @@ const props = defineProps({
 const emit = defineEmits(["close"]);
 const classNamesChats = "c08e6e93";
 const chatList = inject("chatList");
-const search = ref('');
+const search = ref("");
 const selectedChats = ref([]);
 
 const removeEventListeners = () => {
   const searchChatsWrap = document.querySelector(".search-chats-wrap");
   searchChatsWrap.removeEventListener("click", onOutsideClick);
-  window.removeEventListener('keydown', onKeydown);
+  window.removeEventListener("keydown", onKeydown);
   emit("close");
 };
 
@@ -32,7 +32,7 @@ const onOutsideClick = (event) => {
 const onKeydown = (event) => {
   if (event.key !== "Escape") return;
   removeEventListeners();
-}
+};
 
 const onSelectedChats = () => {
   console.log(selectedChats.value);
@@ -40,18 +40,20 @@ const onSelectedChats = () => {
 
 const searchedChats = computed(() => {
   console.log(search.value);
-  return search.value.filter(
-    (chat) => chat.name.toLowerCase().includes(search.value.toLowerCase())
-  )
-})
+  return search.value.filter((chat) =>
+    chat.name.toLowerCase().includes(search.value.toLowerCase())
+  );
+});
 
 onMounted(async () => {
   const searchChatsWrap = document.querySelector(".search-chats-wrap");
   const input = searchChatsWrap.querySelector("input[name='search-chats']");
   input.focus();
   searchChatsWrap.addEventListener("click", onOutsideClick);
-  window.addEventListener('keydown', onKeydown);
+  window.addEventListener("keydown", onKeydown);
 });
+
+// FIXME: Скрывать мешающиеся элементы за модальным окном Search
 </script>
 
 <template>
@@ -61,10 +63,10 @@ onMounted(async () => {
         <IconSearch class="search-chats__icon" />
         <div class="search-chats__input">
           <label for="search-chats"></label>
-          <input 
-            type="text" 
-            name="search-chats" 
-            id="search-chats" 
+          <input
+            type="text"
+            name="search-chats"
+            id="search-chats"
             placeholder="Search chat"
             v-model.trim="search"
           />
@@ -83,12 +85,12 @@ onMounted(async () => {
         </li>
       </ul>
     </div>
-    <button 
-      v-show="selectedChats.length > 0" 
-      class="search-chats__btn" 
+    <button
+      v-show="selectedChats.length > 0"
+      class="search-chats__btn"
       @click="onSelectedChats"
     >
-      Add chat/s
+      Add chat(s)
     </button>
   </div>
 </template>

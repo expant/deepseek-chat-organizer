@@ -12,7 +12,7 @@ const props = defineProps({
 
 <template>
   <button class="context-menu__btn">
-    <template v-if="name === 'Add chat'">
+    <template v-if="name === 'Add chat(s)'">
       <IconChat />
       <span class="btn-name add-chat">{{ name }}</span>
     </template>

@@ -6,7 +6,7 @@ import {
   sortBaseNames,
   convertObjToArrDeep,
 } from "./utils/helpers.js";
-import { initChatsInStorage } from "./storage.js"
+import { initChatsInStorage } from "./storage.js";
 import { createFolder } from "@/background.js";
 import ContextMenu from "./components/ContextMenu.vue";
 import SearchChats from "./components/SearchChats.vue";
@@ -60,7 +60,7 @@ onMounted(async () => {
   folderList.value = convertObjToArrDeep(folders, "folders");
   const baseNames = getBaseNames(folderList.value, []);
   baseFolderNames.value = baseNames.sort(sortBaseNames);
-  console.log('Папки имеются!');
+  console.log("Папки имеются!");
 
   if (chats) {
     await initChatsInStorage(convertObjToArrDeep(chats, "chats"));
@@ -68,10 +68,8 @@ onMounted(async () => {
     await initChatsInStorage([]);
   }
 
-  
   const { chats: newChats } = await chrome.storage.local.get(["chats"]);
   chatList.value = newChats;
-  console.log('chatList: ', chatList.value);
 });
 </script>
 
