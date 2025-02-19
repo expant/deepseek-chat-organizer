@@ -39,8 +39,8 @@ const onSelectedChats = () => {
 };
 
 const searchedChats = computed(() => {
-  console.log(search.value);
-  return search.value.filter((chat) =>
+  if (!search.value) return chatList.value;
+  return chatList.value.filter((chat) =>
     chat.name.toLowerCase().includes(search.value.toLowerCase())
   );
 });
@@ -74,7 +74,7 @@ onMounted(async () => {
         <IconExit @click="removeEventListeners" />
       </div>
       <ul class="search-chats__list">
-        <li v-for="chat in chatList" :key="chat.id">
+        <li v-for="chat in searchedChats" :key="chat.id">
           <input
             type="checkbox"
             :id="'chat-' + chat.id"
