@@ -70,6 +70,7 @@ onMounted(async () => {
 
   const { chats: newChats } = await chrome.storage.local.get(["chats"]);
   chatList.value = newChats;
+  console.log(chatList.value);
 
   // const chatElements = document.querySelectorAll(".f9edaa3c");
   // const entries = Object.entries(chatElements);

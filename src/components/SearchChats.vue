@@ -2,6 +2,7 @@
 import _ from "lodash";
 import { ref, onMounted, inject, computed } from "vue";
 import { addChatsToFolder } from "@/background/background.js";
+import { getFolderNameById } from "@/utils/helpers.js"
 import IconSearch from "./icons/IconSearch.vue";
 import IconExit from "./icons/IconExit.vue";
 
@@ -39,22 +40,24 @@ const onKeydown = (event) => {
 };
 
 // TODO: Возможно стоит разделить список на два (добавленные в папку и нет)
+// TODO: Папка должна открываться после добавления чата/чатов
 const onSelectedChats = async () => {
   const folderId = contextMenu.value.folderId;
   const chats = chatList.value.filter((chat) =>
     selectedChats.value.includes(chat.id)
   );
-  chatList.value =
-
-  console.log("folderList: ", _.cloneDeep(folderList.value));
-  console.log("chatList: ", _.cloneDeep(chats));
+  chatList.value = chatList.value.map((chat) => 
+    selectedChats.value.includes(chat.id) ? {...chat, folderId } : chat
+  );
 
   folderList.value = addChatsToFolder(
     _.cloneDeep(folderList.value),
     _.cloneDeep(chats),
     folderId,
   );
-  await chrome.local.storage.set({ chats:  })
+
+  await chrome.storage.local.set({ folders: folderList.value });
+  await chrome.storage.local.set({ chats: chatList.value });
 };
 
 const searchedChats = computed(() => {
@@ -66,6 +69,8 @@ const searchedChats = computed(() => {
   );
 });
 
+const getFolderName = (id) => id ? `folder: ${getFolderNameById(folderList.value, id)}` : '';
+
 onMounted(async () => {
   const searchChatsWrap = document.querySelector(".search-chats-wrap");
   const input = searchChatsWrap.querySelector("input[name='search-chats']");
@@ -74,7 +79,7 @@ onMounted(async () => {
   window.addEventListener("keydown", onKeydown);
 });
 
-// FIXME: Скрывать мешающиеся элементы за модальным окном Search
+// FIXME: Скрывать мешающие элементы за модальным окном Search
 </script>
 
 <template>
@@ -102,7 +107,10 @@ onMounted(async () => {
             :value="chat.id"
             v-model="selectedChats"
           />
-          <label :for="'chat-' + chat.id">{{ chat.name }}</label>
+          <label :for="'chat-' + chat.id">
+            {{ chat.name }}
+            <span class="chat-folder-name">{{ getFolderName(chat.folderId) }}</span>
+          </label>
         </li>
       </ul>
     </div>

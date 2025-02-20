@@ -334,6 +334,14 @@ ul {
   stroke-width: 1.5;
 }
 
+.chat-folder-name {
+  font-size: 14px;
+  font-style: italic;
+  margin: 0 20px;
+  color: aqua;
+  text-align: right;
+}
+
 .exit-icon {
   width: 30px;
   fill: none;

@@ -1,13 +1,14 @@
 import { createApp } from "vue";
 import { LIST_ROOT_CLASS_NAME } from "./variables.js";
 import App from "./App.vue";
-// Подключаем CSS-файл
+
+// Подключаем CSS-файл --------------------
 const link = document.createElement("link");
 link.rel = "stylesheet";
 link.href = chrome.runtime.getURL("assets/styles.css");
 document.head.appendChild(link);
-
-const targetEl = document.querySelector(".dc04ec1d");
+// ----------------------------------------
+const targetEl = document.querySelector("#root");
 const appContainer = document.createElement("div");
 appContainer.id = "folders-list";
 
