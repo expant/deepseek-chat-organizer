@@ -1,4 +1,4 @@
-import { getNewUntitled } from "./utils/helpers.js";
+import { getNewUntitled } from "../utils/helpers.js";
 
 export const renameFolder = (folders, id, name) =>
   folders.map((item) => {
@@ -54,3 +54,21 @@ export const createFolder = (folders, id, baseNames) => {
     });
   return [getNewFolders(folders), newFolderId];
 };
+
+export const addChatsToFolder = (folders, chats, folderId) =>
+  folders.map((item) => {
+    if (item.type === "chat") return item;
+    if (item.id === folderId) {
+      const newChats = chats.map((chat) => ({
+        ...chat,
+        folderId,
+        type: "chat",
+      }));
+      item.children = [...item.children, ...newChats];
+      return item;
+    }
+    if (!item.children) return item;
+
+    item.children = addChatsToFolder(item.children, chats, folderId);
+    return item;
+  });

@@ -7,7 +7,7 @@ import {
   convertObjToArrDeep,
 } from "./utils/helpers.js";
 import { initChatsInStorage } from "./storage.js";
-import { createFolder } from "@/background.js";
+import { createFolder } from "@/background/background.js";
 import ContextMenu from "./components/ContextMenu.vue";
 import SearchChats from "./components/SearchChats.vue";
 import NestedList from "./components/NestedList.vue";
@@ -70,6 +70,16 @@ onMounted(async () => {
 
   const { chats: newChats } = await chrome.storage.local.get(["chats"]);
   chatList.value = newChats;
+
+  // const chatElements = document.querySelectorAll(".f9edaa3c");
+  // const entries = Object.entries(chatElements);
+  // const targetChatEl = entries.find(([_, el]) => {
+  //   const textEl = el.querySelector(".c08e6e93");
+  //   return textEl.textContent === "Правильный прием витамина D" ? true : false;
+  // });
+  // console.log(targetChatEl);
+  // const dots = targetChatEl[1].querySelector(".aa7b7ebb");
+  // setTimeout(() => dots.click(), 1000);
 });
 </script>
 

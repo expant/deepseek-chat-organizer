@@ -25,6 +25,15 @@ export const getBaseNames = (items, acc) =>
     return getBaseNames(item.children, names);
   }, acc);
 
+// export const getChatList = () => {
+//   const chatElements = document.querySelectorAll(".f9edaa3c");
+//   const entries = Object.entries(chatElements);
+//   return entries.find(([_, el]) => {
+//     const textEl = el.querySelector(".c08e6e93");
+//     return textEl.textContent === "Правильный прием витамина D" ? true : false;
+//   });
+// };
+
 export const sortBaseNames = (a, b) => {
   if (a === "Untitled") return -1;
   if (b === "Untitled") return 1;
@@ -52,7 +61,9 @@ export const convertObjToArrDeep = (object, type) => {
         return item;
       });
     }
-    case "chats": return arr;
-    default: throw new Error(`Unkown array type: ${type}`);
+    case "chats":
+      return arr;
+    default:
+      throw new Error(`Unkown array type: ${type}`);
   }
 };

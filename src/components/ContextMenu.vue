@@ -6,7 +6,7 @@ import {
   getBaseNames,
   sortBaseNames,
 } from "@/utils/helpers.js";
-import { deleteFolder, createFolder } from "@/background.js";
+import { deleteFolder, createFolder } from "@/background/background.js";
 import ContextMenuButton from "./buttons/ContextMenuButton.vue";
 
 const props = defineProps({

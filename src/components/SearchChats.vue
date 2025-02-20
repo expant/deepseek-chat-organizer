@@ -1,5 +1,7 @@
 <script setup>
+import _ from "lodash";
 import { ref, onMounted, inject, computed } from "vue";
+import { addChatsToFolder } from "@/background/background.js";
 import IconSearch from "./icons/IconSearch.vue";
 import IconExit from "./icons/IconExit.vue";
 
@@ -10,6 +12,8 @@ const props = defineProps({
 const emit = defineEmits(["close"]);
 const classNamesChats = "c08e6e93";
 const chatList = inject("chatList");
+const folderList = inject("folderList");
+const contextMenu = inject("contextMenu");
 const search = ref("");
 const selectedChats = ref([]);
 
@@ -34,14 +38,31 @@ const onKeydown = (event) => {
   removeEventListeners();
 };
 
-const onSelectedChats = () => {
-  console.log(selectedChats.value);
+// TODO: Возможно стоит разделить список на два (добавленные в папку и нет)
+const onSelectedChats = async () => {
+  const folderId = contextMenu.value.folderId;
+  const chats = chatList.value.filter((chat) =>
+    selectedChats.value.includes(chat.id)
+  );
+  chatList.value =
+
+  console.log("folderList: ", _.cloneDeep(folderList.value));
+  console.log("chatList: ", _.cloneDeep(chats));
+
+  folderList.value = addChatsToFolder(
+    _.cloneDeep(folderList.value),
+    _.cloneDeep(chats),
+    folderId,
+  );
+  await chrome.local.storage.set({ chats:  })
 };
 
 const searchedChats = computed(() => {
   if (!search.value) return chatList.value;
-  return chatList.value.filter((chat) =>
-    chat.name.toLowerCase().includes(search.value.toLowerCase())
+  return chatList.value.filter(
+    (chat) =>
+      chat.name.toLowerCase().includes(search.value.toLowerCase()) &&
+      !chat.folderId
   );
 });
 
