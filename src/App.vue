@@ -55,22 +55,20 @@ const onCreateFolder = async () => {
 onMounted(async () => {
   const { folders } = await chrome.storage.local.get(["folders"]);
   const { chats } = await chrome.storage.local.get(["chats"]);
+  if (!chats) {
+    await initChatsInStorage([]);
+  } else {
+    console.log("Перед: ", convertObjToArrDeep(chats, "chats"));
+    await initChatsInStorage(convertObjToArrDeep(chats, "chats"));
+  }
+
+  const { chats: newChats } = await chrome.storage.local.get(["chats"]);
+  chatList.value = newChats;
 
   if (!folders) return;
   folderList.value = convertObjToArrDeep(folders, "folders");
   const baseNames = getBaseNames(folderList.value, []);
   baseFolderNames.value = baseNames.sort(sortBaseNames);
-  console.log("Папки имеются!");
-
-  if (chats) {
-    await initChatsInStorage(convertObjToArrDeep(chats, "chats"));
-  } else {
-    await initChatsInStorage([]);
-  }
-
-  const { chats: newChats } = await chrome.storage.local.get(["chats"]);
-  chatList.value = newChats;
-  console.log(chatList.value);
 
   // const chatElements = document.querySelectorAll(".f9edaa3c");
   // const entries = Object.entries(chatElements);

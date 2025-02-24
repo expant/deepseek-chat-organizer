@@ -55,17 +55,23 @@ export const createFolder = (folders, id, baseNames) => {
   return [getNewFolders(folders), newFolderId];
 };
 
-export const addChatsToFolder = (folders, chats, folderId) =>
+// FIXME: addChatsToFolder
+export const addChatsToFolder = (chats, folders, folderId, newFolderId) =>
   folders.map((item) => {
     if (item.type === "chat") return item;
     if (item.id === folderId) {
       const newChats = chats.map((chat) => ({
         ...chat,
-        folderId,
+        folderId: newFolderId,
         type: "chat",
       }));
-      item.children = [...item.children, ...newChats];
-      return item;
+
+      const childrenChats = item.children.map((obj) =>
+        obj.type === "chat" ? { ...obj, folderId: newFolderId } : obj
+      );
+      item.id = newFolderId;
+      item.children = [...childrenChats, ...newChats];
+      item.isOpen = true;
     }
     if (!item.children) return item;
 

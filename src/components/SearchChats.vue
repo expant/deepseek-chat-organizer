@@ -2,7 +2,7 @@
 import _ from "lodash";
 import { ref, onMounted, inject, computed } from "vue";
 import { addChatsToFolder } from "@/background/background.js";
-import { getFolderNameById } from "@/utils/helpers.js"
+import { getFolderNameById } from "@/utils/helpers.js";
 import IconSearch from "./icons/IconSearch.vue";
 import IconExit from "./icons/IconExit.vue";
 
@@ -46,18 +46,29 @@ const onSelectedChats = async () => {
   const chats = chatList.value.filter((chat) =>
     selectedChats.value.includes(chat.id)
   );
-  chatList.value = chatList.value.map((chat) => 
-    selectedChats.value.includes(chat.id) ? {...chat, folderId } : chat
-  );
 
-  folderList.value = addChatsToFolder(
-    _.cloneDeep(folderList.value),
+  const newFolderId = Date.now();
+  chatList.value = chatList.value.map((chat) => {
+    console.log(selectedChats.value);
+
+    return selectedChats.value.includes(chat.id)
+      ? { ...chat, folderId: newFolderId }
+      : chat;
+  });
+
+  const args = [
     _.cloneDeep(chats),
+    _.cloneDeep(folderList.value),
     folderId,
-  );
+    newFolderId,
+  ];
+
+  folderList.value = addChatsToFolder(...args);
 
   await chrome.storage.local.set({ folders: folderList.value });
   await chrome.storage.local.set({ chats: chatList.value });
+
+  console.log("chatList: ", chatList.value);
 };
 
 const searchedChats = computed(() => {
@@ -69,7 +80,10 @@ const searchedChats = computed(() => {
   );
 });
 
-const getFolderName = (id) => id ? `folder: ${getFolderNameById(folderList.value, id)}` : '';
+const getFolderName = (id) => {
+  console.log(id);
+  return id ? `folder: ${getFolderNameById(folderList.value, id)}` : "";
+};
 
 onMounted(async () => {
   const searchChatsWrap = document.querySelector(".search-chats-wrap");
@@ -109,7 +123,9 @@ onMounted(async () => {
           />
           <label :for="'chat-' + chat.id">
             {{ chat.name }}
-            <span class="chat-folder-name">{{ getFolderName(chat.folderId) }}</span>
+            <span class="chat-folder-name">{{
+              getFolderName(chat.folderId)
+            }}</span>
           </label>
         </li>
       </ul>
