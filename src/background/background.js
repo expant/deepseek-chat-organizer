@@ -72,9 +72,10 @@ export const addChatsToFolder = (chats, folders, folderId, newFolderId) =>
       item.id = newFolderId;
       item.children = [...childrenChats, ...newChats];
       item.isOpen = true;
+      return item;
     }
     if (!item.children) return item;
 
-    item.children = addChatsToFolder(item.children, chats, folderId);
+    item.children = addChatsToFolder(chats, item.children, folderId, newFolderId);
     return item;
   });

@@ -58,7 +58,6 @@ onMounted(async () => {
   if (!chats) {
     await initChatsInStorage([]);
   } else {
-    console.log("Перед: ", convertObjToArrDeep(chats, "chats"));
     await initChatsInStorage(convertObjToArrDeep(chats, "chats"));
   }
 

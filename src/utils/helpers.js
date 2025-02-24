@@ -34,12 +34,14 @@ export const getBaseNames = (items, acc) =>
 //   });
 // };
 
-export const getFolderNameById = (folders, id) =>
-  folders.forEach((item) => {
-    if (item.type === "chat") return;
-    if (item.id === id) return item.name;
+export const getFolderNameById = (folders, id) => {
+  const folder = folders.find((item) => {
+    if (item.type === "chat") return false;
+    if (item.id === id) return true;
     if (item.children) return getFolderNameById(item.children, id);
   });
+  return folder.name;
+}
 
 export const sortBaseNames = (a, b) => {
   if (a === "Untitled") return -1;

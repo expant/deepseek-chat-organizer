@@ -49,9 +49,7 @@ const onSelectedChats = async () => {
 
   const newFolderId = Date.now();
   chatList.value = chatList.value.map((chat) => {
-    console.log(selectedChats.value);
-
-    return selectedChats.value.includes(chat.id)
+    return selectedChats.value.includes(chat.id) || chat.folderId === folderId
       ? { ...chat, folderId: newFolderId }
       : chat;
   });
@@ -64,11 +62,9 @@ const onSelectedChats = async () => {
   ];
 
   folderList.value = addChatsToFolder(...args);
-
   await chrome.storage.local.set({ folders: folderList.value });
   await chrome.storage.local.set({ chats: chatList.value });
 
-  console.log("chatList: ", chatList.value);
 };
 
 const searchedChats = computed(() => {
@@ -80,10 +76,7 @@ const searchedChats = computed(() => {
   );
 });
 
-const getFolderName = (id) => {
-  console.log(id);
-  return id ? `folder: ${getFolderNameById(folderList.value, id)}` : "";
-};
+const getFolderName = (id) => id ? `folder: ${getFolderNameById(folderList.value, id)}` : "";
 
 onMounted(async () => {
   const searchChatsWrap = document.querySelector(".search-chats-wrap");
