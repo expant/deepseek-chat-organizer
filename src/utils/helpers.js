@@ -40,7 +40,7 @@ export const getFolderNameById = (folders, id) => {
     if (item.id === id) return true;
     if (item.children) return getFolderNameById(item.children, id);
   });
-  return folder.name;
+  return folder ? folder.name : false;
 }
 
 export const sortBaseNames = (a, b) => {

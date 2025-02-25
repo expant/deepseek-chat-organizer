@@ -3,6 +3,7 @@ import _ from "lodash";
 import { ref, onMounted, inject, computed } from "vue";
 import { addChatsToFolder } from "@/background/background.js";
 import { getFolderNameById, convertObjToArrDeep } from "@/utils/helpers.js";
+import IconDeleteFromFolder from "./icons/IconDeleteFromFolder.vue";
 import IconSearch from "./icons/IconSearch.vue";
 import IconExit from "./icons/IconExit.vue";
 
@@ -26,7 +27,6 @@ const removeEventListeners = () => {
 };
 
 const onOutsideClick = (event) => {
-  console.log("Здесь");
   const searchChatsWrap = document.querySelector(".search-chats-wrap");
   const searchСhats = searchChatsWrap.querySelector(".search-chats");
 
@@ -40,10 +40,10 @@ const onKeydown = (event) => {
   removeEventListeners();
 };
 
-// TODO: Возможно стоит разделить список на два (добавленные в папку и нет)
 // TODO: Папка должна открываться после добавления чата/чатов
 const onSelectedChats = async (event) => {
   event.stopPropagation();
+  onOutsideClick(event);
   const folderId = contextMenu.value.folderId;
   const chats = chatList.value.filter((chat) =>
     selectedChats.value.includes(chat.id)
@@ -63,13 +63,10 @@ const onSelectedChats = async (event) => {
     newFolderId,
   ];
 
-  chatList.value = convertObjToArrDeep(chatList.value, "chats");
-  folderList.value = convertObjToArrDeep(addChatsToFolder(...args), "folders");
+  folderList.value = addChatsToFolder(...args);
 
-  console.log("folderList: " + folderList.value);
   await chrome.storage.local.set({ folders: folderList.value });
   await chrome.storage.local.set({ chats: chatList.value });
-  onOutsideClick(event);
 };
 
 const searchedChats = computed(() => {
@@ -81,10 +78,15 @@ const searchedChats = computed(() => {
   );
 });
 
-const getFolderName = (id) =>
-  id ? `folder: ${getFolderNameById(folderList.value, id)}` : "";
+const getFolderName = (id) => {
+  if (!id) return "";
+  const folderName = getFolderNameById(folderList.value, id);
+  return folderName ? `${folderName}` : "";
+}
+ 
 
 onMounted(async () => {
+  console.log("Монтирование произошло");
   const searchChatsWrap = document.querySelector(".search-chats-wrap");
   const input = searchChatsWrap.querySelector("input[name='search-chats']");
   input.focus();
@@ -124,6 +126,7 @@ onMounted(async () => {
             {{ chat.name }}
             <span class="chat-folder-name">
               {{ getFolderName(chat.folderId) }}
+              <IconDeleteFromFolder />
             </span>
           </label>
         </li>

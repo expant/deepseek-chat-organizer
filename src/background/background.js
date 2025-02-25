@@ -60,7 +60,6 @@ export const addChatsToFolder = (chats, folders, folderId, newFolderId) =>
   folders.map((item) => {
     if (item.type === "chat") return item;
     if (item.id === folderId) {
-      console.log("folderId in addChatsToFolder func: " + folderId);
       const newChats = chats.map((chat) => ({
         ...chat,
         folderId: newFolderId,

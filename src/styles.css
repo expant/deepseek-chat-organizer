@@ -303,6 +303,8 @@ ul {
 }
 
 .search-chats__list label {
+  display: flex;
+  justify-content: space-between;
   width: 100%;
 }
 
@@ -336,9 +338,9 @@ ul {
 
 .chat-folder-name {
   font-size: 14px;
-  font-style: italic;
+  font-weight: 500;
   margin: 0 20px;
-  color: aqua;
+  color: #03a9f4;
   text-align: right;
 }
 
@@ -347,4 +349,11 @@ ul {
   fill: none;
   stroke: #4d6dfe;
   cursor: pointer;
+}
+
+.icon-delete-from-folder {
+  width: 15px;
+  fill: #03a9f4;
+  cursor: pointer;
+  margin-left: 10px;
 }
