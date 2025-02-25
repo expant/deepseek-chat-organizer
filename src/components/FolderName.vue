@@ -54,12 +54,9 @@ const handleRename = async () => {
 
   if (isNameNotUnique(clonedFolders, inputValue)) {
     // TODO: Активация showNotification и рендеринг соответствующего компонента
-    console.log("Папка с таким именем уже существует");
     isEditingFolderName.value = false;
     return;
   }
-
-  console.log(inputValue);
   folderList.value = renameFolder(clonedFolders, props.id, inputValue);
   await chrome.storage.local.set({ folders: folderList.value });
   isEditingFolderName.value = false;

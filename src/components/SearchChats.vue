@@ -2,7 +2,7 @@
 import _ from "lodash";
 import { ref, onMounted, inject, computed } from "vue";
 import { addChatsToFolder } from "@/background/background.js";
-import { getFolderNameById } from "@/utils/helpers.js";
+import { getFolderNameById, convertObjToArrDeep } from "@/utils/helpers.js";
 import IconSearch from "./icons/IconSearch.vue";
 import IconExit from "./icons/IconExit.vue";
 
@@ -26,6 +26,7 @@ const removeEventListeners = () => {
 };
 
 const onOutsideClick = (event) => {
+  console.log("Здесь");
   const searchChatsWrap = document.querySelector(".search-chats-wrap");
   const searchСhats = searchChatsWrap.querySelector(".search-chats");
 
@@ -41,7 +42,8 @@ const onKeydown = (event) => {
 
 // TODO: Возможно стоит разделить список на два (добавленные в папку и нет)
 // TODO: Папка должна открываться после добавления чата/чатов
-const onSelectedChats = async () => {
+const onSelectedChats = async (event) => {
+  event.stopPropagation();
   const folderId = contextMenu.value.folderId;
   const chats = chatList.value.filter((chat) =>
     selectedChats.value.includes(chat.id)
@@ -61,10 +63,13 @@ const onSelectedChats = async () => {
     newFolderId,
   ];
 
-  folderList.value = addChatsToFolder(...args);
+  chatList.value = convertObjToArrDeep(chatList.value, "chats");
+  folderList.value = convertObjToArrDeep(addChatsToFolder(...args), "folders");
+
+  console.log("folderList: " + folderList.value);
   await chrome.storage.local.set({ folders: folderList.value });
   await chrome.storage.local.set({ chats: chatList.value });
-
+  onOutsideClick(event);
 };
 
 const searchedChats = computed(() => {
@@ -76,7 +81,8 @@ const searchedChats = computed(() => {
   );
 });
 
-const getFolderName = (id) => id ? `folder: ${getFolderNameById(folderList.value, id)}` : "";
+const getFolderName = (id) =>
+  id ? `folder: ${getFolderNameById(folderList.value, id)}` : "";
 
 onMounted(async () => {
   const searchChatsWrap = document.querySelector(".search-chats-wrap");
@@ -116,9 +122,9 @@ onMounted(async () => {
           />
           <label :for="'chat-' + chat.id">
             {{ chat.name }}
-            <span class="chat-folder-name">{{
-              getFolderName(chat.folderId)
-            }}</span>
+            <span class="chat-folder-name">
+              {{ getFolderName(chat.folderId) }}
+            </span>
           </label>
         </li>
       </ul>
