@@ -84,3 +84,12 @@ export const addChatsToFolder = (chats, folders, folderId, newFolderId) =>
     );
     return item;
   });
+
+export const deleteChatFromFolder = (folders, chatId) => {
+  console.log(folders);
+  const result = folders.filter((item) => {
+    if (item.type === "folder" && !item.children) return true;
+    return item.id === chatId ? false : deleteChatFromFolder(item.children, chatId);
+  });
+  return result;
+};

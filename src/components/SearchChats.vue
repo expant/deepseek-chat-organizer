@@ -2,8 +2,8 @@
 import _ from "lodash";
 import { ref, onMounted, inject, computed } from "vue";
 import { addChatsToFolder } from "@/background/background.js";
-import { getFolderNameById, convertObjToArrDeep } from "@/utils/helpers.js";
-import IconDeleteFromFolder from "./icons/IconDeleteFromFolder.vue";
+import { convertObjToArrDeep } from "@/utils/helpers.js";
+import SearchChatsItem from "./SearchChatsItem.vue"
 import IconSearch from "./icons/IconSearch.vue";
 import IconExit from "./icons/IconExit.vue";
 
@@ -40,7 +40,6 @@ const onKeydown = (event) => {
   removeEventListeners();
 };
 
-// TODO: Папка должна открываться после добавления чата/чатов
 const onSelectedChats = async (event) => {
   event.stopPropagation();
   onOutsideClick(event);
@@ -78,15 +77,7 @@ const searchedChats = computed(() => {
   );
 });
 
-const getFolderName = (id) => {
-  if (!id) return "";
-  const folderName = getFolderNameById(folderList.value, id);
-  return folderName ? `${folderName}` : "";
-}
- 
-
 onMounted(async () => {
-  console.log("Монтирование произошло");
   const searchChatsWrap = document.querySelector(".search-chats-wrap");
   const input = searchChatsWrap.querySelector("input[name='search-chats']");
   input.focus();
@@ -115,21 +106,12 @@ onMounted(async () => {
         <IconExit @click="removeEventListeners" />
       </div>
       <ul class="search-chats__list">
-        <li v-for="chat in searchedChats" :key="chat.id">
-          <input
-            type="checkbox"
-            :id="'chat-' + chat.id"
-            :value="chat.id"
-            v-model="selectedChats"
-          />
-          <label :for="'chat-' + chat.id">
-            {{ chat.name }}
-            <span class="chat-folder-name">
-              {{ getFolderName(chat.folderId) }}
-              <IconDeleteFromFolder />
-            </span>
-          </label>
-        </li>
+        <SearchChatsItem 
+          v-for="chat in searchedChats" 
+          :key="chat.id"
+          :chat="chat"
+          v-model="selectedChats"
+        />
       </ul>
     </div>
     <button

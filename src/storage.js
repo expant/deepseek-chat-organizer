@@ -1,4 +1,5 @@
 import { LIST_ROOT_CLASS_NAME, CHAT_EL_CLASS_NAME } from "./variables.js";
+import { deleteChatFromFolder } from "@/background/background.js";
 
 // TODO: Наблюдение через Observer за списком чатов
 export const initChatsInStorage = async (chats) => {

@@ -351,9 +351,10 @@ ul {
   cursor: pointer;
 }
 
-.icon-delete-from-folder {
+.icon-return {
   width: 15px;
   fill: #03a9f4;
   cursor: pointer;
   margin-left: 10px;
+  vertical-align: middle;
 }
