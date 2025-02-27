@@ -45,6 +45,9 @@ export const createFolder = (folders, id, baseNames) => {
       if (item.id === id) {
         item = { ...item, id: Date.now() + 1, isOpen: true };
         item.children.unshift(newFolder);
+        item.children = item.children.map((child) =>
+          child.type === "chat" ? { ...child, folderId: newFolder.id } : child
+        );
         newFolderId = newFolder.id;
         return item;
       }
@@ -88,8 +91,11 @@ export const addChatsToFolder = (chats, folders, folderId, newFolderId) =>
 export const deleteChatFromFolder = (folders, chatId) => {
   console.log(folders);
   const result = folders.filter((item) => {
-    if (item.type === "folder" && !item.children) return true;
-    return item.id === chatId ? false : deleteChatFromFolder(item.children, chatId);
+    if (item.type === "folder") {
+      if (!item.children) return true;
+      return deleteChatFromFolder(item.children, chatId);
+    }
+    return item.id === chatId ? false : true;
   });
   return result;
 };

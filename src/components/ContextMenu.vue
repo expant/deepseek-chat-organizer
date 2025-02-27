@@ -17,6 +17,7 @@ const props = defineProps({
 });
 const emit = defineEmits(["close"]);
 const folderList = inject("folderList");
+const chatList = inject("chatList");
 const contextMenu = inject("contextMenu");
 const baseFolderNames = inject("baseFolderNames");
 const showSearchChats = inject("showSearchChats");
@@ -53,6 +54,9 @@ const onCreateFolder = async () => {
     baseFolderNames.value
   );
   folderList.value = folders;
+  chatList.value = chatList.value.map((chat) =>
+    chat.folderId === id ? { ...chat, folderId: newFolderId } : chat
+  );
   const baseNames = getBaseNames(folderList.value, []);
   baseFolderNames.value = baseNames.sort(sortBaseNames);
   contextMenu.value = {
@@ -62,6 +66,7 @@ const onCreateFolder = async () => {
   };
   isEditingFolderName.value = true;
   await chrome.storage.local.set({ folders });
+  await chrome.storage.local.set({ chats: chatList.value });
   await nextTick();
   document.querySelector(".folder-name__input").focus();
 };

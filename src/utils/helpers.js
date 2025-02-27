@@ -34,14 +34,7 @@ export const getBaseNames = (items, acc) =>
 //   });
 // };
 
-export const getFolderNameById = (folders, id) => {
-  const folder = folders.find((item) => {
-    if (item.type === "chat") return false;
-    if (item.id === id) return true;
-    if (item.children) return getFolderNameById(item.children, id);
-  });
-  return folder ? folder.name : false;
-}
+export const getFolderNameById = (folders, id) => {};
 
 export const sortBaseNames = (a, b) => {
   if (a === "Untitled") return -1;
