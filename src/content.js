@@ -12,36 +12,12 @@ const targetEl = document.querySelector("#root");
 const appContainer = document.createElement("div");
 appContainer.id = "folders-list";
 
-// TODO: STOPDRAGFILE
-
-// let draggedElement = null;
-
-// const stopDragFiles = (event) => {
-//   event.preventDefault();
-//   event.stopPropagation();
-// };
-
-// ['dragstart', 'dragover', 'dragenter', 'drop'].forEach((eventName) => {
-//   document.addEventListener(eventName, stopDragFiles, { capture: true });
-// });
-
 const insertAppToDeepseek = (deepseekContainer) => {
   if (deepseekContainer) {
     deepseekContainer.prepend(appContainer);
     createApp(App).mount("#folders-list");
   }
 };
-
-// TODO: Добавить условие для очистки setTimeOut
-const watchForDeepseekEl = (cb) => {
-  const existingDeepseek = targetEl.querySelector(LIST_ROOT_CLASS_NAME);
-  if (!existingDeepseek) {
-    setTimeout(() => watchForDeepseekEl(cb), 500);
-    return;
-  }
-  return cb(existingDeepseek);
-};
-watchForDeepseekEl(insertAppToDeepseek);
 
 // TODO: Отслеживать переименование и удаление чатов
 const callback = (mutationsList, observer) => {
