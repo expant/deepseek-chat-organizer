@@ -94,7 +94,8 @@ export const deleteChatFromFolder = (folders, chatId) => {
   const result = folders.filter((item) => {
     if (item.type === "folder") {
       if (!item.children) return true;
-      return deleteChatFromFolder(item.children, chatId);
+      item.children = deleteChatFromFolder(item.children, chatId);
+      return true;
     }
     return item.id === chatId ? false : true;
   });

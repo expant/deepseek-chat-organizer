@@ -50,10 +50,9 @@ const onCreateFolder = async () => {
 };
 
 onMounted(async () => {
-  console.log("log");
   const { folders } = await chrome.storage.local.get(["folders"]);
   const { chats } = await chrome.storage.local.get(["chats"]);
-  console.log("App.vue: ", chats);
+
   if (!chats) {
     await initChatsInStorage([]);
   } else {

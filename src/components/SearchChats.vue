@@ -67,7 +67,6 @@ const onSelectedChats = async (event) => {
   await chrome.storage.local.set({ chats: chatList.value });
 
   const log = await chrome.storage.local.get(["chats"]);
-  console.log(log);
 };
 
 const searchedChats = computed(() => {

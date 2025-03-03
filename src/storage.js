@@ -5,22 +5,15 @@ import { deleteChatFromFolder } from "@/background/background.js";
 // TODO: Наблюдение через Observer за списком чатов
 export const initChatsInStorage = async (chats) => {
   const elements = document.querySelectorAll(CHAT_EL_CLASS_NAME);
-  const chatsWithFolderId = chats.filter((chat) => chat.folderId);
-  console.log("chatsWithFolderId: ", chatsWithFolderId);
-  console.log(Object.entries(elements));
-  const chatData = Object.entries(elements).map(([_, el]) => {
-    const chatWithFolderId = chatsWithFolderId.find((chat) => {
-      console.log(`${JSON.stringify(el)} - ${chat.folderId}`);
-      return el.folderId === chat.folderId;
-    });
-
-    console.log("chatWithFolderId: ", chatWithFolderId);
-
-    return {
-      id: generateId(),
-      name: el.textContent,
-      folderId: chatWithFolderId ? chatWithFolderId.folderId : null,
-    };
+  const newChats = Object.entries(elements).map(([_, el]) => {
+    const chat = chats.find((item) => item.name === el.textContent);
+    return chat 
+      ? chat 
+      : { 
+        id: generateId(),
+        name: el.textContent,
+        folderId: null,
+      }
   });
-  await chrome.storage.local.set({ chats: chatData });
+  await chrome.storage.local.set({ chats: newChats });
 };

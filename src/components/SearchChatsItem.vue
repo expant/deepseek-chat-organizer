@@ -3,6 +3,7 @@ import { inject, ref, computed, onMounted } from "vue";
 import { getFolderNameById } from "@/utils/helpers.js";
 import { deleteChatFromFolder } from "@/background/background.js";
 import IconReturn from "./icons/IconReturn.vue";
+import { every } from "lodash";
 
 const props = defineProps({
   modelValue: {
@@ -33,6 +34,7 @@ const isChatInFolder = computed(() => {
 });
 
 const onDeleteFromFolder = async () => {
+  folderName.value = "";
   chatList.value = chatList.value.map((chat) =>
     props.chat.id === chat.id ? { ...chat, folderId: null } : chat
   );
@@ -50,7 +52,6 @@ const getFolderName = (id) => {
 
 onMounted(() => {
   folderName.value = getFolderName(props.chat.folderId);
-  console.log(`${props.chat.name}: ` + props.chat.folderId);
 });
 </script>
 

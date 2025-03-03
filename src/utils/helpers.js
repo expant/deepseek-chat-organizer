@@ -1,10 +1,10 @@
-export const getFolderNameById = (folders, id) =>
+export const getFolderNameById = (folders, id) => 
   folders.reduce((acc, item) => {
-    if (item.type === "chat") return acc;
+    if (acc || item.type === "chat") return acc;
     if (item.id === id) return item.name;
     if (item.children) return getFolderNameById(item.children, id);
     return acc;
-  }, "");
+  }, null);
 
 export const isNameNotUnique = (items, name) =>
   items.some((item) => {
