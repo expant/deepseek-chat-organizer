@@ -44,13 +44,14 @@ const onDeleteFromFolder = async () => {
 
 const getFolderName = (id) => {
   if (!id) return "";
-  console.log(JSON.stringify(folderList.value));
   const folderName = getFolderNameById(folderList.value, id);
-  console.log(folderName);
   return folderName ? `${folderName}` : "";
 };
 
-onMounted(() => (folderName.value = getFolderName(props.chat.folderId)));
+onMounted(() => {
+  folderName.value = getFolderName(props.chat.folderId);
+  console.log(`${props.chat.name}: ` + props.chat.folderId);
+});
 </script>
 
 <template>

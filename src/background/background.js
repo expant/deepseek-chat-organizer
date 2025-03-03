@@ -1,4 +1,5 @@
-import { getNewUntitled } from "../utils/helpers.js";
+import { generateId } from "@/utils/helpers.js";
+import { getNewBaseFolderName } from "../utils/baseFolderNames.js";
 
 export const renameFolder = (folders, id, name) =>
   folders.map((item) => {
@@ -23,10 +24,11 @@ export const deleteFolder = (folders, id) =>
   });
 
 export const createFolder = (folders, id, baseNames) => {
-  let newFolderId = 0;
-  const name = getNewUntitled(baseNames);
+  let newFolderId = generateId();
+  let newParentFolderId = generateId();
+  const name = getNewBaseFolderName(baseNames);
   const newFolder = {
-    id: Date.now(),
+    id: newFolderId,
     type: "folder",
     isOpen: false,
     children: [],
@@ -34,28 +36,28 @@ export const createFolder = (folders, id, baseNames) => {
   };
 
   if (!id) {
-    newFolderId = newFolder.id;
     folders.push(newFolder);
-    return [folders, newFolderId];
+    return [folders, newFolderId, newParentFolderId];
   }
 
   const getNewFolders = (items) =>
     items.map((item) => {
       if (item.type === "chat") return item;
       if (item.id === id) {
-        item = { ...item, id: Date.now() + 1, isOpen: true };
+        item = { ...item, id: newParentFolderId, isOpen: true };
         item.children.unshift(newFolder);
         item.children = item.children.map((child) =>
-          child.type === "chat" ? { ...child, folderId: newFolder.id } : child
+          child.type === "chat"
+            ? { ...child, folderId: newParentFolderId }
+            : child
         );
-        newFolderId = newFolder.id;
         return item;
       }
       return item.children
         ? { ...item, children: getNewFolders(item.children) }
         : item;
     });
-  return [getNewFolders(folders), newFolderId];
+  return [getNewFolders(folders), newFolderId, newParentFolderId];
 };
 
 // FIXME: addChatsToFolder
@@ -89,7 +91,6 @@ export const addChatsToFolder = (chats, folders, folderId, newFolderId) =>
   });
 
 export const deleteChatFromFolder = (folders, chatId) => {
-  console.log(folders);
   const result = folders.filter((item) => {
     if (item.type === "folder") {
       if (!item.children) return true;

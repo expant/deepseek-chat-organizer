@@ -2,8 +2,8 @@
 import _ from "lodash";
 import { ref, onMounted, inject, computed } from "vue";
 import { addChatsToFolder } from "@/background/background.js";
-import { convertObjToArrDeep } from "@/utils/helpers.js";
-import SearchChatsItem from "./SearchChatsItem.vue"
+import { convertObjToArrDeep, generateId } from "@/utils/helpers.js";
+import SearchChatsItem from "./SearchChatsItem.vue";
 import IconSearch from "./icons/IconSearch.vue";
 import IconExit from "./icons/IconExit.vue";
 
@@ -43,18 +43,12 @@ const onKeydown = (event) => {
 const onSelectedChats = async (event) => {
   event.stopPropagation();
   onOutsideClick(event);
+
   const folderId = contextMenu.value.folderId;
   const chats = chatList.value.filter((chat) =>
     selectedChats.value.includes(chat.id)
   );
-
-  const newFolderId = Date.now();
-  chatList.value = chatList.value.map((chat) => {
-    return selectedChats.value.includes(chat.id) || chat.folderId === folderId
-      ? { ...chat, folderId: newFolderId }
-      : chat;
-  });
-
+  const newFolderId = generateId();
   const args = [
     _.cloneDeep(chats),
     _.cloneDeep(folderList.value),
@@ -63,9 +57,17 @@ const onSelectedChats = async (event) => {
   ];
 
   folderList.value = addChatsToFolder(...args);
+  chatList.value = chatList.value.map((chat) => {
+    return selectedChats.value.includes(chat.id) || chat.folderId === folderId
+      ? { ...chat, folderId: newFolderId }
+      : chat;
+  });
 
   await chrome.storage.local.set({ folders: folderList.value });
   await chrome.storage.local.set({ chats: chatList.value });
+
+  const log = await chrome.storage.local.get(["chats"]);
+  console.log(log);
 };
 
 const searchedChats = computed(() => {
@@ -106,8 +108,8 @@ onMounted(async () => {
         <IconExit @click="removeEventListeners" />
       </div>
       <ul class="search-chats__list">
-        <SearchChatsItem 
-          v-for="chat in searchedChats" 
+        <SearchChatsItem
+          v-for="chat in searchedChats"
           :key="chat.id"
           :chat="chat"
           v-model="selectedChats"

@@ -1,11 +1,7 @@
 <script setup>
 import _ from "lodash";
-import { onMounted, onUnmounted, inject, nextTick, ref, watch } from "vue";
-import {
-  getNewUntitled,
-  getBaseNames,
-  sortBaseNames,
-} from "@/utils/helpers.js";
+import { onMounted, onUnmounted, inject, nextTick } from "vue";
+import { getBaseFolderNames, sortBaseNames } from "@/utils/baseFolderNames.js";
 import { deleteFolder, createFolder } from "@/background/background.js";
 import ContextMenuButton from "./buttons/ContextMenuButton.vue";
 
@@ -40,7 +36,7 @@ const onRenameFolder = async () => {
 const onDeleteFolder = async () => {
   const id = contextMenu.value.folderId;
   folderList.value = deleteFolder(folderList.value, id);
-  const baseNames = getBaseNames(folderList.value, []);
+  const baseNames = getBaseFolderNames(folderList.value, []);
   baseFolderNames.value = baseNames.sort(sortBaseNames);
   await chrome.storage.local.set({ folders: folderList.value });
   contextMenu.value = { ...contextMenu.value, isOpen: false };
@@ -48,16 +44,16 @@ const onDeleteFolder = async () => {
 
 const onCreateFolder = async () => {
   const id = contextMenu.value.folderId;
-  const [folders, newFolderId] = createFolder(
+  const [folders, newFolderId, newParentFolderId] = createFolder(
     _.cloneDeep(folderList.value),
     id,
     baseFolderNames.value
   );
   folderList.value = folders;
   chatList.value = chatList.value.map((chat) =>
-    chat.folderId === id ? { ...chat, folderId: newFolderId } : chat
+    chat.folderId === id ? { ...chat, folderId: newParentFolderId } : chat
   );
-  const baseNames = getBaseNames(folderList.value, []);
+  const baseNames = getBaseFolderNames(folderList.value, []);
   baseFolderNames.value = baseNames.sort(sortBaseNames);
   contextMenu.value = {
     ...contextMenu.value,

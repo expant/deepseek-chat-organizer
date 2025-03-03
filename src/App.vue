@@ -1,11 +1,8 @@
 <script setup>
 import _ from "lodash";
 import { ref, onMounted, provide, nextTick } from "vue";
-import {
-  getBaseNames,
-  sortBaseNames,
-  convertObjToArrDeep,
-} from "./utils/helpers.js";
+import { sortBaseNames, getBaseFolderNames } from "./utils/baseFolderNames.js";
+import { convertObjToArrDeep } from "./utils/helpers.js";
 import { initChatsInStorage } from "./storage.js";
 import { createFolder } from "@/background/background.js";
 import ContextMenu from "./components/ContextMenu.vue";
@@ -39,7 +36,7 @@ const onCreateFolder = async () => {
   ];
   const [folders, newFolderId] = createFolder(...newFolderArgs);
   folderList.value = folders;
-  const baseNames = getBaseNames(folderList.value, []);
+  const baseNames = getBaseFolderNames(folderList.value, []);
   baseFolderNames.value = baseNames.sort(sortBaseNames);
   contextMenu.value = {
     ...contextMenu.value,
@@ -53,20 +50,20 @@ const onCreateFolder = async () => {
 };
 
 onMounted(async () => {
+  console.log("log");
   const { folders } = await chrome.storage.local.get(["folders"]);
   const { chats } = await chrome.storage.local.get(["chats"]);
+  console.log("App.vue: ", chats);
   if (!chats) {
     await initChatsInStorage([]);
   } else {
     await initChatsInStorage(convertObjToArrDeep(chats, "chats"));
   }
-
   const { chats: newChats } = await chrome.storage.local.get(["chats"]);
   chatList.value = newChats;
-
   if (!folders) return;
   folderList.value = convertObjToArrDeep(folders, "folders");
-  const baseNames = getBaseNames(folderList.value, []);
+  const baseNames = getBaseFolderNames(folderList.value, []);
   baseFolderNames.value = baseNames.sort(sortBaseNames);
 
   // const chatElements = document.querySelectorAll(".f9edaa3c");
