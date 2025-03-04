@@ -65,11 +65,18 @@ onMounted(() => {
       @change="handleCheckboxChange"
     />
     <label :for="'chat-' + chat.id">
-      {{ chat.name }}
-      <span v-if="folderName" class="chat-folder-name">
+      <span class="chat-name" :title="chat.name">{{ chat.name }}</span>
+      <span v-if="folderName" class="chat-folder-name" :title="folderName">
         {{ folderName }}
-        <IconReturn v-show="showIconReturn" @click="onDeleteFromFolder" />
       </span>
     </label>
+    <span
+      class="icon-return-wrap"
+      v-show="showIconReturn && isChatInFolder"
+      title="Remove from folder"
+      @click="onDeleteFromFolder"
+    >
+      <IconReturn title="" />
+    </span>
   </li>
 </template>

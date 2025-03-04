@@ -1,4 +1,4 @@
-export const getFolderNameById = (folders, id) => 
+export const getFolderNameById = (folders, id) =>
   folders.reduce((acc, item) => {
     if (acc || item.type === "chat") return acc;
     if (item.id === id) return item.name;

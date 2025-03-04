@@ -36,9 +36,13 @@ const onRenameFolder = async () => {
 const onDeleteFolder = async () => {
   const id = contextMenu.value.folderId;
   folderList.value = deleteFolder(folderList.value, id);
+  chatList.value = chatList.value.map((item) =>
+    item.folderId === id ? { ...item, folderId: null } : item
+  );
   const baseNames = getBaseFolderNames(folderList.value, []);
   baseFolderNames.value = baseNames.sort(sortBaseNames);
   await chrome.storage.local.set({ folders: folderList.value });
+  await chrome.storage.local.set({ chats: chatList.value });
   contextMenu.value = { ...contextMenu.value, isOpen: false };
 };
 
