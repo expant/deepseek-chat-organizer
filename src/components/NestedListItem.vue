@@ -1,6 +1,7 @@
 <script setup>
 import NestedList from "./NestedList.vue";
-import FolderName from "./FolderName.vue";
+import FolderItem from "./FolderItem.vue";
+import ChatItem from "./ChatItem.vue"
 import { ref, watch } from "vue";
 
 const props = defineProps({
@@ -15,9 +16,13 @@ const isFolderOpen = ref(props.node?.isOpen);
 
 <template>
   <li class="folders__item">
-    <span class="chat" v-if="node.type === 'chat'">{{ node.name }}</span>
+    <ChatItem 
+      v-if="node.type === 'chat'" 
+      :name="node.name" 
+      :nodeId="node.id"  
+    />
     <template v-else>
-      <FolderName
+      <FolderItem
         :name="node.name"
         :id="node.id"
         v-model:is-folder-open="isFolderOpen"
