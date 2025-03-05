@@ -37,6 +37,8 @@ const openContextMenu = (event) => {
   contextMenuChat.value = { isOpen: true, position, chatId: props.chat.id };
 };
 
+// TODO: Отслеживать переименование и удаление чатов
+// TODO: Открывать диалог с чатом при нажатии на чат из папки
 const renameDSChat = (prevName, newName) => {
   const menuClassname = "ds-floating-position-wrapper";
   const renameBtnClassName = "ds-dropdown-menu-option--none";
