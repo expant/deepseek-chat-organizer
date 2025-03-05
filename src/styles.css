@@ -1,3 +1,14 @@
+.dc04ec1d::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 10px; /* Ширина границы */
+  height: 100%;
+  background-color: transparent;
+  cursor: ew-resize;
+}
+
 #folders-list * {
   box-sizing: border-box;
 }
