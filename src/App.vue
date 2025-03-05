@@ -21,10 +21,16 @@ const contextMenu = ref({
   position: { top: 0, left: 0 },
   folderId: null,
 });
+const contextMenuChat = ref({
+  isOpen: false,
+  position: { top: 0, left: 0 },
+  chatId: null,
+});
 
 provide("chatList", chatList);
 provide("folderList", folderList);
 provide("contextMenu", contextMenu);
+provide("contextMenuChat", contextMenuChat);
 provide("baseFolderNames", baseFolderNames);
 provide("showSearchChats", showSearchChats);
 provide("isEditingChatName", isEditingChatName);
@@ -94,7 +100,14 @@ onMounted(async () => {
     <ContextMenu
       v-show="contextMenu.isOpen"
       @close="contextMenu.isOpen = false"
+      :type="'folder'"
       :position="contextMenu.position"
+    />
+    <ContextMenu
+      v-show="contextMenuChat.isOpen"
+      @close="contextMenuChat.isOpen = false"
+      :type="'chat'"
+      :position="contextMenuChat.position"
     />
     <SearchChats
       v-if="showSearchChats"

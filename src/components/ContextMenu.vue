@@ -2,10 +2,18 @@
 import _ from "lodash";
 import { onMounted, onUnmounted, inject, nextTick } from "vue";
 import { getBaseFolderNames, sortBaseNames } from "@/utils/baseFolderNames.js";
-import { deleteFolder, createFolder } from "@/background/background.js";
+import {
+  deleteFolder,
+  createFolder,
+  deleteChatFromFolder,
+} from "@/background/background.js";
 import ContextMenuButton from "./buttons/ContextMenuButton.vue";
 
 const props = defineProps({
+  type: {
+    type: String,
+    required: true,
+  },
   position: {
     type: Object,
     required: true,
@@ -15,24 +23,36 @@ const emit = defineEmits(["close"]);
 const folderList = inject("folderList");
 const chatList = inject("chatList");
 const contextMenu = inject("contextMenu");
+const contextMenuChat = inject("contextMenuChat");
 const baseFolderNames = inject("baseFolderNames");
 const showSearchChats = inject("showSearchChats");
+const isEditingChatName = inject("isEditingChatName");
 const isEditingFolderName = inject("isEditingFolderName");
 
-const onOutsideClick = (event) => {
-  const contextMenu = document.querySelector(".context-menu");
+// Общие функции
+const onOutsideClick = (event, type) => {
+  const contextMenu = document.querySelector(
+    `${type === "chat" ? ".cm-chat" : ".cm-folder"}`
+  );
+
   if (contextMenu && !contextMenu.contains(event.target)) {
     emit("close");
   }
 };
 
-const onRenameFolder = async () => {
-  isEditingFolderName.value = true;
-  contextMenu.value = { ...contextMenu.value, isOpen: false };
+const onRename = async (type) => {
+  if (type === "chat") {
+    isEditingChatName.value = true;
+    contextMenuChat.value = { ...contextMenuChat.value, isOpen: false };
+  } else {
+    isEditingFolderName.value = true;
+    contextMenu.value = { ...contextMenu.value, isOpen: false };
+  }
   await nextTick();
-  document.querySelector(".folder-name__input").focus();
+  document.querySelector(`.${type}-name__input`).focus();
 };
 
+// type: folder
 const onDeleteFolder = async () => {
   const id = contextMenu.value.folderId;
   folderList.value = deleteFolder(folderList.value, id);
@@ -76,6 +96,20 @@ const onAddChat = () => {
   contextMenu.value = { ...contextMenu.value, isOpen: false };
 };
 
+// type: chat
+const onDeleteFromFolder = async () => {
+  const chatId = contextMenuChat.value.chatId;
+
+  contextMenuChat.value = { ...contextMenuChat.value, isOpen: false };
+  folderList.value = deleteChatFromFolder(folderList.value, chatId);
+  chatList.value = chatList.value.map((item) =>
+    item.id === chatId ? { ...item, folderId: null } : item
+  );
+
+  await chrome.storage.local.set({ folders: folderList.value });
+  await chrome.storage.local.set({ chats: chatList.value });
+};
+
 onMounted(async () => document.addEventListener("click", onOutsideClick));
 onUnmounted(() => document.removeEventListener("click", onOutsideClick));
 </script>
@@ -83,7 +117,8 @@ onUnmounted(() => document.removeEventListener("click", onOutsideClick));
 <template>
   <transition name="fade">
     <div
-      class="context-menu"
+      v-if="type === 'folder'"
+      class="context-menu cm-folder"
       :style="{
         top: `${position.top}px`,
         left: `${position.left}px`,
@@ -92,8 +127,23 @@ onUnmounted(() => document.removeEventListener("click", onOutsideClick));
       <ContextMenuButton name="Add chat(s)" @click="onAddChat" />
       <ContextMenuButton name="New folder" @click="onCreateFolder" />
       <div class="line"></div>
-      <ContextMenuButton name="Rename" @click="onRenameFolder" />
+      <ContextMenuButton name="Rename" @click="onRename('folder')" />
       <ContextMenuButton name="Delete" @click="onDeleteFolder" />
+    </div>
+    <div
+      v-else
+      class="context-menu cm-chat"
+      :style="{
+        top: `${position.top}px`,
+        left: `${position.left}px`,
+      }"
+    >
+      <!-- <div class="line"></div> -->
+      <ContextMenuButton name="Rename" @click="onRename('chat')" />
+      <ContextMenuButton
+        name="Delete from folder"
+        @click="onDeleteFromFolder"
+      />
     </div>
   </transition>
 </template>

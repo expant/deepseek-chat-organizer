@@ -1,8 +1,9 @@
 <script setup>
+import IconChat from "../icons/IconChat.vue";
 import IconRename from "../icons/IconRename.vue";
 import IconDelete from "../icons/IconDelete.vue";
 import IconFolder from "../icons/IconFolder.vue";
-import IconChat from "../icons/IconChat.vue";
+import IconDeleteFromFolder from "../icons/IconDeleteFromFolder.vue";
 
 const props = defineProps({
   name: String,
@@ -27,6 +28,10 @@ const props = defineProps({
     <template v-else-if="name === 'Delete'">
       <IconDelete />
       <span class="btn-name delete">{{ name }}</span>
+    </template>
+    <template v-else-if="name === 'Delete from folder'">
+      <IconDeleteFromFolder />
+      <span class="btn-name delete-from-folder">{{ name }}</span>
     </template>
   </button>
 </template>

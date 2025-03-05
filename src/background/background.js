@@ -90,6 +90,17 @@ export const addChatsToFolder = (chats, folders, folderId, newFolderId) =>
     return item;
   });
 
+export const renameChat = (folders, id, name) =>
+  folders.map((item) => {
+    if (item.type === "chat") {
+      if (item.id !== id) return item;
+      return { ...item, name };
+    }
+    if (!item.children) return item;
+    const children = renameChat(item.children, id, name);
+    return { ...item, children };
+  });
+
 export const deleteChatFromFolder = (folders, chatId) => {
   const result = folders.filter((item) => {
     if (item.type === "folder") {

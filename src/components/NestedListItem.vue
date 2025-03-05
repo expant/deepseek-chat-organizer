@@ -1,7 +1,7 @@
 <script setup>
 import NestedList from "./NestedList.vue";
 import FolderItem from "./FolderItem.vue";
-import ChatItem from "./ChatItem.vue"
+import ChatItem from "./ChatItem.vue";
 import { ref, watch } from "vue";
 
 const props = defineProps({
@@ -16,11 +16,7 @@ const isFolderOpen = ref(props.node?.isOpen);
 
 <template>
   <li class="folders__item">
-    <ChatItem 
-      v-if="node.type === 'chat'" 
-      :name="node.name" 
-      :nodeId="node.id"  
-    />
+    <ChatItem v-if="node.type === 'chat'" :chat="node" />
     <template v-else>
       <FolderItem
         :name="node.name"

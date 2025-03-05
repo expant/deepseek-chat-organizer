@@ -13,7 +13,7 @@ const props = defineProps({
     required: true,
   },
   id: {
-    type: Number,
+    type: String,
     required: true,
   },
   isFolderOpen: {
@@ -23,16 +23,20 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["update:isFolderOpen"]);
-const contextMenu = inject("contextMenu");
-const folderList = inject("folderList");
-const isEditingFolderName = inject("isEditingFolderName");
-const baseFolderNames = inject("baseFolderNames");
-const showDots = ref(false);
 const inputRef = ref(null);
+const showDots = ref(false);
 const showNotification = ref(false);
+const folderList = inject("folderList");
+const contextMenu = inject("contextMenu");
+const contextMenuChat = inject("contextMenuChat");
+const baseFolderNames = inject("baseFolderNames");
+const isEditingFolderName = inject("isEditingFolderName");
 
 const toggleFolder = () => emit("update:isFolderOpen", !props.isFolderOpen);
 const openContextMenu = (event) => {
+  if (contextMenuChat.value.isOpen) {
+    contextMenuChat.value = { ...contextMenuChat.value, isOpen: false };
+  }
   if (contextMenu.value.isOpen) {
     contextMenu.value = { ...contextMenu.value, isOpen: false };
     return;

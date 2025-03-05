@@ -22,8 +22,9 @@ export const initChatsInStorage = async (chats) => {
 export const loadFolders = async () => {
   const { chats } = await chrome.storage.local.get(["chats"]);
   const { folders: foldersObj } = await chrome.storage.local.get(["folders"]);
+  if (!foldersObj) return;
+
   const folders = convertObjToArrDeep(foldersObj, "folders");
-  if (!folders) return;
 
   const getNewFolders = (items) =>
     items.filter((item) => {
