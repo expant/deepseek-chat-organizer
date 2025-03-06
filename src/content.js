@@ -1,6 +1,7 @@
 import { createApp } from "vue";
 import { LIST_ROOT_CLASS_NAME, SIDEBAR_CLASS_NAME } from "./variables.js";
 import App from "./App.vue";
+import sidebarWidthResizing from "./utils/sidebarWidthResizing.js";
 
 // Подключаем CSS-файл --------------------
 const link = document.createElement("link");
@@ -49,6 +50,7 @@ const callback = (mutationsList, observer) => {
     if (mutation.target.className === SIDEBAR_CLASS_NAME) {
       if (mutation.addedNodes.length > 0) {
         insertAppToDeepseek();
+        setTimeout(() => sidebarWidthResizing(), 500);
       }
     }
   }
