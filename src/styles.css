@@ -6,7 +6,7 @@
   height: 100%;
   background-color: transparent;
   cursor: ew-resize;
-  z-index: 1000;
+  z-index: 1;
 }
 
 #folders-list * {
@@ -172,7 +172,7 @@ ul {
   padding: 5px;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  z-index: 100;
+  /* z-index: 100; */
 }
 
 .context-menu__btn {

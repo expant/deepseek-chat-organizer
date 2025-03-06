@@ -3,18 +3,14 @@ import { SIDEBAR_CLASS_NAME } from "@/variables";
 const variableName = "--local-sider-width";
 let isResizing = false;
 
-const resize = (event, sidebar, sidebarChild, width) => {
+const resize = async (e, sidebar, width) => {
   if (!isResizing) return;
-
   const { min, max } = width;
-  const newWidth = event.clientX - sidebar.getBoundingClientRect().left;
+  const newWidth = e.clientX - sidebar.getBoundingClientRect().left;
 
   if (newWidth > min && newWidth < max) {
-    sidebar.style.width = `${newWidth}px`;
-    sidebarChild.style.width = `${newWidth}px`;
-    sidebar.style.maxWidth = `${newWidth}px`;
-    sidebarChild.style.maxWidth = `${newWidth}px`;
-    // document.documentElement.style.setProperty(variableName, `${newWidth}px`);
+    sidebar.style.setProperty(variableName, `${newWidth}px`);
+    // await chrome.storage.local.set({ sidebarWidth: `${newWidth}px` });
   }
 };
 
@@ -24,27 +20,27 @@ const stopResize = () => {
   document.removeEventListener("mouseup", stopResize);
 };
 
-export default () => {
+export default async () => {
   const sidebar = document.querySelector(`.${SIDEBAR_CLASS_NAME}`);
-  const sidebarChild = sidebar.querySelector(".a2f3d50e");
-
   const sidebarStyles = window.getComputedStyle(sidebar);
-  const rootStyles = getComputedStyle(document.documentElement);
-  const sidebarWidth = rootStyles.getPropertyValue(variableName).trim();
-  const width = { min: parseInt(sidebarWidth, 10), max: 500 };
-  let sidebarHandle = sidebar.querySelector(".sidebar-handle");
+  // const { sidebarWidth } = await chrome.storage.local.get(["sidebarWidth"]);
+  // if (!sidebarWidth) {
+  //   sidebar.style.setProperty(variableName, sidebarWidth);
+  // }
 
-  if (!sidebarHandle) {
-    sidebarHandle = document.createElement("div");
-    sidebarHandle.classList.add("sidebar-handle");
-    sidebar.appendChild(sidebarHandle);
+  const baseSidebarWidth = sidebarStyles.getPropertyValue(variableName).trim();
+  const width = { min: parseInt(baseSidebarWidth, 10), max: 500 };
+  let sidebarHandler = sidebar.querySelector(".sidebar-handle");
+
+  if (!sidebarHandler) {
+    sidebarHandler = document.createElement("div");
+    sidebarHandler.classList.add("sidebar-handle");
+    sidebar.appendChild(sidebarHandler);
   }
 
-  sidebarHandle.addEventListener("mousedown", () => {
+  sidebarHandler.addEventListener("mousedown", () => {
     isResizing = true;
-    document.addEventListener("mousemove", (e) =>
-      resize(e, sidebar, sidebarChild, width)
-    );
+    document.addEventListener("mousemove", async (e) => await resize(e, sidebar, width));
     document.addEventListener("mouseup", stopResize);
   });
 };
