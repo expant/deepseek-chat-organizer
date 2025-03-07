@@ -46,7 +46,7 @@ const getDSChatEl = (name) => {
   const entries = Object.entries(elements);
   const [, el] = entries.find(([_, el]) => el.textContent === name);
   return el;
-}
+};
 
 // TODO: Отслеживать переименование и удаление чатов
 const renameDSChat = (prevName, newName) => {
@@ -101,8 +101,8 @@ const handleRename = async () => {
   folderList.value = renameChat(folderList.value, props.chat.id, inputValue);
   renameDSChat(prevName, inputValue);
 
-  await chrome.storage.local.set({ chats: chatList.value });
-  await chrome.storage.local.set({ folders: folderList.value });
+  await chrome.storage.sync.set({ chats: chatList.value });
+  await chrome.storage.sync.set({ folders: folderList.value });
 
   isEditingChatName.value = false;
 };
@@ -115,7 +115,6 @@ const openDialog = () => {
 // onMounted(() => {
 //   const cb = (mutationsList, observer) => {
 //     for (let mutation of mutationsList) {
-
 
 //       const input = document.querySelector(
 //         `input.${inputClassName}[value="${props.chat.name}"]`

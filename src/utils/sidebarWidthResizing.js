@@ -10,12 +10,13 @@ const resize = async (e, sidebar, width) => {
 
   if (newWidth > min && newWidth < max) {
     sidebar.style.setProperty(variableName, `${newWidth}px`);
-    // await chrome.storage.local.set({ sidebarWidth: `${newWidth}px` });
+    // await chrome.storage.sync.set({ sidebarWidth: `${newWidth}px` });
   }
 };
 
 const stopResize = () => {
   isResizing = false;
+  document.body.style.userSelect = "auto";
   document.removeEventListener("mousemove", resize);
   document.removeEventListener("mouseup", stopResize);
 };
@@ -23,7 +24,7 @@ const stopResize = () => {
 export default async () => {
   const sidebar = document.querySelector(`.${SIDEBAR_CLASS_NAME}`);
   const sidebarStyles = window.getComputedStyle(sidebar);
-  // const { sidebarWidth } = await chrome.storage.local.get(["sidebarWidth"]);
+  // const { sidebarWidth } = await chrome.storage.sync.get(["sidebarWidth"]);
   // if (!sidebarWidth) {
   //   sidebar.style.setProperty(variableName, sidebarWidth);
   // }
@@ -40,7 +41,12 @@ export default async () => {
 
   sidebarHandler.addEventListener("mousedown", () => {
     isResizing = true;
-    document.addEventListener("mousemove", async (e) => await resize(e, sidebar, width));
+    document.body.style.userSelect = "none";
+
+    document.addEventListener(
+      "mousemove",
+      async (e) => await resize(e, sidebar, width)
+    );
     document.addEventListener("mouseup", stopResize);
   });
 };

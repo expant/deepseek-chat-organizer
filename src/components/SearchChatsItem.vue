@@ -40,8 +40,8 @@ const onDeleteFromFolder = async () => {
   );
   folderList.value = deleteChatFromFolder(folderList.value, props.chat.id);
 
-  await chrome.storage.local.set({ chats: chatList.value });
-  await chrome.storage.local.set({ folders: folderList.value });
+  await chrome.storage.sync.set({ chats: chatList.value });
+  await chrome.storage.sync.set({ folders: folderList.value });
 };
 
 const getFolderName = (id) => {

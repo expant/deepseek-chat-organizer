@@ -52,13 +52,13 @@ const onCreateFolder = async () => {
     folderId: newFolderId,
   };
   isEditingFolderName.value = true;
-  await chrome.storage.local.set({ folders });
+  await chrome.storage.sync.set({ folders });
   await nextTick();
   document.querySelector(".folder-name__input").focus();
 };
 
 onMounted(async () => {
-  const { chats } = await chrome.storage.local.get(["chats"]);
+  const { chats } = await chrome.storage.sync.get(["chats"]);
 
   if (!chats) {
     await initChatsInStorage([]);
@@ -67,8 +67,8 @@ onMounted(async () => {
   }
   await loadFolders();
 
-  const { folders } = await chrome.storage.local.get(["folders"]);
-  const { chats: newChats } = await chrome.storage.local.get(["chats"]);
+  const { folders } = await chrome.storage.sync.get(["folders"]);
+  const { chats: newChats } = await chrome.storage.sync.get(["chats"]);
 
   chatList.value = newChats;
   if (!folders) return;

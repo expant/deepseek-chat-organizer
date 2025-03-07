@@ -61,8 +61,8 @@ const onDeleteFolder = async () => {
   );
   const baseNames = getBaseFolderNames(folderList.value, []);
   baseFolderNames.value = baseNames.sort(sortBaseNames);
-  await chrome.storage.local.set({ folders: folderList.value });
-  await chrome.storage.local.set({ chats: chatList.value });
+  await chrome.storage.sync.set({ folders: folderList.value });
+  await chrome.storage.sync.set({ chats: chatList.value });
   contextMenu.value = { ...contextMenu.value, isOpen: false };
 };
 
@@ -85,8 +85,8 @@ const onCreateFolder = async () => {
     folderId: newFolderId,
   };
   isEditingFolderName.value = true;
-  await chrome.storage.local.set({ folders });
-  await chrome.storage.local.set({ chats: chatList.value });
+  await chrome.storage.sync.set({ folders });
+  await chrome.storage.sync.set({ chats: chatList.value });
   await nextTick();
   document.querySelector(".folder-name__input").focus();
 };
@@ -106,8 +106,8 @@ const onDeleteFromFolder = async () => {
     item.id === chatId ? { ...item, folderId: null } : item
   );
 
-  await chrome.storage.local.set({ folders: folderList.value });
-  await chrome.storage.local.set({ chats: chatList.value });
+  await chrome.storage.sync.set({ folders: folderList.value });
+  await chrome.storage.sync.set({ chats: chatList.value });
 };
 
 onMounted(async () => document.addEventListener("click", onOutsideClick));
