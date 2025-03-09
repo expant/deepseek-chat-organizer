@@ -43,6 +43,7 @@ const callback = (mutationsList, observer) => {
     if (mutation.previousSibling && el) {
       if (mutation.previousSibling.className === "ebaea5d2") {
         insertAppToDeepseek();
+        setTimeout(() => sidebarWidthResizing(), 500);
         return;
       }
     }
