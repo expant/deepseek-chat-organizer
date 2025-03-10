@@ -24,9 +24,7 @@ const stopResize = () => {
 export default async () => {
   const sidebar = document.querySelector(`.${SIDEBAR_CLASS_NAME}`);
   const sidebarStyles = window.getComputedStyle(sidebar);
-  const { sidebarWidth } = await chrome.storage.sync.get(["sidebarWidth"]);
-  console.log(sidebarWidth);
-
+  // const { sidebarWidth } = await chrome.storage.sync.get(["sidebarWidth"]);
   const baseSidebarWidth = sidebarStyles.getPropertyValue(variableName).trim();
   const width = { min: parseInt(baseSidebarWidth, 10), max: 500 };
   let sidebarHandler = sidebar.querySelector(".sidebar-handle");

@@ -101,11 +101,11 @@ export const renameChat = (folders, id, name) =>
     return { ...item, children };
   });
 
-export const deleteChatFromFolder = (folders, chatId) => {
+export const deleteChat = (folders, chatId) => {
   const result = folders.filter((item) => {
     if (item.type === "folder") {
       if (!item.children) return true;
-      item.children = deleteChatFromFolder(item.children, chatId);
+      item.children = deleteChat(item.children, chatId);
       return true;
     }
     return item.id === chatId ? false : true;

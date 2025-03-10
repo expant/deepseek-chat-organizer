@@ -99,11 +99,10 @@ const handleRename = async () => {
     item.id === props.chat.id ? { ...item, name: inputValue } : item
   );
   folderList.value = renameChat(folderList.value, props.chat.id, inputValue);
-  renameDSChat(prevName, inputValue);
 
+  renameDSChat(prevName, inputValue);
   await chrome.storage.sync.set({ chats: chatList.value });
   await chrome.storage.sync.set({ folders: folderList.value });
-
   isEditingChatName.value = false;
 };
 

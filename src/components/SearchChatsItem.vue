@@ -1,7 +1,7 @@
 <script setup>
 import { inject, ref, computed, onMounted } from "vue";
 import { getFolderNameById } from "@/utils/helpers.js";
-import { deleteChatFromFolder } from "@/background/background.js";
+import { deleteChat } from "@/background/background.js";
 import IconReturn from "./icons/IconReturn.vue";
 import { every } from "lodash";
 
@@ -38,7 +38,7 @@ const onDeleteFromFolder = async () => {
   chatList.value = chatList.value.map((chat) =>
     props.chat.id === chat.id ? { ...chat, folderId: null } : chat
   );
-  folderList.value = deleteChatFromFolder(folderList.value, props.chat.id);
+  folderList.value = deleteChat(folderList.value, props.chat.id);
 
   await chrome.storage.sync.set({ chats: chatList.value });
   await chrome.storage.sync.set({ folders: folderList.value });

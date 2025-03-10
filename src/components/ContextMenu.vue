@@ -5,8 +5,9 @@ import { getBaseFolderNames, sortBaseNames } from "@/utils/baseFolderNames.js";
 import {
   deleteFolder,
   createFolder,
-  deleteChatFromFolder,
+  deleteChat,
 } from "@/background/background.js";
+import { CHAT_EL_CLASS_NAME } from "@/variables.js";
 import ContextMenuButton from "./buttons/ContextMenuButton.vue";
 
 const props = defineProps({
@@ -19,6 +20,8 @@ const props = defineProps({
     required: true,
   },
 });
+const menuClassname = "ds-floating-position-wrapper";
+const deleteBtnClassName = "ds-dropdown-menu-option--error";
 const emit = defineEmits(["close"]);
 const folderList = inject("folderList");
 const chatList = inject("chatList");
@@ -30,6 +33,13 @@ const isEditingChatName = inject("isEditingChatName");
 const isEditingFolderName = inject("isEditingFolderName");
 
 // Общие функции
+const deleteFolderIdFromList = (id) =>
+  chatList.value.map((item) =>
+    item.id === id ? { ...item, folderId: null } : item
+  );
+const deleteChatFromList = (id) =>
+  chatList.value.filter((item) => item.id !== id);
+
 const onOutsideClick = (event, type) => {
   const contextMenu = document.querySelector(
     `${type === "chat" ? ".cm-chat" : ".cm-folder"}`
@@ -97,14 +107,51 @@ const onAddChat = () => {
 };
 
 // type: chat
-const onDeleteFromFolder = async () => {
-  const chatId = contextMenuChat.value.chatId;
+const getDSChatEl = (name) => {
+  const elements = document.querySelectorAll(CHAT_EL_CLASS_NAME);
+  const entries = Object.entries(elements);
+  const [, el] = entries.find(([_, el]) => el.textContent === name);
+  return el;
+};
 
+const handleDeleteChat = () => {
+  const cb = (mutationsList, observer) => {
+    for (let mutation of mutationsList) {
+      if (
+        !mutation.addedNodes[0] &&
+        !mutation.target.classList.contains(menuClassname)
+      )
+        return;
+
+      const el1 = mutation.addedNodes[0];
+      const el2 = mutation.target;
+      const isMenuEl1 = el1.classList.contains(menuClassname);
+      const menuEl = isMenuEl1 ? el1 : el2;
+      const deleteBtn = menuEl.querySelector(`.${deleteBtnClassName}`);
+      deleteBtn.click();
+      observer.disconnect();
+    }
+  };
+
+  const observer = new MutationObserver(cb);
+  const config = { childList: true, subtree: true };
+  observer.observe(document.body, config);
+
+  const chatId = contextMenuChat.value.chatId;
+  const { name: chatName } = chatList.value.find((chat) => chat.id === chatId);
+  const el = getDSChatEl(chatName);
+  const dotsEl = el.nextElementSibling;
+  dotsEl.click();
+};
+
+const onDelete = async (target) => {
+  const chatId = contextMenuChat.value.chatId;
   contextMenuChat.value = { ...contextMenuChat.value, isOpen: false };
-  folderList.value = deleteChatFromFolder(folderList.value, chatId);
-  chatList.value = chatList.value.map((item) =>
-    item.id === chatId ? { ...item, folderId: null } : item
-  );
+  folderList.value = deleteChat(folderList.value, chatId);
+  chatList.value =
+    target === "from folder"
+      ? deleteFolderIdFromList(chatId)
+      : deleteChatFromList(chatId);
 
   await chrome.storage.sync.set({ folders: folderList.value });
   await chrome.storage.sync.set({ chats: chatList.value });
@@ -142,8 +189,9 @@ onUnmounted(() => document.removeEventListener("click", onOutsideClick));
       <ContextMenuButton name="Rename" @click="onRename('chat')" />
       <ContextMenuButton
         name="Delete from folder"
-        @click="onDeleteFromFolder"
+        @click="onDelete('from folder')"
       />
+      <ContextMenuButton name="Delete" @click="handleDeleteChat" />
     </div>
   </transition>
 </template>

@@ -39,11 +39,18 @@ const callback = (mutationsList, observer) => {
 
     // if (!isChatsLoaded && !isSideBarOpened) return;
     // insertAppToDeepseek();
+    console.log(mutation);
+    if (
+      mutation.target.className === "d4b5352e" &&
+      mutation.removedNodes[0].className === "f9edaa3c"
+    ) {
+      insertAppToDeepseek();
+      return;
+    }
 
     if (mutation.previousSibling && el) {
       if (mutation.previousSibling.className === "ebaea5d2") {
         insertAppToDeepseek();
-        setTimeout(() => sidebarWidthResizing(), 500);
         return;
       }
     }
@@ -51,7 +58,7 @@ const callback = (mutationsList, observer) => {
     if (mutation.target.className === SIDEBAR_CLASS_NAME) {
       if (mutation.addedNodes.length > 0) {
         insertAppToDeepseek();
-        setTimeout(() => sidebarWidthResizing(), 500);
+        // setTimeout(() => sidebarWidthResizing(), 500);
       }
     }
   }

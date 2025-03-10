@@ -1,7 +1,7 @@
 import { generateId } from "./utils/helpers.js";
-import { LIST_ROOT_CLASS_NAME, CHAT_EL_CLASS_NAME } from "./variables.js";
-import { deleteChatFromFolder } from "@/background/background.js";
+import { CHAT_EL_CLASS_NAME } from "./variables.js";
 import { convertObjToArrDeep } from "@/utils/helpers.js";
+// import { deleteChatFromFolder } from "@/background/background.js";
 
 // TODO: Наблюдение через Observer за списком чатов
 export const initChatsInStorage = async (chats) => {
@@ -37,4 +37,19 @@ export const loadFolders = async () => {
       return chat ? true : false;
     });
   await chrome.storage.sync.set({ folders: getNewFolders(folders) });
+};
+
+export const getData = async () => {
+  const { chats } = await chrome.storage.sync.get(["chats"]);
+
+  if (!chats) {
+    await initChatsInStorage([]);
+  } else {
+    await initChatsInStorage(convertObjToArrDeep(chats, "chats"));
+  }
+  await loadFolders();
+
+  const { folders } = await chrome.storage.sync.get(["folders"]);
+  const { chats: newChats } = await chrome.storage.sync.get(["chats"]);
+  return { folders, chats: newChats };
 };
