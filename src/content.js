@@ -1,7 +1,7 @@
 import { createApp } from "vue";
 import { LIST_ROOT_CLASS_NAME, SIDEBAR_CLASS_NAME } from "./variables.js";
-import App from "./App.vue";
 import sidebarWidthResizing from "./utils/sidebarWidthResizing.js";
+import App from "./App.vue";
 
 // Подключаем CSS-файл --------------------
 const link = document.createElement("link");
@@ -27,36 +27,30 @@ const callback = (mutationsList, observer) => {
     const el = mutation.addedNodes[0];
     if (el instanceof Comment) return;
 
-    // console.log(mutation.previousSibling && el);
-
-    // const isChatsLoaded =
-    //   mutation.previousSibling && el
-    //     ? mutation.previousSibling.className === "ebaea5d2"
-    //     : false;
-    // const isSideBarOpened =
-    //   mutation.target.className === SIDEBAR_CLASS_NAME &&
-    //   mutation.addedNodes.length > 0;
-
-    // if (!isChatsLoaded && !isSideBarOpened) return;
-    // insertAppToDeepseek();
-    console.log(mutation);
-    if (
-      mutation.target.className === "d4b5352e" &&
-      mutation.removedNodes[0].className === "f9edaa3c"
-    ) {
-      insertAppToDeepseek();
-      return;
-    }
-
     if (mutation.previousSibling && el) {
       if (mutation.previousSibling.className === "ebaea5d2") {
+        console.log("variant 1");
         insertAppToDeepseek();
+        return;
+      }
+    }
+
+    if (mutation.removedNodes[0]) {
+      if (
+        mutation.target.className === "d4b5352e" &&
+        mutation.removedNodes[0].className === "f9edaa3c"
+      ) {
+        console.log("variant 2");
+        insertAppToDeepseek();
+
+        // insertAppToDeepseek();
         return;
       }
     }
 
     if (mutation.target.className === SIDEBAR_CLASS_NAME) {
       if (mutation.addedNodes.length > 0) {
+        console.log("variant 3");
         insertAppToDeepseek();
         // setTimeout(() => sidebarWidthResizing(), 500);
       }

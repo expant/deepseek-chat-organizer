@@ -3,6 +3,7 @@ import _ from "lodash";
 import { ref, inject, onMounted } from "vue";
 import { renameChat } from "@/background/background.js";
 import { CHAT_EL_CLASS_NAME } from "@/variables.js";
+import { setNames, observer } from "@/background/observers/renameChat.js";
 import IconDots from "./icons/IconDots.vue";
 
 const props = defineProps({
@@ -11,10 +12,6 @@ const props = defineProps({
     required: true,
   },
 });
-
-const menuClassname = "ds-floating-position-wrapper";
-const renameBtnClassName = "ds-dropdown-menu-option--none";
-const inputClassName = "ds-input__input";
 const chatList = inject("chatList");
 const folderList = inject("folderList");
 const contextMenu = inject("contextMenu");
@@ -48,42 +45,6 @@ const getDSChatEl = (name) => {
   return el;
 };
 
-// TODO: Отслеживать переименование и удаление чатов
-const renameDSChat = (prevName, newName) => {
-  const cb = (mutationsList, observer) => {
-    for (let mutation of mutationsList) {
-      if (
-        !mutation.addedNodes[0] &&
-        !mutation.target.classList.contains(menuClassname)
-      )
-        return;
-
-      const el1 = mutation.addedNodes[0];
-      const el2 = mutation.target;
-      const isMenuEl1 = el1.classList.contains(menuClassname);
-      const menuEl = isMenuEl1 ? el1 : el2;
-      const renameBtn = menuEl.querySelector(`.${renameBtnClassName}`);
-      renameBtn.click();
-
-      setTimeout(() => {
-        const input = document.querySelector(
-          `input.${inputClassName}[value="${prevName}"]`
-        );
-        input.value = newName;
-        input.blur();
-      }, 100);
-      observer.disconnect();
-    }
-  };
-
-  const observer = new MutationObserver(cb);
-  const config = { childList: true, subtree: true };
-  observer.observe(document.body, config);
-  const el = getDSChatEl(prevName);
-  const dotsEl = el.nextElementSibling;
-  dotsEl.click();
-};
-
 const handleRename = async () => {
   if (!inputRef.value) return;
   const prevName = props.chat.name;
@@ -99,10 +60,14 @@ const handleRename = async () => {
     item.id === props.chat.id ? { ...item, name: inputValue } : item
   );
   folderList.value = renameChat(folderList.value, props.chat.id, inputValue);
-
-  renameDSChat(prevName, inputValue);
   await chrome.storage.sync.set({ chats: chatList.value });
   await chrome.storage.sync.set({ folders: folderList.value });
+  setNames(prevName, inputValue);
+
+  observer.observe(document.body, { childList: true });
+  const el = getDSChatEl(prevName);
+  const dotsEl = el.nextElementSibling;
+  dotsEl.click();
   isEditingChatName.value = false;
 };
 
@@ -110,21 +75,6 @@ const openDialog = () => {
   const el = getDSChatEl(props.chat.name);
   el.click();
 };
-
-// onMounted(() => {
-//   const cb = (mutationsList, observer) => {
-//     for (let mutation of mutationsList) {
-
-//       const input = document.querySelector(
-//         `input.${inputClassName}[value="${props.chat.name}"]`
-//       );
-//     }
-//   };
-
-//   const observer = new MutationObserver(cb);
-//   const config = { childList: true, subtree: true };
-//   observer.observe(document.body, config);
-// })
 </script>
 
 <template>

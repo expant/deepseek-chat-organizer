@@ -69,7 +69,7 @@ onMounted(async () => {
   baseFolderNames.value = baseNames.sort(sortBaseNames);
 
   // const chatElements = document.querySelectorAll(".f9edaa3c");
-  // const entries = Object.entries(chatElements);
+  // const entries = Object.entries(chatE   lements);
   // const targetChatEl = entries.find(([_, el]) => {
   //   const textEl = el.querySelector(".c08e6e93");
   //   return textEl.textContent === "Правильный прием витамина D" ? true : false;
