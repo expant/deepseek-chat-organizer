@@ -40,6 +40,7 @@ export const renameDSChat = (mutation) => {
     );
     input.value = names.new;
     input.blur();
+    console.log("variant 4.1");
   }, 100);
   observer.disconnect();
 };

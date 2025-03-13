@@ -1,5 +1,6 @@
 import { createApp } from "vue";
 import { LIST_ROOT_CLASS_NAME, SIDEBAR_CLASS_NAME } from "./variables.js";
+import { names } from "@/background/observers/renameChat.js";
 import sidebarWidthResizing from "./utils/sidebarWidthResizing.js";
 import App from "./App.vue";
 
@@ -40,7 +41,8 @@ const callback = (mutationsList, observer) => {
         mutation.target.className === "d4b5352e" &&
         mutation.removedNodes[0].className === "f9edaa3c"
       ) {
-        console.log("variant 2");
+        const chatTextEl = mutation.removedNodes[0].querySelector(".c08e6e93");
+        if (chatTextEl.textContent === names.prev) return;
         insertAppToDeepseek();
 
         // insertAppToDeepseek();
