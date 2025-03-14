@@ -39,7 +39,7 @@ export const loadFolders = async () => {
   await chrome.storage.sync.set({ folders: getNewFolders(folders) });
 };
 
-export const getData = async () => {
+export const initData = async () => {
   const { chats } = await chrome.storage.sync.get(["chats"]);
 
   if (!chats) {
@@ -52,4 +52,18 @@ export const getData = async () => {
   const { folders } = await chrome.storage.sync.get(["folders"]);
   const { chats: newChats } = await chrome.storage.sync.get(["chats"]);
   return { folders, chats: newChats };
+};
+
+export const getData = async () => {
+  const { folders: foldersObj } = await chrome.storage.sync.get(["folders"]);
+  const { chats: chatsObj } = await chrome.storage.sync.get(["chats"]);
+  const folders =
+    typeof foldersObj === "object"
+      ? convertObjToArrDeep(foldersObj, "folders")
+      : foldersObj;
+  const chats =
+    typeof chatsObj === "object"
+      ? convertObjToArrDeep(chatsObj, "chats")
+      : chatsObj;
+  return { folders, chats };
 };

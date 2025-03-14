@@ -1,6 +1,12 @@
 import { createApp } from "vue";
 import { LIST_ROOT_CLASS_NAME, SIDEBAR_CLASS_NAME } from "./variables.js";
-import { names } from "@/background/observers/renameChat.js";
+import {
+  names,
+  setNames,
+  observationType,
+  setObservationType,
+  handleRenameFromList,
+} from "@/background/observers/renameChat.js";
 import sidebarWidthResizing from "./utils/sidebarWidthResizing.js";
 import App from "./App.vue";
 
@@ -22,20 +28,19 @@ const insertAppToDeepseek = () => {
   }
 };
 
-// TODO: Отслеживать переименование и удаление чатов
-const callback = (mutationsList, observer) => {
-  for (let mutation of mutationsList) {
-    const el = mutation.addedNodes[0];
-    if (el instanceof Comment) return;
+const handleMutation = async (mutation) => {
+  const el = mutation.addedNodes[0];
+  if (el instanceof Comment) return;
 
-    if (mutation.previousSibling && el) {
-      if (mutation.previousSibling.className === "ebaea5d2") {
-        console.log("variant 1");
-        insertAppToDeepseek();
-        return;
-      }
+  if (mutation.previousSibling && el) {
+    if (mutation.previousSibling.className === "ebaea5d2") {
+      console.log("variant 1");
+      insertAppToDeepseek();
+      return;
     }
+  }
 
+  if (observationType === "renameFromFolder") {
     if (mutation.removedNodes[0]) {
       if (
         mutation.target.className === "d4b5352e" &&
@@ -44,19 +49,42 @@ const callback = (mutationsList, observer) => {
         const chatTextEl = mutation.removedNodes[0].querySelector(".c08e6e93");
         if (chatTextEl.textContent === names.prev) return;
         insertAppToDeepseek();
-
+        setObservationType("");
         // insertAppToDeepseek();
         return;
       }
     }
+  }
 
-    if (mutation.target.className === SIDEBAR_CLASS_NAME) {
-      if (mutation.addedNodes.length > 0) {
-        console.log("variant 3");
-        insertAppToDeepseek();
-        // setTimeout(() => sidebarWidthResizing(), 500);
-      }
+  if (el) {
+    if (
+      el.classList.contains("ds-input") &&
+      observationType !== "renameFromFolder"
+    ) {
+      handleRenameFromList();
+      return;
     }
+
+    if (observationType === "renameFromList") {
+      await handleRenameFromList(el);
+      insertAppToDeepseek();
+      return;
+    }
+  }
+
+  if (mutation.target.className === SIDEBAR_CLASS_NAME) {
+    if (mutation.addedNodes.length > 0) {
+      console.log("variant 3");
+      insertAppToDeepseek();
+      // setTimeout(() => sidebarWidthResizing(), 500);
+    }
+  }
+};
+
+// TODO: Отслеживать переименование и удаление чатов
+const callback = async (mutationsList, observer) => {
+  for (let mutation of mutationsList) {
+    await handleMutation(mutation);
   }
 };
 

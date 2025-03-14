@@ -1,3 +1,7 @@
+import { CHAT_EL_CLASS_NAME } from "@/variables.js";
+import { renameChat } from "../background.js";
+import { getData } from "@/storage";
+
 const inputClassName = "ds-input__input";
 const menuClassName = "ds-floating-position-wrapper";
 const renameBtnClassName = "ds-dropdown-menu-option--none";
@@ -40,7 +44,31 @@ export const renameDSChat = (mutation) => {
     );
     input.value = names.new;
     input.blur();
-    console.log("variant 4.1");
   }, 100);
   observer.disconnect();
+};
+
+export const handleRenameFromList = async (el) => {
+  if (observationType !== "renameFromList") {
+    setObservationType("renameFromList");
+    const input = document.querySelector(`.${inputClassName}`);
+    setNames(input.value, "");
+    return;
+  }
+
+  const { folders, chats } = await getData();
+  const chatEl = el.querySelector(CHAT_EL_CLASS_NAME);
+  const chat = chats.find((item) => item.name === names.prev);
+  const newFolders = folders
+    ? renameChat(folders, chat.id, chatEl.textContent)
+    : [];
+  const newChats = chats.map((item) =>
+    item.id === chat.id ? { ...item, name: chatEl.textContent } : item
+  );
+
+  if (folders) {
+    await chrome.storage.sync.set({ folders: newFolders });
+  }
+  await chrome.storage.sync.set({ chats: newChats });
+  setObservationType("");
 };

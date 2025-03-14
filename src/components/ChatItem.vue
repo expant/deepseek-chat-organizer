@@ -3,7 +3,12 @@ import _ from "lodash";
 import { ref, inject, onMounted } from "vue";
 import { renameChat } from "@/background/background.js";
 import { CHAT_EL_CLASS_NAME } from "@/variables.js";
-import { setNames, observer } from "@/background/observers/renameChat.js";
+import {
+  setNames,
+  observer,
+  observationType,
+  setObservationType,
+} from "@/background/observers/renameChat.js";
 import IconDots from "./icons/IconDots.vue";
 
 const props = defineProps({
@@ -56,6 +61,7 @@ const handleRename = async () => {
     return;
   }
 
+  setObservationType("renameFromFolder");
   chatList.value = chatList.value.map((item) =>
     item.id === props.chat.id ? { ...item, name: inputValue } : item
   );
