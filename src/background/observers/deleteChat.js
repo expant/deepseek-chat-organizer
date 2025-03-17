@@ -12,7 +12,7 @@ const getDSChatEl = (name) => {
   return el;
 };
 
-export const deleteChat = (chatList, chatId, mutation) => {
+export const handleDeleteChat = ({ chatList, chatId, mutation }) => {
   if (observationType !== "deleteFromFolder") {
     setObservationType("deleteFromFolder");
     const { name: chatName } = chatList.find((chat) => chat.id === chatId);

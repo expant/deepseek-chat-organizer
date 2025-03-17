@@ -7,7 +7,7 @@ import {
   createFolder,
   deleteChat,
 } from "@/background/background.js";
-import { deleteChat } from "@/background/observers/deleteChat.js";
+import { handleDeleteChat } from "@/background/observers/deleteChat.js";
 import { CHAT_EL_CLASS_NAME } from "@/variables.js";
 import ContextMenuButton from "./buttons/ContextMenuButton.vue";
 
@@ -155,7 +155,7 @@ onUnmounted(() => document.removeEventListener("click", onOutsideClick));
       />
       <ContextMenuButton
         name="Delete"
-        @click="deleteChat(chatList, contextMenuChat.chatId)"
+        @click="handleDeleteChat({ chatList, chatId: contextMenuChat.chatId })"
       />
     </div>
   </transition>

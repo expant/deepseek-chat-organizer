@@ -57,6 +57,8 @@ const handleMutation = async (mutation) => {
     }
   }
 
+  if (observationType === "renameFromFolder")
+
   if (el) {
     if (
       el.classList.contains("ds-input") &&
