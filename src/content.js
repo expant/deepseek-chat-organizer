@@ -1,10 +1,11 @@
 import { createApp } from "vue";
 import { LIST_ROOT_CLASS_NAME, SIDEBAR_CLASS_NAME } from "./variables.js";
 import {
-  names,
-  setNames,
-  observationType,
   setObservationType,
+  observationType,
+} from "./background/observers/common.js";
+import {
+  names,
   handleRenameFromList,
 } from "@/background/observers/renameChat.js";
 import sidebarWidthResizing from "./utils/sidebarWidthResizing.js";

@@ -1,3 +1,4 @@
+import { setObservationType, observationType } from "./common.js";
 import { CHAT_EL_CLASS_NAME } from "@/variables.js";
 import { renameChat } from "../background.js";
 import { getData } from "@/storage";
@@ -6,9 +7,7 @@ const inputClassName = "ds-input__input";
 const menuClassName = "ds-floating-position-wrapper";
 const renameBtnClassName = "ds-dropdown-menu-option--none";
 
-export let observationType = "";
 export const names = { prev: "", new: "" };
-export const setObservationType = (type) => (observationType = type);
 export const setNames = (prevName, newName) => {
   names.prev = prevName;
   names.new = newName;
