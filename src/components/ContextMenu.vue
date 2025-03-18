@@ -7,8 +7,10 @@ import {
   createFolder,
   deleteChat,
 } from "@/background/background.js";
+import { getData } from "@/storage";
 import { handleDeleteChat } from "@/background/observers/deleteChat.js";
-import { CHAT_EL_CLASS_NAME } from "@/variables.js";
+import { setObservationType } from "@/background/observers/common";
+import { CHAT_CLASS_NAME_TEXT } from "@/variables.js";
 import ContextMenuButton from "./buttons/ContextMenuButton.vue";
 
 const props = defineProps({
@@ -106,7 +108,7 @@ const onAddChat = () => {
 };
 
 // type: chat
-const onDelete = async (target) => {
+const onDeleteChatFromFolder = async (target) => {
   const chatId = contextMenuChat.value.chatId;
   contextMenuChat.value = { ...contextMenuChat.value, isOpen: false };
   folderList.value = deleteChat(folderList.value, chatId);
@@ -117,6 +119,19 @@ const onDelete = async (target) => {
 
   await chrome.storage.sync.set({ folders: folderList.value });
   await chrome.storage.sync.set({ chats: chatList.value });
+};
+
+const onDeleteChat = async () => {
+  // FIXME: Обновлять данные нужно только после нажатия на кнопку удалить в модальном окне
+  const chatId = contextMenuChat.value.chatId;
+  const chatName = chatList.value.find((chat) => chat.id === chatId);
+  chatList.value = deleteChatFromList(chatId);
+  folderList.value = deleteChat(folderList.value, chatId);
+  await chrome.storage.sync.set({ chats: chatList.value });
+  await chrome.storage.sync.set({ folders: folderList.value });
+
+  setObservationType("deleteFromFolder");
+  handleDeleteChat(chatName);
 };
 
 onMounted(async () => document.addEventListener("click", onOutsideClick));
@@ -151,12 +166,9 @@ onUnmounted(() => document.removeEventListener("click", onOutsideClick));
       <ContextMenuButton name="Rename" @click="onRename('chat')" />
       <ContextMenuButton
         name="Delete from folder"
-        @click="onDelete('from folder')"
+        @click="onDeleteChatFromFolder('from folder')"
       />
-      <ContextMenuButton
-        name="Delete"
-        @click="handleDeleteChat({ chatList, chatId: contextMenuChat.chatId })"
-      />
+      <ContextMenuButton name="Delete" @click="onDeleteChat" />
     </div>
   </transition>
 </template>

@@ -1,5 +1,10 @@
 import { createApp } from "vue";
-import { LIST_ROOT_CLASS_NAME, SIDEBAR_CLASS_NAME } from "./variables.js";
+import {
+  LIST_ROOT_CLASS_NAME,
+  SIDEBAR_CLASS_NAME,
+  CHAT_CLASS_NAME,
+  CHAT_CLASS_NAME_TEXT,
+} from "./variables.js";
 import {
   setObservationType,
   observationType,
@@ -10,6 +15,7 @@ import {
 } from "@/background/observers/renameChat.js";
 import sidebarWidthResizing from "./utils/sidebarWidthResizing.js";
 import App from "./App.vue";
+import { handleDeleteChat } from "./background/observers/deleteChat.js";
 
 // Подключаем CSS-файл --------------------
 const link = document.createElement("link");
@@ -30,10 +36,11 @@ const insertAppToDeepseek = () => {
 };
 
 const handleMutation = async (mutation) => {
-  const el = mutation.addedNodes[0];
-  if (el instanceof Comment) return;
+  const added = mutation.addedNodes[0];
+  const removed = mutation.removedNodes[0];
+  if (added instanceof Comment) return;
 
-  if (mutation.previousSibling && el) {
+  if (mutation.previousSibling && added) {
     if (mutation.previousSibling.className === "ebaea5d2") {
       console.log("variant 1");
       insertAppToDeepseek();
@@ -41,27 +48,26 @@ const handleMutation = async (mutation) => {
     }
   }
 
-  if (observationType === "renameFromFolder") {
-    if (mutation.removedNodes[0]) {
-      if (
-        mutation.target.className === "d4b5352e" &&
-        mutation.removedNodes[0].className === "f9edaa3c"
-      ) {
-        const chatTextEl = mutation.removedNodes[0].querySelector(".c08e6e93");
+  if (removed) {
+    // mutation.target.className === "d4b5352e" &&
+    if (removed.className === `.${CHAT_CLASS_NAME}`) {
+      if (observationType === "renameFromFolder") {
+        const chatTextEl = removed.querySelector(CHAT_CLASS_NAME_TEXT);
         if (chatTextEl.textContent === names.prev) return;
-        insertAppToDeepseek();
         setObservationType("");
-        // insertAppToDeepseek();
-        return;
+      } else {
+        handleDeleteChat({ mutation });
       }
+      insertAppToDeepseek();
+      return;
     }
   }
 
-  if (observationType === "renameFromFolder")
+  console.log(mutation);
 
-  if (el) {
+  if (added) {
     if (
-      el.classList.contains("ds-input") &&
+      added.classList.contains("ds-input") &&
       observationType !== "renameFromFolder"
     ) {
       handleRenameFromList();
@@ -69,7 +75,7 @@ const handleMutation = async (mutation) => {
     }
 
     if (observationType === "renameFromList") {
-      await handleRenameFromList(el);
+      await handleRenameFromList(added);
       insertAppToDeepseek();
       return;
     }

@@ -2,13 +2,12 @@
 import _ from "lodash";
 import { ref, inject, onMounted } from "vue";
 import { renameChat } from "@/background/background.js";
-import { CHAT_EL_CLASS_NAME } from "@/variables.js";
+import { CHAT_CLASS_NAME_TEXT } from "@/variables.js";
+import { setNames, observer } from "@/background/observers/renameChat.js";
 import {
-  setNames,
-  observer,
   observationType,
   setObservationType,
-} from "@/background/observers/renameChat.js";
+} from "@/background/observers/common.js";
 import IconDots from "./icons/IconDots.vue";
 
 const props = defineProps({
@@ -44,7 +43,7 @@ const openContextMenu = (event) => {
 };
 
 const getDSChatEl = (name) => {
-  const elements = document.querySelectorAll(CHAT_EL_CLASS_NAME);
+  const elements = document.querySelectorAll(CHAT_CLASS_NAME_TEXT);
   const entries = Object.entries(elements);
   const [, el] = entries.find(([_, el]) => el.textContent === name);
   return el;

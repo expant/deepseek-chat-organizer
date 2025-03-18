@@ -1,11 +1,11 @@
 import { generateId } from "./utils/helpers.js";
-import { CHAT_EL_CLASS_NAME } from "./variables.js";
+import { CHAT_CLASS_NAME_TEXT } from "./variables.js";
 import { convertObjToArrDeep } from "@/utils/helpers.js";
 // import { deleteChatFromFolder } from "@/background/background.js";
 
 // TODO: Наблюдение через Observer за списком чатов
 export const initChatsInStorage = async (chats) => {
-  const elements = document.querySelectorAll(CHAT_EL_CLASS_NAME);
+  const elements = document.querySelectorAll(CHAT_CLASS_NAME_TEXT);
   const newChats = Object.entries(elements).map(([_, el]) => {
     const chat = chats.find((item) => item.name === el.textContent);
     return chat

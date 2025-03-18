@@ -1,3 +1,5 @@
+import { CHAT_CLASS_NAME_TEXT } from "@/variables.js";
+
 export const getFolderNameById = (folders, id) =>
   folders.reduce((acc, item) => {
     if (acc || item.type === "chat") return acc;
@@ -5,6 +7,13 @@ export const getFolderNameById = (folders, id) =>
     if (item.children) return getFolderNameById(item.children, id);
     return acc;
   }, null);
+
+export const getDSChatEl = (name) => {
+  const elements = document.querySelectorAll(CHAT_CLASS_NAME_TEXT);
+  const entries = Object.entries(elements);
+  const [, el] = entries.find(([_, el]) => el.textContent === name);
+  return el;
+};
 
 export const isNameNotUnique = (items, name) =>
   items.some((item) => {
