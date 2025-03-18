@@ -1,10 +1,6 @@
 import { createApp } from "vue";
-import {
-  LIST_ROOT_CLASS_NAME,
-  SIDEBAR_CLASS_NAME,
-  CHAT_CLASS_NAME,
-  CHAT_CLASS_NAME_TEXT,
-} from "./variables.js";
+import { classNames } from "./variables.js";
+import { handleDeleteChat } from "./background/observers/deleteChat.js";
 import {
   setObservationType,
   observationType,
@@ -13,9 +9,8 @@ import {
   names,
   handleRenameFromList,
 } from "@/background/observers/renameChat.js";
-import sidebarWidthResizing from "./utils/sidebarWidthResizing.js";
+// import sidebarWidthResizing from "./utils/sidebarWidthResizing.js";
 import App from "./App.vue";
-import { handleDeleteChat } from "./background/observers/deleteChat.js";
 
 // Подключаем CSS-файл --------------------
 const link = document.createElement("link");
@@ -27,8 +22,10 @@ const targetEl = document.querySelector("#root");
 const appContainer = document.createElement("div");
 appContainer.id = "folders-list";
 
+const { LIST_ROOT, CHAT, CHAT_TEXT, SIDEBAR, MODAL_DELETE } = classNames;
+
 const insertAppToDeepseek = () => {
-  const deepseekContainer = document.querySelector(LIST_ROOT_CLASS_NAME);
+  const deepseekContainer = document.querySelector(LIST_ROOT);
   if (deepseekContainer) {
     deepseekContainer.prepend(appContainer);
     createApp(App).mount("#folders-list");
@@ -50,9 +47,9 @@ const handleMutation = async (mutation) => {
 
   if (removed) {
     // mutation.target.className === "d4b5352e" &&
-    if (removed.className === `.${CHAT_CLASS_NAME}`) {
+    if (removed.className === `.${CHAT}`) {
       if (observationType === "renameFromFolder") {
-        const chatTextEl = removed.querySelector(CHAT_CLASS_NAME_TEXT);
+        const chatTextEl = removed.querySelector(CHAT_TEXT);
         if (chatTextEl.textContent === names.prev) return;
         setObservationType("");
       } else {
@@ -81,7 +78,7 @@ const handleMutation = async (mutation) => {
     }
   }
 
-  if (mutation.target.className === SIDEBAR_CLASS_NAME) {
+  if (mutation.target.className === SIDEBAR) {
     if (mutation.addedNodes.length > 0) {
       console.log("variant 3");
       insertAppToDeepseek();
@@ -90,7 +87,6 @@ const handleMutation = async (mutation) => {
   }
 };
 
-// TODO: Отслеживать переименование и удаление чатов
 const callback = async (mutationsList, observer) => {
   for (let mutation of mutationsList) {
     await handleMutation(mutation);

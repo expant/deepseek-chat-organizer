@@ -2,7 +2,7 @@
 import _ from "lodash";
 import { ref, inject, onMounted } from "vue";
 import { renameChat } from "@/background/background.js";
-import { CHAT_CLASS_NAME_TEXT } from "@/variables.js";
+import { classNames } from "@/variables.js";
 import { setNames, observer } from "@/background/observers/renameChat.js";
 import {
   observationType,
@@ -43,7 +43,7 @@ const openContextMenu = (event) => {
 };
 
 const getDSChatEl = (name) => {
-  const elements = document.querySelectorAll(CHAT_CLASS_NAME_TEXT);
+  const elements = document.querySelectorAll(classNames.CHAT_TEXT);
   const entries = Object.entries(elements);
   const [, el] = entries.find(([_, el]) => el.textContent === name);
   return el;

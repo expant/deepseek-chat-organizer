@@ -1,9 +1,8 @@
 import { setObservationType, observationType } from "./common.js";
-import { CHAT_CLASS_NAME_TEXT } from "@/variables.js";
+import { classNames } from "@/variables.js";
 import { renameChat } from "../background.js";
 import { getData } from "@/storage";
-
-const inputClassName = "ds-input__input";
+const { CHAT_TEXT, CHAT_INPUT } = classNames;
 
 export const names = { prev: "", new: "" };
 export const setNames = (prevName, newName) => {
@@ -14,7 +13,7 @@ export const setNames = (prevName, newName) => {
 export const renameDSChat = () => {
   setTimeout(() => {
     const input = document.querySelector(
-      `input.${inputClassName}[value="${names.prev}"]`
+      `input.${CHAT_INPUT}[value="${names.prev}"]`
     );
     input.value = names.new;
     input.blur();
@@ -24,13 +23,13 @@ export const renameDSChat = () => {
 export const handleRenameFromList = async (el) => {
   if (observationType !== "renameFromList") {
     setObservationType("renameFromList");
-    const input = document.querySelector(`.${inputClassName}`);
+    const input = document.querySelector(`.${CHAT_INPUT}`);
     setNames(input.value, "");
     return;
   }
 
   const { folders, chats } = await getData();
-  const chatEl = el.querySelector(CHAT_CLASS_NAME_TEXT);
+  const chatEl = el.querySelector(CHAT_TEXT)
   const chat = chats.find((item) => item.name === names.prev);
   const newFolders = folders
     ? renameChat(folders, chat.id, chatEl.textContent)

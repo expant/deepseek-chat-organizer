@@ -1,11 +1,8 @@
-const LIST_ROOT_CLASS_NAME = ".fb0a63fb";
-const CHAT_CLASS_NAME_TEXT = ".c08e6e93";
-const CHAT_CLASS_NAME = "f9edaa3c";
-const SIDEBAR_CLASS_NAME = "dc04ec1d";
-
-export {
-  LIST_ROOT_CLASS_NAME,
-  CHAT_CLASS_NAME_TEXT,
-  SIDEBAR_CLASS_NAME,
-  CHAT_CLASS_NAME,
+export const classNames = {
+  CHAT: "f9edaa3c",
+  CHAT_TEXT: ".c08e6e93",
+  CHAT_INPUT: "ds-input__input",
+  SIDEBAR: "dc04ec1d",
+  LIST_ROOT: ".fb0a63fb",
+  MODAL_DELETE: "ds-button--error",
 };

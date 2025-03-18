@@ -10,7 +10,7 @@ import {
 import { getData } from "@/storage";
 import { handleDeleteChat } from "@/background/observers/deleteChat.js";
 import { setObservationType } from "@/background/observers/common";
-import { CHAT_CLASS_NAME_TEXT } from "@/variables.js";
+import { classNames } from "@/variables.js";
 import ContextMenuButton from "./buttons/ContextMenuButton.vue";
 
 const props = defineProps({
@@ -107,7 +107,7 @@ const onAddChat = () => {
   contextMenu.value = { ...contextMenu.value, isOpen: false };
 };
 
-// type: chat
+//t ype: chat
 const onDeleteChatFromFolder = async (target) => {
   const chatId = contextMenuChat.value.chatId;
   contextMenuChat.value = { ...contextMenuChat.value, isOpen: false };
@@ -122,16 +122,14 @@ const onDeleteChatFromFolder = async (target) => {
 };
 
 const onDeleteChat = async () => {
-  // FIXME: Обновлять данные нужно только после нажатия на кнопку удалить в модальном окне
   const chatId = contextMenuChat.value.chatId;
-  const chatName = chatList.value.find((chat) => chat.id === chatId);
-  chatList.value = deleteChatFromList(chatId);
-  folderList.value = deleteChat(folderList.value, chatId);
+  // chatList.value = deleteChatFromList(chatId);
+  // folderList.value = deleteChat(folderList.value, chatId);
   await chrome.storage.sync.set({ chats: chatList.value });
   await chrome.storage.sync.set({ folders: folderList.value });
 
   setObservationType("deleteFromFolder");
-  handleDeleteChat(chatName);
+  handleDeleteChat(chatId);
 };
 
 onMounted(async () => document.addEventListener("click", onOutsideClick));

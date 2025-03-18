@@ -9,8 +9,9 @@ const openMenu = () => {
   dotsEl.click();
 };
 
-export const handleDeleteChat = (chatName) => {
+export const handleDeleteChat = (chatId) => {
   if (observationType === "deleteFromFolder") {
+    const chatName = chatList.value.find((chat) => chat.id === chatId);
     observer.observe(document.body, { childList: true });
     openMenu(chatName);
     return;
