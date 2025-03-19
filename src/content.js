@@ -25,6 +25,7 @@ appContainer.id = "folders-list";
 const { LIST_ROOT, CHAT, CHAT_TEXT, SIDEBAR, MODAL_DELETE } = classNames;
 
 const insertAppToDeepseek = () => {
+  console.trace("Трассировка вызова insertAppToDeepseek");
   const deepseekContainer = document.querySelector(LIST_ROOT);
   if (deepseekContainer) {
     deepseekContainer.prepend(appContainer);
@@ -47,31 +48,32 @@ const handleMutation = async (mutation) => {
 
   if (removed) {
     // mutation.target.className === "d4b5352e" &&
-    if (removed.className === `.${CHAT}`) {
+    if (removed.className === CHAT) {
       if (observationType === "renameFromFolder") {
         const chatTextEl = removed.querySelector(CHAT_TEXT);
         if (chatTextEl.textContent === names.prev) return;
         setObservationType("");
-      } else {
-        handleDeleteChat({ mutation });
+        insertAppToDeepseek();
+      } else if (observationType === "deleteFromList") {
+        await handleDeleteChat();
+        insertAppToDeepseek();
       }
-      insertAppToDeepseek();
       return;
     }
   }
-
-  console.log(mutation);
 
   if (added) {
     if (
       added.classList.contains("ds-input") &&
       observationType !== "renameFromFolder"
     ) {
-      handleRenameFromList();
+      console.log("событие: ", mutation);
+      await handleRenameFromList();
       return;
     }
 
-    if (observationType === "renameFromList") {
+    if (observationType === "renameFromList" && added.className === CHAT) {
+      console.log("Выполняется после");
       await handleRenameFromList(added);
       insertAppToDeepseek();
       return;
@@ -80,7 +82,6 @@ const handleMutation = async (mutation) => {
 
   if (mutation.target.className === SIDEBAR) {
     if (mutation.addedNodes.length > 0) {
-      console.log("variant 3");
       insertAppToDeepseek();
       // setTimeout(() => sidebarWidthResizing(), 500);
     }

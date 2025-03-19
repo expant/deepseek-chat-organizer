@@ -1,4 +1,4 @@
-import { CHAT_CLASS_NAME_TEXT } from "@/variables.js";
+import { classNames } from "@/variables.js";
 
 export const getFolderNameById = (folders, id) =>
   folders.reduce((acc, item) => {
@@ -9,7 +9,7 @@ export const getFolderNameById = (folders, id) =>
   }, null);
 
 export const getDSChatEl = (name) => {
-  const elements = document.querySelectorAll(CHAT_CLASS_NAME_TEXT);
+  const elements = document.querySelectorAll(classNames.CHAT_TEXT);
   const entries = Object.entries(elements);
   const [, el] = entries.find(([_, el]) => el.textContent === name);
   return el;

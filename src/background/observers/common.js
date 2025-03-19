@@ -1,5 +1,4 @@
 import { renameDSChat } from "./renameChat";
-import { handleDeleteChat } from "./deleteChat";
 
 const menuClassName = "ds-floating-position-wrapper";
 const renameBtnClassName = "ds-dropdown-menu-option--none";
@@ -16,6 +15,8 @@ const callback = (mutationsList, observer) => {
     )
       return;
 
+    console.log("mutation from common: ", mutation);
+
     const el1 = mutation.addedNodes[0];
     const el2 = mutation.target;
     const isMenuEl1 = el1.classList.contains(menuClassName);
@@ -23,17 +24,18 @@ const callback = (mutationsList, observer) => {
     const renameBtn = menuEl.querySelector(`.${renameBtnClassName}`);
     const deleteBtn = menuEl.querySelector(`.${deleteBtnClassName}`);
 
-    if (observationType === "renameFromList") {
-      renameBtn.click();
-      renameDSChat();
-      observer.disconnect();
-    }
-
     if (observationType === "deleteFromFolder") {
       deleteBtn.click();
       setObservationType("deleteFromList");
-      handleDeleteChat({});
+    } else {
+      renameBtn.click();
+      renameDSChat();
     }
+
+    // if (observationType === "renameFromList") {
+
+    // }
+    observer.disconnect();
   }
 };
 

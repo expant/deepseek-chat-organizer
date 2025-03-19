@@ -1,10 +1,11 @@
 <script setup>
 import _ from "lodash";
-import { ref, inject, onMounted } from "vue";
+import { ref, inject } from "vue";
+import { setNames } from "@/background/observers/renameChat.js";
 import { renameChat } from "@/background/background.js";
-import { classNames } from "@/variables.js";
-import { setNames, observer } from "@/background/observers/renameChat.js";
+import { getDSChatEl } from "@/utils/helpers";
 import {
+  observer,
   observationType,
   setObservationType,
 } from "@/background/observers/common.js";
@@ -40,13 +41,6 @@ const openContextMenu = (event) => {
     left: buttonRect.left + window.scrollX,
   };
   contextMenuChat.value = { isOpen: true, position, chatId: props.chat.id };
-};
-
-const getDSChatEl = (name) => {
-  const elements = document.querySelectorAll(classNames.CHAT_TEXT);
-  const entries = Object.entries(elements);
-  const [, el] = entries.find(([_, el]) => el.textContent === name);
-  return el;
 };
 
 const handleRename = async () => {

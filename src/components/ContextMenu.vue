@@ -107,7 +107,7 @@ const onAddChat = () => {
   contextMenu.value = { ...contextMenu.value, isOpen: false };
 };
 
-//t ype: chat
+//type: chat
 const onDeleteChatFromFolder = async (target) => {
   const chatId = contextMenuChat.value.chatId;
   contextMenuChat.value = { ...contextMenuChat.value, isOpen: false };
@@ -123,13 +123,8 @@ const onDeleteChatFromFolder = async (target) => {
 
 const onDeleteChat = async () => {
   const chatId = contextMenuChat.value.chatId;
-  // chatList.value = deleteChatFromList(chatId);
-  // folderList.value = deleteChat(folderList.value, chatId);
-  await chrome.storage.sync.set({ chats: chatList.value });
-  await chrome.storage.sync.set({ folders: folderList.value });
-
   setObservationType("deleteFromFolder");
-  handleDeleteChat(chatId);
+  await handleDeleteChat(chatId);
 };
 
 onMounted(async () => document.addEventListener("click", onOutsideClick));
