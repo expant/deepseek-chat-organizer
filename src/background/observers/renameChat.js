@@ -10,15 +10,15 @@ export const setNames = (prevName, newName) => {
   names.new = newName;
 };
 
-export const renameDSChat = () => {
+export const renameDSChat = () =>
   setTimeout(() => {
     const input = document.querySelector(
       `input.${CHAT_INPUT}[value="${names.prev}"]`
     );
     input.value = names.new;
     input.blur();
+    setObservationType("");
   }, 100);
-};
 
 export const handleRenameFromList = async (el) => {
   if (observationType !== "renameFromList") {

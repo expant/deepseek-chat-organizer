@@ -23,11 +23,12 @@ const callback = (mutationsList, observer) => {
     const menuEl = isMenuEl1 ? el1 : el2;
     const renameBtn = menuEl.querySelector(`.${renameBtnClassName}`);
     const deleteBtn = menuEl.querySelector(`.${deleteBtnClassName}`);
+    console.log(deleteBtn);
 
     if (observationType === "deleteFromFolder") {
       deleteBtn.click();
       setObservationType("deleteFromList");
-    } else {
+    } else if (observationType === "renameFromFolder") {
       renameBtn.click();
       renameDSChat();
     }

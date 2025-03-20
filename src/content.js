@@ -22,10 +22,10 @@ const targetEl = document.querySelector("#root");
 const appContainer = document.createElement("div");
 appContainer.id = "folders-list";
 
+const prevMutation = { removed: {}, added: {} };
 const { LIST_ROOT, CHAT, CHAT_TEXT, SIDEBAR, MODAL_DELETE } = classNames;
 
 const insertAppToDeepseek = () => {
-  console.trace("Трассировка вызова insertAppToDeepseek");
   const deepseekContainer = document.querySelector(LIST_ROOT);
   if (deepseekContainer) {
     deepseekContainer.prepend(appContainer);
@@ -46,9 +46,17 @@ const handleMutation = async (mutation) => {
     }
   }
 
+  // if (removed && added) {
+  //   if (removed.classList.contains(CHAT) && added)
+  // }
+
   if (removed) {
     // mutation.target.className === "d4b5352e" &&
-    if (removed.className === CHAT) {
+    console.log(removed);
+    if (removed.classList.contains(CHAT)) {
+      console.log("removed: ", mutation);
+      prevMutation.removed = removed;
+
       if (observationType === "renameFromFolder") {
         const chatTextEl = removed.querySelector(CHAT_TEXT);
         if (chatTextEl.textContent === names.prev) return;
@@ -63,6 +71,16 @@ const handleMutation = async (mutation) => {
   }
 
   if (added) {
+    if (added.nodeType === Node.TEXT_NODE) {
+      return;
+    }
+
+    // console.log(observationType);
+    // console.log("added: ", mutation);
+    if (added.classList.contains(CHAT)) {
+      prevMutation.added = added;
+    }
+
     if (
       added.classList.contains("ds-input") &&
       observationType !== "renameFromFolder"
@@ -72,7 +90,10 @@ const handleMutation = async (mutation) => {
       return;
     }
 
-    if (observationType === "renameFromList" && added.className === CHAT) {
+    if (
+      observationType === "renameFromList" &&
+      added.classList.contains(CHAT)
+    ) {
       console.log("Выполняется после");
       await handleRenameFromList(added);
       insertAppToDeepseek();
