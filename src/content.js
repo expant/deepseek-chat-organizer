@@ -22,8 +22,8 @@ const targetEl = document.querySelector("#root");
 const appContainer = document.createElement("div");
 appContainer.id = "folders-list";
 
-const prevMutation = { removed: {}, added: {} };
-const { LIST_ROOT, CHAT, CHAT_TEXT, SIDEBAR, MODAL_DELETE } = classNames;
+const { LIST_ROOT, CHAT, CHAT_TEXT, SIDEBAR } = classNames;
+const htmlElType = "[object HTMLDivElement]";
 
 const insertAppToDeepseek = () => {
   const deepseekContainer = document.querySelector(LIST_ROOT);
@@ -36,7 +36,11 @@ const insertAppToDeepseek = () => {
 const handleMutation = async (mutation) => {
   const added = mutation.addedNodes[0];
   const removed = mutation.removedNodes[0];
+  const addedType = Object.prototype.toString.call(added);
+  const removedType = Object.prototype.toString.call(removed);
+
   if (added instanceof Comment) return;
+  if (removed instanceof Comment) return;
 
   if (mutation.previousSibling && added) {
     if (mutation.previousSibling.className === "ebaea5d2") {
@@ -46,46 +50,32 @@ const handleMutation = async (mutation) => {
     }
   }
 
-  // if (removed && added) {
-  //   if (removed.classList.contains(CHAT) && added)
-  // }
+  if (removedType === htmlElType) {
+    if (!removed.classList.contains(CHAT)) return;
 
-  if (removed) {
-    // mutation.target.className === "d4b5352e" &&
+    // FIXME: Починить обновление папок после удаления чата ИЗ СПИСКА DS
     console.log(removed);
-    if (removed.classList.contains(CHAT)) {
-      console.log("removed: ", mutation);
-      prevMutation.removed = removed;
 
-      if (observationType === "renameFromFolder") {
+    switch (observationType) {
+      case "renameFromFolder":
         const chatTextEl = removed.querySelector(CHAT_TEXT);
         if (chatTextEl.textContent === names.prev) return;
         setObservationType("");
-        insertAppToDeepseek();
-      } else if (observationType === "deleteFromList") {
+        break;
+      case "deleteFromList":
         await handleDeleteChat();
-        insertAppToDeepseek();
-      }
-      return;
+        break;
+      default:
+        return;
     }
+    insertAppToDeepseek();
   }
 
-  if (added) {
-    if (added.nodeType === Node.TEXT_NODE) {
-      return;
-    }
-
-    // console.log(observationType);
-    // console.log("added: ", mutation);
-    if (added.classList.contains(CHAT)) {
-      prevMutation.added = added;
-    }
-
+  if (addedType === htmlElType) {
     if (
       added.classList.contains("ds-input") &&
       observationType !== "renameFromFolder"
     ) {
-      console.log("событие: ", mutation);
       await handleRenameFromList();
       return;
     }
@@ -94,7 +84,6 @@ const handleMutation = async (mutation) => {
       observationType === "renameFromList" &&
       added.classList.contains(CHAT)
     ) {
-      console.log("Выполняется после");
       await handleRenameFromList(added);
       insertAppToDeepseek();
       return;

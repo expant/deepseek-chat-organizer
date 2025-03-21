@@ -42,6 +42,13 @@ export const convertObjToArrDeep = (object, type) => {
 
 export const generateId = () => Math.random().toString(36).substring(2, 9);
 
+export const getDSContextMenu = () => {
+  const { CONTEXT_MENU } = classNames;
+  const menus = document.querySelectorAll(`.${CONTEXT_MENU}`);
+  const entries = Object.entries(menus);
+  const [, menu] = entries.find(([, el]) => el.style.zIndex === "1024");
+  return menu;
+};
 // export const getChatList = () => {
 //   const chatElements = document.querySelectorAll(".f9edaa3c");
 //   const entries = Object.entries(chatElements);

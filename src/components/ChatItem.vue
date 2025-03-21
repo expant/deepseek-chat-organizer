@@ -1,11 +1,11 @@
 <script setup>
 import _ from "lodash";
 import { ref, inject } from "vue";
-import { setNames } from "@/background/observers/renameChat.js";
+import { setNames, renameDSChat } from "@/background/observers/renameChat.js";
 import { renameChat } from "@/background/background.js";
-import { getDSChatEl } from "@/utils/helpers";
+import { classNames } from "@/variables";
+import { getDSChatEl, getDSContextMenu } from "@/utils/helpers";
 import {
-  observer,
   observationType,
   setObservationType,
 } from "@/background/observers/common.js";
@@ -43,6 +43,13 @@ const openContextMenu = (event) => {
   contextMenuChat.value = { isOpen: true, position, chatId: props.chat.id };
 };
 
+const handleBtnRename = () => {
+  const menu = getDSContextMenu();
+  const renameBtn = menu.querySelector(`.${classNames.RENAME_BTN}`);
+  renameBtn.click();
+  renameDSChat();
+};
+
 const handleRename = async () => {
   if (!inputRef.value) return;
   const prevName = props.chat.name;
@@ -64,10 +71,11 @@ const handleRename = async () => {
   await chrome.storage.sync.set({ folders: folderList.value });
   setNames(prevName, inputValue);
 
-  observer.observe(document.body, { childList: true });
   const el = getDSChatEl(prevName);
   const dotsEl = el.nextElementSibling;
+
   dotsEl.click();
+  setTimeout(() => handleBtnRename(), 100);
   isEditingChatName.value = false;
 };
 

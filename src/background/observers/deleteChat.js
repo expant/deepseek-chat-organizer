@@ -1,7 +1,8 @@
 import { getData } from "@/storage";
 import { deleteChat } from "@/background/background";
-import { getDSChatEl } from "@/utils/helpers.js";
-import { setObservationType, observationType, observer } from "./common.js";
+import { getDSChatEl, getDSContextMenu } from "@/utils/helpers.js";
+import { setObservationType, observationType } from "./common.js";
+import { classNames } from "@/variables.js";
 
 let chatId = "";
 
@@ -12,14 +13,21 @@ const openMenu = (chatName) => {
   dotsEl.click();
 };
 
+const handleBtnDelete = () => {
+  const menu = getDSContextMenu();
+  const deleteBtn = menu.querySelector(`.${classNames.DELETE_BTN}`);
+  deleteBtn.click();
+  setObservationType("deleteFromList");
+};
+
 export const handleDeleteChat = async (id) => {
   const { folders, chats } = await getData();
 
   if (observationType === "deleteFromFolder") {
     chatId = id;
     const chat = chats.find((item) => item.id === id);
-    observer.observe(document.body, { childList: true });
     openMenu(chat.name);
+    setTimeout(() => handleBtnDelete(), 100);
     return;
   }
 
