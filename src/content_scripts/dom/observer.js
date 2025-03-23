@@ -1,37 +1,29 @@
 import { createApp } from "vue";
-import { classNames } from "./variables.js";
-import { handleDeleteChat } from "./background/observers/deleteChat.js";
-import {
-  setObservationType,
-  observationType,
-} from "./background/observers/common.js";
-import {
-  names,
-  handleRenameFromList,
-} from "@/background/observers/renameChat.js";
+import { classNames } from "@/variables.js";
+import { setObservationType, observationType, names } from "./state.js";
+import { handleRenameFromList, saveChatNameFromInput, handleChatDeletion } from "./handlers.js";
+import App from "@/App.vue";
 // import sidebarWidthResizing from "./utils/sidebarWidthResizing.js";
-import App from "./App.vue";
-
-// Подключаем CSS-файл --------------------
-const link = document.createElement("link");
-link.rel = "stylesheet";
-link.href = chrome.runtime.getURL("assets/styles.css");
-document.head.appendChild(link);
-// ----------------------------------------
-const targetEl = document.querySelector("#root");
-const appContainer = document.createElement("div");
-appContainer.id = "folders-list";
 
 const { LIST_ROOT, CHAT, CHAT_TEXT, SIDEBAR } = classNames;
 const htmlElType = "[object HTMLDivElement]";
+const appContainer = document.createElement("div");
+appContainer.id = "folders-list";
 
 const insertAppToDeepseek = () => {
   const deepseekContainer = document.querySelector(LIST_ROOT);
   if (deepseekContainer) {
     deepseekContainer.prepend(appContainer);
-    createApp(App).mount("#folders-list");
+    createApp(App).mount(`#${appContainer.id}`);
   }
 };
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "chatDeleted") {
+    console.log("Чат удалён, обновляем DOM...");
+    insertAppToDeepseek();
+  }
+});
 
 const handleMutation = async (mutation) => {
   const added = mutation.addedNodes[0];
@@ -53,7 +45,6 @@ const handleMutation = async (mutation) => {
   if (removedType === htmlElType) {
     if (!removed.classList.contains(CHAT)) return;
 
-    // FIXME: Починить обновление папок после удаления чата ИЗ СПИСКА DS
     console.log(removed);
 
     switch (observationType) {
@@ -63,7 +54,7 @@ const handleMutation = async (mutation) => {
         setObservationType("");
         break;
       case "deleteFromList":
-        await handleDeleteChat();
+        await handleChatDeletion();
         break;
       default:
         return;
@@ -76,7 +67,7 @@ const handleMutation = async (mutation) => {
       added.classList.contains("ds-input") &&
       observationType !== "renameFromFolder"
     ) {
-      await handleRenameFromList();
+      await saveChatNameFromInput();
       return;
     }
 
@@ -103,7 +94,6 @@ const callback = async (mutationsList, observer) => {
     await handleMutation(mutation);
   }
 };
-
 const observer = new MutationObserver(callback);
-const config = { childList: true, subtree: true };
-observer.observe(targetEl, config);
+
+export { insertAppToDeepseek, observer };

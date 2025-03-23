@@ -1,14 +1,11 @@
 <script setup>
 import _ from "lodash";
 import { ref, inject } from "vue";
-import { setNames, renameDSChat } from "@/background/observers/renameChat.js";
-import { renameChat } from "@/background/background.js";
 import { classNames } from "@/variables";
-import { getDSChatEl, getDSContextMenu } from "@/utils/helpers";
-import {
-  observationType,
-  setObservationType,
-} from "@/background/observers/common.js";
+import { renameChat } from "@/utils/chatAndFolderLogic";
+import { renameDSChat } from "@/content_scripts/dom/handlers";
+import { getDSChatEl, simulateContextMenuAction } from "@/utils/helpers";
+import { setObservationType, setNames } from "@/content_scripts/dom/state";
 import IconDots from "./icons/IconDots.vue";
 
 const props = defineProps({
@@ -43,13 +40,6 @@ const openContextMenu = (event) => {
   contextMenuChat.value = { isOpen: true, position, chatId: props.chat.id };
 };
 
-const handleBtnRename = () => {
-  const menu = getDSContextMenu();
-  const renameBtn = menu.querySelector(`.${classNames.RENAME_BTN}`);
-  renameBtn.click();
-  renameDSChat();
-};
-
 const handleRename = async () => {
   if (!inputRef.value) return;
   const prevName = props.chat.name;
@@ -73,9 +63,12 @@ const handleRename = async () => {
 
   const el = getDSChatEl(prevName);
   const dotsEl = el.nextElementSibling;
-
   dotsEl.click();
-  setTimeout(() => handleBtnRename(), 100);
+
+  setTimeout(() => {
+    simulateContextMenuAction(classNames.RENAME_BTN); 
+    renameDSChat();
+  }, 100)
   isEditingChatName.value = false;
 };
 

@@ -3,7 +3,7 @@ import _ from "lodash";
 import { ref, onMounted, provide, nextTick } from "vue";
 import { sortBaseNames, getBaseFolderNames } from "./utils/baseFolderNames.js";
 import { convertObjToArrDeep } from "./utils/helpers.js";
-import { createFolder } from "@/background/background.js";
+import { createFolder } from "@/utils/chatAndFolderLogic.js";
 import { initData } from "./storage.js";
 import ContextMenu from "./components/ContextMenu.vue";
 import SearchChats from "./components/SearchChats.vue";

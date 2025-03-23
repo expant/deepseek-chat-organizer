@@ -6,11 +6,9 @@ import {
   deleteFolder,
   createFolder,
   deleteChat,
-} from "@/background/background.js";
-import { getData } from "@/storage";
-import { handleDeleteChat } from "@/background/observers/deleteChat.js";
-import { setObservationType } from "@/background/observers/common";
-import { classNames } from "@/variables.js";
+} from "@/utils/chatAndFolderLogic";
+import { handleChatDeletion } from "@/content_scripts/dom/handlers";
+import { setObservationType } from "@/content_scripts/dom/state";
 import ContextMenuButton from "./buttons/ContextMenuButton.vue";
 
 const props = defineProps({
@@ -124,7 +122,7 @@ const onDeleteChatFromFolder = async (target) => {
 const onDeleteChat = async () => {
   const chatId = contextMenuChat.value.chatId;
   setObservationType("deleteFromFolder");
-  await handleDeleteChat(chatId);
+  await handleChatDeletion(chatId);
 };
 
 onMounted(async () => document.addEventListener("click", onOutsideClick));

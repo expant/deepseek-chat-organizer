@@ -2,7 +2,7 @@
 import _ from "lodash";
 import { ref, inject } from "vue";
 import { isNameNotUnique } from "@/utils/helpers.js";
-import { renameFolder } from "@/background/background.js";
+import { renameFolder } from "@/utils/chatAndFolderLogic";
 import IconArrow from "./icons/IconArrow.vue";
 import IconDots from "./icons/IconDots.vue";
 import BaseNotification from "./BaseNotification.vue";

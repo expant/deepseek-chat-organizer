@@ -1,5 +1,5 @@
-import { generateId } from "@/utils/helpers.js";
-import { getNewBaseFolderName } from "../utils/baseFolderNames.js";
+import { generateId } from "./helpers";
+import { getNewBaseFolderName } from "./baseFolderNames";
 
 export const renameFolder = (folders, id, name) =>
   folders.map((item) => {
@@ -60,7 +60,6 @@ export const createFolder = (folders, id, baseNames) => {
   return [getNewFolders(folders), newFolderId, newParentFolderId];
 };
 
-// FIXME: addChatsToFolder
 export const addChatsToFolder = (chats, folders, folderId, newFolderId) =>
   folders.map((item) => {
     if (item.type === "chat") return item;

@@ -1,7 +1,7 @@
 <script setup>
 import _ from "lodash";
 import { ref, onMounted, inject, computed } from "vue";
-import { addChatsToFolder } from "@/background/background.js";
+import { addChatsToFolder } from "@/utils/chatAndFolderLogic";
 import { convertObjToArrDeep, generateId } from "@/utils/helpers.js";
 import SearchChatsItem from "./SearchChatsItem.vue";
 import IconSearch from "./icons/IconSearch.vue";

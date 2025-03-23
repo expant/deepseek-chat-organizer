@@ -1,8 +1,7 @@
-import { fileURLToPath, URL } from "node:url";
-
-import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import vueDevTools from "vite-plugin-vue-devtools";
+import { defineConfig } from "vite";
+import { fileURLToPath, URL } from "node:url";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 
 export default defineConfig({
@@ -25,9 +24,9 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        content: "src/content.js",
+        content: "src/content_scripts/main.js",
         popup: "src/popup/popup.html",
-        background: "src/background/background.js",
+        background: "src/background.js",
         styles: "src/styles.css",
       },
       output: {

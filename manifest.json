@@ -3,7 +3,15 @@
   "name": "modified-deepseek-sidebar",
   "version": "1.0",
   "description": "Extension for sorting chats by directories in deepseek",
-  "permissions": ["activeTab", "scripting", "storage"],
+  "permissions": [
+    "webRequest",
+    "activeTab", 
+    "scripting", 
+    "storage"
+  ],
+  "host_permissions": [
+    "https://chat.deepseek.com/*"
+  ],
   "background": {
     "service_worker": "background.js"
   },

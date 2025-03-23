@@ -1,7 +1,5 @@
-import { generateId } from "./utils/helpers.js";
+import { generateId, convertObjToArrDeep } from "./utils/helpers.js";
 import { classNames } from "./variables.js";
-import { convertObjToArrDeep } from "@/utils/helpers.js";
-// import { deleteChatFromFolder } from "@/background/background.js";
 
 // TODO: Наблюдение через Observer за списком чатов
 export const initChatsInStorage = async (chats) => {

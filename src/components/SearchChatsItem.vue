@@ -1,7 +1,7 @@
 <script setup>
 import { inject, ref, computed, onMounted } from "vue";
 import { getFolderNameById } from "@/utils/helpers.js";
-import { deleteChat } from "@/background/background.js";
+import { deleteChat } from "@/utils/chatAndFolderLogic";
 import IconReturn from "./icons/IconReturn.vue";
 import { every } from "lodash";
 
