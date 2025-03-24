@@ -5,7 +5,6 @@ import { isNameNotUnique } from "@/utils/helpers.js";
 import { renameFolder } from "@/utils/chatAndFolderLogic";
 import IconArrow from "./icons/IconArrow.vue";
 import IconDots from "./icons/IconDots.vue";
-import BaseNotification from "./BaseNotification.vue";
 
 const props = defineProps({
   name: {
@@ -68,7 +67,6 @@ const handleRename = async () => {
 </script>
 
 <template>
-  <!-- <base-notification class="noti" v-if="showNotification">There's already a folder with the same name</base-notification> -->
   <input
     v-if="isEditingFolderName && id === contextMenu.folderId"
     ref="inputRef"

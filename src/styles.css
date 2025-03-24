@@ -403,3 +403,75 @@ ul {
   width: 15px;
   fill: #03a9f4;
 }
+
+.sidebar-resizing {
+  position: relative;
+  width: 100%;
+  text-align: right;
+}
+
+.sidebar-resizing__icon {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2.5px;
+  border-radius: 5px;
+  transition: background-color .1s ease-in;
+}
+
+.sidebar-resizing__icon:hover {
+  background-color: #b3e5fc;
+  cursor: pointer;
+}
+
+.sidebar-resizing__icon-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.icon-width {
+  width: 20px;
+  fill: #800080;
+}
+
+.sidebar-resizing__menu {
+  position: absolute;
+  top: 30px;
+  right: 0;
+  display: flex;
+  gap: 5px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px #0000001a;
+  padding: 5px;
+  z-index: 1000;
+}
+
+.sidebar-resizing__menu button {
+  font-size: 14px;
+  border: 0;
+  border-radius: 5px;
+  background-color: #dbeafe;
+  padding: 10px 5px;
+  color: #800080;
+  transition: background-color .1s ease-in;
+  white-space: nowrap;
+}
+
+.sidebar-resizing__menu button:hover {
+  border: 0;
+  background-color: #c6dcf8;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.notification {
+  position: absolute;
+  bottom: 20px;
+  font-size: 14px;
+  padding: 5px 10px;
+  background-color: #262626;
+  border-radius: 10px;
+  color: #fff;
+  white-space: nowrap;
+}

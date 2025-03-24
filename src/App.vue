@@ -5,9 +5,11 @@ import { sortBaseNames, getBaseFolderNames } from "./utils/baseFolderNames.js";
 import { convertObjToArrDeep } from "./utils/helpers.js";
 import { createFolder } from "@/utils/chatAndFolderLogic.js";
 import { initData } from "./storage.js";
+import { setCurrentWidth } from "./utils/sidebarWidthResizing"
 import ContextMenu from "./components/ContextMenu.vue";
 import SearchChats from "./components/SearchChats.vue";
 import NestedList from "./components/NestedList.vue";
+import SidebarResizing from "./components/SidebarResizing.vue"
 import IconFolder from "./components/icons/IconFolder.vue";
 
 const chatList = ref([]);
@@ -64,11 +66,13 @@ onMounted(async () => {
   folderList.value = folders;
   const baseNames = getBaseFolderNames(folderList.value, []);
   baseFolderNames.value = baseNames.sort(sortBaseNames);
+  await setCurrentWidth();
 });
 </script>
 
 <template>
   <div class="folders">
+    <SidebarResizing />
     <div class="first-nested-list">
       <NestedList :items="folderList" />
       <button class="new-folder-app" @click="onCreateFolder">
