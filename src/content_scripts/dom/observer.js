@@ -1,13 +1,18 @@
 import { createApp } from "vue";
 import { classNames } from "@/variables.js";
 import { setObservationType, observationType, names } from "./state.js";
-import { handleRenameFromList, saveChatNameFromInput, handleChatDeletion } from "./handlers.js";
+import {
+  handleRenameFromList,
+  saveChatNameFromInput,
+  handleChatDeletion,
+} from "./handlers.js";
 import App from "@/App.vue";
 // import sidebarWidthResizing from "./utils/sidebarWidthResizing.js";
 
-const { LIST_ROOT, CHAT, CHAT_TEXT, SIDEBAR } = classNames;
+const { LIST_ROOT, CHAT, CHAT_TEXT, SIDEBAR, CHAT_MAIN_TITLE } = classNames;
 const htmlElType = "[object HTMLDivElement]";
 const appContainer = document.createElement("div");
+let debounceTimer = null;
 appContainer.id = "folders-list";
 
 const insertAppToDeepseek = () => {
@@ -18,11 +23,10 @@ const insertAppToDeepseek = () => {
   }
 };
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === "chatDeleted") {
-    console.log("Чат удалён, обновляем DOM...");
-    insertAppToDeepseek();
-  }
+// Отлавливание удаления чата из основного списка deepseek
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.action !== "chatDeleted") return;
+  insertAppToDeepseek();
 });
 
 const handleMutation = async (mutation) => {
@@ -33,6 +37,18 @@ const handleMutation = async (mutation) => {
 
   if (added instanceof Comment) return;
   if (removed instanceof Comment) return;
+
+  // Отлавливание нового чата
+  if (mutation.type === "characterData") {
+    const parentElement = mutation.target.parentElement;
+    const isChatTitle = parentElement.classList.contains(CHAT_TEXT);
+    if (!isChatTitle || debounceTimer) return;
+
+    debounceTimer = setTimeout(() => {
+      insertAppToDeepseek();
+      debounceTimer = null;
+    }, 500);
+  }
 
   if (mutation.previousSibling && added) {
     if (mutation.previousSibling.className === "ebaea5d2") {
@@ -49,7 +65,7 @@ const handleMutation = async (mutation) => {
 
     switch (observationType) {
       case "renameFromFolder":
-        const chatTextEl = removed.querySelector(CHAT_TEXT);
+        const chatTextEl = removed.querySelector(`.${CHAT_TEXT}`);
         if (chatTextEl.textContent === names.prev) return;
         setObservationType("");
         break;

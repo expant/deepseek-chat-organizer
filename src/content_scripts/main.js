@@ -7,5 +7,5 @@ link.href = chrome.runtime.getURL("assets/styles.css");
 document.head.appendChild(link);
 // ----------------------------------------
 const targetEl = document.querySelector("#root");
-const config = { childList: true, subtree: true };
+const config = { childList: true, characterData: true, subtree: true };
 observer.observe(targetEl, config);

@@ -9,7 +9,7 @@ export const getFolderNameById = (folders, id) =>
   }, null);
 
 export const getDSChatEl = (name) => {
-  const elements = document.querySelectorAll(classNames.CHAT_TEXT);
+  const elements = document.querySelectorAll(`.${classNames.CHAT_TEXT}`);
   const entries = Object.entries(elements);
   const [, el] = entries.find(([_, el]) => el.textContent === name);
   return el;

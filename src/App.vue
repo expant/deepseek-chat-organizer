@@ -64,16 +64,6 @@ onMounted(async () => {
   folderList.value = folders;
   const baseNames = getBaseFolderNames(folderList.value, []);
   baseFolderNames.value = baseNames.sort(sortBaseNames);
-
-  // const chatElements = document.querySelectorAll(".f9edaa3c");
-  // const entries = Object.entries(chatE   lements);
-  // const targetChatEl = entries.find(([_, el]) => {
-  //   const textEl = el.querySelector(".c08e6e93");
-  //   return textEl.textContent === "Правильный прием витамина D" ? true : false;
-  // });
-  // console.log(targetChatEl);
-  // const dots = targetChatEl[1].querySelector(".aa7b7ebb");
-  // setTimeout(() => dots.click(), 1000);
 });
 </script>
 

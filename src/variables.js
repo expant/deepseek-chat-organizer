@@ -1,7 +1,9 @@
 export const classNames = {
   CHAT: "_83421f9",
-  CHAT_TEXT: ".c08e6e93",
+  CHAT_TEXT: "c08e6e93",
+  CHAT_MAIN_TITLE: "d8ed659a",
   CHAT_INPUT: "ds-input__input",
+  CHAT_LIST: "_03210fb",
   SIDEBAR: "dc04ec1d",
   LIST_ROOT: "._03210fb",
   MODAL_DELETE: "ds-button--error",

@@ -3,7 +3,7 @@ import { classNames } from "./variables.js";
 
 // TODO: Наблюдение через Observer за списком чатов
 export const initChatsInStorage = async (chats) => {
-  const elements = document.querySelectorAll(classNames.CHAT_TEXT);
+  const elements = document.querySelectorAll(`.${classNames.CHAT_TEXT}`);
   const newChats = Object.entries(elements).map(([_, el]) => {
     const chat = chats.find((item) => item.name === el.textContent);
     return chat
@@ -12,6 +12,7 @@ export const initChatsInStorage = async (chats) => {
           id: generateId(),
           name: el.textContent,
           folderId: null,
+          isActive: false,
         };
   });
   await chrome.storage.sync.set({ chats: newChats });

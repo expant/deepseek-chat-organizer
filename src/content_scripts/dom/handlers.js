@@ -1,8 +1,16 @@
 import { getData } from "@/storage";
 import { classNames } from "@/variables.js";
 import { renameChat, deleteChat } from "@/utils/chatAndFolderLogic.js";
-import { showDSContextMenu, simulateContextMenuAction } from "@/utils/helpers.js";
-import { setObservationType, observationType, names, setNames } from "./state.js";
+import {
+  showDSContextMenu,
+  simulateContextMenuAction,
+} from "@/utils/helpers.js";
+import {
+  setObservationType,
+  observationType,
+  names,
+  setNames,
+} from "./state.js";
 
 const { CHAT_TEXT, CHAT_INPUT, DELETE_BTN } = classNames;
 let chatId = "";
@@ -26,7 +34,7 @@ export const saveChatNameFromInput = () => {
 
 export const handleRenameFromList = async (el) => {
   const { folders, chats } = await getData();
-  const chatEl = el.querySelector(CHAT_TEXT);
+  const chatEl = el.querySelector(`.${CHAT_TEXT}`);
   const chat = chats.find((item) => item.name === names.prev);
   const newFolders = folders
     ? renameChat(folders, chat.id, chatEl.textContent)
