@@ -416,7 +416,7 @@ ul {
   align-items: center;
   padding: 2.5px;
   border-radius: 5px;
-  transition: background-color .1s ease-in;
+  transition: background-color 0.1s ease-in;
 }
 
 .sidebar-resizing__icon:hover {
@@ -425,7 +425,6 @@ ul {
 }
 
 .sidebar-resizing__icon-wrap {
-  position: relative;
   display: inline-block;
 }
 
@@ -435,15 +434,15 @@ ul {
 }
 
 .sidebar-resizing__menu {
-  position: absolute;
-  top: 30px;
-  right: 0;
+  position: fixed;
+  width: auto;
+  height: auto;
   display: flex;
-  gap: 5px;
+  gap: 3px;
   background-color: #fff;
   border-radius: 5px;
   box-shadow: 0 2px 10px #0000001a;
-  padding: 5px;
+  padding: 4px;
   z-index: 1000;
 }
 
@@ -452,9 +451,9 @@ ul {
   border: 0;
   border-radius: 5px;
   background-color: #dbeafe;
-  padding: 10px 5px;
+  padding: 5px;
   color: #800080;
-  transition: background-color .1s ease-in;
+  transition: background-color 0.1s ease-in;
   white-space: nowrap;
 }
 
@@ -466,12 +465,25 @@ ul {
 }
 
 .notification {
-  position: absolute;
-  bottom: 20px;
+  position: fixed;
   font-size: 14px;
   padding: 5px 10px;
   background-color: #262626;
   border-radius: 10px;
   color: #fff;
   white-space: nowrap;
+  z-index: 1001;
+}
+
+.notification::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+  background-color: #262626;
+  transform: translateX(-50%) rotate(45deg);
+  margin-top: -10px;
 }

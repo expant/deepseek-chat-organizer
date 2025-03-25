@@ -85,8 +85,6 @@ onMounted(async () => {
   searchChatsWrap.addEventListener("click", onOutsideClick);
   window.addEventListener("keydown", onKeydown);
 });
-
-// FIXME: Скрывать мешающие элементы за модальным окном Search
 </script>
 
 <template>

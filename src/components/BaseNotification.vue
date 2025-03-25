@@ -1,5 +1,18 @@
+<script setup>
+const props = defineProps({
+  position: {
+    type: Object,
+    required: true,
+  },
+});
+</script>
 <template>
-  <div class="notification">
-    <slot></slot>
-  </div>
+  <transition name="fade">
+    <div
+      class="notification"
+      :styles="`left: ${position.left}; top: ${position.top};`"
+    >
+      <slot></slot>
+    </div>
+  </transition>
 </template>

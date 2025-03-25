@@ -7,7 +7,9 @@ const { SIDEBAR } = classNames;
 export const setCurrentWidth = async () => {
   const sidebar = document.querySelector(`.${SIDEBAR}`);
   const { sidebarWidth } = await chrome.storage.sync.get(["sidebarWidth"]);
-  sidebar.style.setProperty(variableName, sidebarWidth);
+  if (sidebarWidth) {
+    sidebar.style.setProperty(variableName, sidebarWidth);
+  }
 };
 
 export const setNewWidth = async (scale) => {
