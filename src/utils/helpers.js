@@ -61,11 +61,3 @@ export const simulateContextMenuAction = (btnClassName) => {
   const btn = menu.querySelector(`.${btnClassName}`);
   btn.click();
 };
-// export const getChatList = () => {
-//   const chatElements = document.querySelectorAll(".f9edaa3c");
-//   const entries = Object.entries(chatElements);
-//   return entries.find(([_, el]) => {
-//     const textEl = el.querySelector(".c08e6e93");
-//     return textEl.textContent === "Правильный прием витамина D" ? true : false;
-//   });
-// };

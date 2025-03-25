@@ -7,12 +7,10 @@ const props = defineProps({
 });
 </script>
 <template>
-  <transition name="fade">
-    <div
-      class="notification"
-      :styles="`left: ${position.left}; top: ${position.top};`"
-    >
-      <slot></slot>
-    </div>
-  </transition>
+  <div
+    class="notification"
+    :style="`left: ${position.left}; top: ${position.top};`"
+  >
+    <slot></slot>
+  </div>
 </template>

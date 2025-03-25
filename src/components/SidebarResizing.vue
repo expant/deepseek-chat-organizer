@@ -20,53 +20,42 @@ const onOutsideClick = (event, type) => {
   }
 };
 
-const setMenuPosition = async () => {
+const setPositions = async () => {
   const resizingEl = document.querySelector(".sidebar-resizing__icon");
   const rect = resizingEl.getBoundingClientRect();
   const { sidebarWidth } = await chrome.storage.sync.get(["sidebarWidth"]);
-  const left = `${parseInt(sidebarWidth, 10) - menuWidth - 20}px`;
-  const top = `${rect.top + 30}px`;
-  menuPosition.value = { left, top };
-};
+  const sidebarWidthInt = parseInt(sidebarWidth, 10);
 
-const setNotiPosition = async () => {
-  const resizingEl = document.querySelector(".sidebar-resizing__icon");
-  const rect = resizingEl.getBoundingClientRect();
-  const { sidebarWidth } = await chrome.storage.sync.get(["sidebarWidth"]);
-  const left = `${parseInt(sidebarWidth, 10) - 115}px`;
-  const top = `${rect.top - 50}px`;
-  notiPosition.value = { left, top };
-};
-
-const handlePositions = () => {
-  setMenuPosition();
-  setNotiPosition();
+  menuPosition.value = {
+    left: `${sidebarWidthInt - menuWidth - 20}px`,
+    top: `${rect.top + 30}px`,
+  };
+  notiPosition.value = {
+    left: `${sidebarWidthInt - 115}px`,
+    top: `${rect.top - 50}px`,
+  };
 };
 
 const onResizing = async (scale) => {
   showResizionMenu.value = false;
   await setNewWidth(scale);
-  handlePositions();
+  await setPositions();
 };
 
 onMounted(async () => {
-  await setMenuPosition();
-  await setNotiPosition();
+  await setPositions();
   document.addEventListener("click", onOutsideClick);
-  scrollContainer.addEventListener("scroll", handlePositions);
+  scrollContainer.addEventListener("scroll", setPositions);
 });
 onUnmounted(() => {
   document.removeEventListener("click", onOutsideClick);
-  scrollContainer.removeEventListener("scroll", handlePositions);
+  scrollContainer.removeEventListener("scroll", setPositions);
 });
 </script>
 <template>
   <div class="sidebar-resizing">
     <div class="sidebar-resizing__icon-wrap">
-      <!-- <base-notification v-show="showNotification" :position="notiPosition">
-        Change sidebar width
-      </base-notification> -->
-
+    
       <div
         class="sidebar-resizing__icon"
         @click.stop="showResizionMenu = !showResizionMenu"
@@ -78,13 +67,9 @@ onUnmounted(() => {
     </div>
 
     <transition name="fade">
-      <div
-        class="notification"
-        v-show="showNotification"
-        :style="`left: ${notiPosition.left}; top: ${notiPosition.top};`"
-      >
+      <base-notification v-show="showNotification" :position="notiPosition">
         Change sidebar width
-      </div>
+      </base-notification>
     </transition>
 
     <transition name="fade">
