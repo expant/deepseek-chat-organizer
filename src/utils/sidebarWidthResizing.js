@@ -6,15 +6,22 @@ const { SIDEBAR } = classNames;
 
 export const setCurrentWidth = async () => {
   const sidebar = document.querySelector(`.${SIDEBAR}`);
-  const { sidebarWidth } = await chrome.storage.sync.get(["sidebarWidth"]);
-  if (sidebarWidth) {
-    sidebar.style.setProperty(variableName, sidebarWidth);
+  const { sidebarResizing } = await chrome.storage.sync.get([
+    "sidebarResizing",
+  ]);
+  if (sidebarResizing) {
+    sidebar.style.setProperty(variableName, sidebarResizing.width);
+    return;
   }
+
+  const newSidebarResizing = { width: `${baseWidth}px`, scale: 1 };
+  await chrome.storage.sync.set({ sidebarResizing: newSidebarResizing });
 };
 
 export const setNewWidth = async (scale) => {
   const sidebar = document.querySelector(`.${SIDEBAR}`);
   const newWidth = baseWidth * scale;
   sidebar.style.setProperty(variableName, `${newWidth}px`);
-  await chrome.storage.sync.set({ sidebarWidth: `${newWidth}px` });
+  const sidebarResizing = { width: `${newWidth}px`, scale };
+  await chrome.storage.sync.set({ sidebarResizing });
 };

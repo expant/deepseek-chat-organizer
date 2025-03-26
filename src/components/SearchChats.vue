@@ -2,7 +2,11 @@
 import _ from "lodash";
 import { ref, onMounted, inject, computed } from "vue";
 import { addChatsToFolder } from "@/utils/chatAndFolderLogic";
-import { convertObjToArrDeep, generateId } from "@/utils/helpers.js";
+import {
+  convertObjToArrDeep,
+  generateId,
+  isOutsideClick,
+} from "@/utils/helpers.js";
 import SearchChatsItem from "./SearchChatsItem.vue";
 import IconSearch from "./icons/IconSearch.vue";
 import IconExit from "./icons/IconExit.vue";
@@ -21,18 +25,9 @@ const selectedChats = ref([]);
 
 const removeEventListeners = () => {
   const searchChatsWrap = document.querySelector(".search-chats-wrap");
-  searchChatsWrap.removeEventListener("click", onOutsideClick);
+  searchChatsWrap.removeEventListener("click", isOutsideClick);
   window.removeEventListener("keydown", onKeydown);
   emit("close");
-};
-
-const onOutsideClick = (event) => {
-  const searchChatsWrap = document.querySelector(".search-chats-wrap");
-  const searchСhats = searchChatsWrap.querySelector(".search-chats");
-
-  if (props.isOpen && !searchСhats.contains(event.target)) {
-    removeEventListeners();
-  }
 };
 
 const onKeydown = (event) => {
@@ -42,7 +37,9 @@ const onKeydown = (event) => {
 
 const onSelectedChats = async (event) => {
   event.stopPropagation();
-  onOutsideClick(event);
+  if (!isOutsideClick(event, ".search-chats")) {
+    removeEventListeners();
+  }
 
   const folderId = contextMenu.value.folderId;
   const chats = chatList.value.filter((chat) =>
@@ -82,7 +79,10 @@ onMounted(async () => {
   const searchChatsWrap = document.querySelector(".search-chats-wrap");
   const input = searchChatsWrap.querySelector("input[name='search-chats']");
   input.focus();
-  searchChatsWrap.addEventListener("click", onOutsideClick);
+  searchChatsWrap.addEventListener("click", (event) => {
+    if (isOutsideClick(event, ".search-chats")) return;
+    removeEventListeners();
+  });
   window.addEventListener("keydown", onKeydown);
 });
 </script>

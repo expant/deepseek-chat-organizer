@@ -62,11 +62,13 @@ const onCreateFolder = async () => {
 onMounted(async () => {
   const { folders, chats } = await initData();
   chatList.value = chats;
+  await setCurrentWidth();
+
   if (!folders) return;
   folderList.value = folders;
   const baseNames = getBaseFolderNames(folderList.value, []);
   baseFolderNames.value = baseNames.sort(sortBaseNames);
-  await setCurrentWidth();
+  console.log("sdfsdf");
 });
 </script>
 

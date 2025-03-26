@@ -15,12 +15,29 @@ export const getDSChatEl = (name) => {
   return el;
 };
 
+export const getDSContextMenu = () => {
+  const { CONTEXT_MENU } = classNames;
+  const menus = document.querySelectorAll(`.${CONTEXT_MENU}`);
+  const entries = Object.entries(menus);
+  const [, menu] = entries.find(([, el]) => el.style.zIndex === "1024");
+  return menu;
+};
+
 export const isNameNotUnique = (items, name) =>
   items.some((item) => {
     if (item.type === "chat") return false;
     if (item.name === name) return true;
     if (item.children) return isNameNotUnique(item.children, name);
   });
+
+export const isOutsideClick = (event, selector) => {
+  const element = document.querySelector(selector);
+
+  if (element && !element.contains(event.target)) {
+    return false;
+  }
+  return true;
+};
 
 export const convertObjToArrDeep = (object, type) => {
   const arr = Object.values(object);
@@ -46,14 +63,6 @@ export const showDSContextMenu = (chatName) => {
   const el = getDSChatEl(chatName);
   const dotsEl = el.nextElementSibling;
   dotsEl.click();
-};
-
-export const getDSContextMenu = () => {
-  const { CONTEXT_MENU } = classNames;
-  const menus = document.querySelectorAll(`.${CONTEXT_MENU}`);
-  const entries = Object.entries(menus);
-  const [, menu] = entries.find(([, el]) => el.style.zIndex === "1024");
-  return menu;
 };
 
 export const simulateContextMenuAction = (btnClassName) => {

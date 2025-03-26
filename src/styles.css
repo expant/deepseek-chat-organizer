@@ -457,11 +457,16 @@ ul {
   white-space: nowrap;
 }
 
-.sidebar-resizing__menu button:hover {
+.sidebar-resizing__menu button:hover:not(.active-scale) {
   border: 0;
   background-color: #c6dcf8;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.sidebar-resizing__menu .active-scale {
+  background-color: purple;
+  color: #dbeafe;
 }
 
 .notification {

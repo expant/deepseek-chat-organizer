@@ -1,6 +1,7 @@
 <script setup>
 import _ from "lodash";
 import { onMounted, onUnmounted, inject, nextTick } from "vue";
+import { isOutsideClick } from "@/utils/helpers";
 import { getBaseFolderNames, sortBaseNames } from "@/utils/baseFolderNames.js";
 import {
   deleteFolder,
@@ -38,16 +39,6 @@ const deleteFolderIdFromList = (id) =>
   );
 const deleteChatFromList = (id) =>
   chatList.value.filter((item) => item.id !== id);
-
-const onOutsideClick = (event, type) => {
-  const contextMenu = document.querySelector(
-    `${type === "chat" ? ".cm-chat" : ".cm-folder"}`
-  );
-
-  if (contextMenu && !contextMenu.contains(event.target)) {
-    emit("close");
-  }
-};
 
 const onRename = async (type) => {
   if (type === "chat") {
@@ -125,8 +116,14 @@ const onDeleteChat = async () => {
   await handleChatDeletion(chatId);
 };
 
-onMounted(async () => document.addEventListener("click", onOutsideClick));
-onUnmounted(() => document.removeEventListener("click", onOutsideClick));
+onMounted(async () =>
+  document.addEventListener("click", (event) => {
+    const selector = `${props.type === "chat" ? ".cm-chat" : ".cm-folder"}`;
+    if (isOutsideClick(event, selector)) return;
+    emit("close");
+  })
+);
+onUnmounted(() => document.removeEventListener("click", isOutsideClick));
 </script>
 
 <template>
