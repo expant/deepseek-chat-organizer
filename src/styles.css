@@ -65,7 +65,7 @@ ul {
   font-weight: 600;
   margin: 5px 0;
   padding-right: 5px;
-  border-radius: 5px;
+  border-radius: 10px;
   transition: background-color 0.1s ease-in;
 }
 
@@ -79,7 +79,7 @@ ul {
   font-size: 14px;
   font-weight: 400;
   margin: 0;
-  padding-left: 5px;
+  padding-left: 10px;
   color: #262626;
 }
 
@@ -91,17 +91,17 @@ ul {
 .folder-name__input {
   width: 100%;
   height: 32px;
-  font-size: 15px;
+  font-size: 14px;
   margin: 5px;
-  padding: 0 5px;
+  padding: 0 10px;
   border: none;
-  border-radius: 5px;
+  border-radius: 10px;
   outline: none;
 }
 
 .chat-name__input:focus,
 .folder-name__input:focus {
-  border: 2px solid #b3e5fc;
+  border: 2px solid #4d6bfe;
 }
 
 .folder-name__text {
@@ -114,6 +114,10 @@ ul {
   flex-grow: 0;
   flex-shrink: 0;
   transition: transform 0.2s;
+}
+
+.icon-arrow path {
+  stroke: #800080;
 }
 
 .folders__list {
@@ -170,6 +174,10 @@ ul {
 .context-menu,
 .context-menu button {
   background-color: #fff;
+}
+
+.icon-dots path {
+  stroke: #262626;
 }
 
 .context-menu {
@@ -496,4 +504,128 @@ ul {
   background-color: #262626;
   transform: translateX(-50%) rotate(45deg);
   margin-top: -10px;
+}
+
+.folders.light {
+  background-color: #f9fbff;
+}
+
+.folders.dark {
+  background-color: #212327;
+}
+
+.folders.dark .new-folder-app {
+  background-color: #4d6bfe;
+  color: #F8FAFC;
+}
+
+.folders.dark .new-folder-app {
+  background-color: #4d6bfe;
+  color: #F8FAFC;
+}
+
+.folders.dark .new-folder-app:hover {
+  background-color: #4166d5;
+}
+
+.folders.dark .context-menu-icon {
+  fill: #F8FAFC;
+}
+
+.folders.dark .chat-item {
+  color: rgb(228 228 231);
+}
+
+.folders.dark .chat-item,
+.folders.dark .folder-name {
+  background-color: #212327;
+}
+
+.folders.dark .chat-item:hover,
+.folders.dark .folder-name:hover {
+  background-color: rgb(51 51 51);
+}
+
+.folders.dark .icon-arrow path,
+.folders.dark .icon-dots path {
+  stroke: rgb(228 228 231);
+}
+
+.folders.dark .icon-dots:hover {
+  background-color: #212327;
+}
+
+.folders.dark .chat-active {
+  background-color: #494949;
+}
+
+.folders.dark .icon-width {
+  fill: #E4E4E7;
+}
+
+.folders.dark .sidebar-resizing__icon:hover,
+.folders.dark .sidebar-resizing__menu,
+.folders.dark .context-menu,
+.folders.dark .context-menu button {
+  background-color: #3A3A46;
+}
+
+.folders.dark .context-menu button {
+  color: #F8FAFC;
+}
+
+.folders.dark .sidebar-resizing__menu button,
+.folders.dark .context-menu button:hover {
+  background-color: #464451;
+  color: #F8FAFC;
+}
+
+.folders.dark .context-menu__btn .icon-delete {
+  fill: #f44336;
+}
+
+.folders.dark .sidebar-resizing__menu button:hover:not(.active-scale) {
+  background-color: #555562;
+}
+
+.folders.dark .sidebar-resizing__menu .active-scale {
+  background-color: #4d6bfe;
+}
+
+.folders.dark .search-chats__list li:hover,
+.folders.dark .cm-folder .line {
+  background-color: #464451;
+}
+
+.folders.dark .search-chats {
+  background-color: #3A3A46;
+}
+
+.folders.dark .search-chats__header {
+  border-bottom: 1px solid #464451;
+}
+
+.folders.dark .icon-return-wrap:hover {
+  background-color: #4d6bfe;
+}
+
+.folders.dark .icon-return-wrap:hover > .icon-return {
+  fill: #F8FAFC;
+}
+
+/* .folders.dark .chat-name__input,
+.folders.dark .folder-name__input {
+  width: 100%;
+  height: 32px;
+  font-size: 15px;
+  margin: 5px;
+  padding: 0 5px;
+  border: none;
+  border-radius: 5px;
+  outline: none;
+} */
+
+.folders.dark .chat-name__input:focus,
+.folders.dark .folder-name__input:focus {
+  background-color: #212327;
 }

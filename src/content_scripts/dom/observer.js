@@ -1,6 +1,6 @@
 import { createApp } from "vue";
 import { classNames } from "@/variables.js";
-import { setObservationType, observationType, names } from "./state.js";
+import { setObservationType, observationType, names, emitter } from "./state.js";
 import {
   saveChatNameFromInput,
   handleRenameFromList,
@@ -55,6 +55,13 @@ const handleMutation = async (mutation) => {
 
     if (targetClassList.contains(CHAT_ACTIVE)) {
       handleActiveChat(mutation.target);
+    }
+
+    if (targetClassList.contains("dark")) {
+      emitter.emit("updateTheme", "dark");
+    }
+    if (targetClassList.contains("light")) {
+      emitter.emit("updateTheme", "light");
     }
   }
 

@@ -6,11 +6,11 @@ link.rel = "stylesheet";
 link.href = chrome.runtime.getURL("assets/styles.css");
 document.head.appendChild(link);
 // ----------------------------------------
-const targetEl = document.querySelector("#root");
+// const targetEl = document.querySelector("#root");
 const config = {
   childList: true,
   characterData: true,
   attributes: true,
   subtree: true,
 };
-observer.observe(targetEl, config);
+observer.observe(document.body, config);

@@ -12,6 +12,7 @@ import NestedList from "./components/NestedList.vue";
 import SidebarResizing from "./components/SidebarResizing.vue";
 import IconFolder from "./components/icons/IconFolder.vue";
 
+const theme = ref("light");
 const chatList = ref([]);
 const folderList = ref([]);
 const baseFolderNames = ref([]);
@@ -29,6 +30,7 @@ const contextMenuChat = ref({
   chatId: null,
 });
 
+provide("theme", theme);
 provide("chatList", chatList);
 provide("folderList", folderList);
 provide("contextMenu", contextMenu);
@@ -69,22 +71,30 @@ onMounted(async () => {
   const baseNames = getBaseFolderNames(folderList.value, []);
   baseFolderNames.value = baseNames.sort(sortBaseNames);
 
+  if (document.body.classList.contains("dark")) {
+    theme.value = "dark";
+  }
+
   emitter.on("updateFolders", (newValue) => {
     folderList.value = newValue;
   });
   emitter.on("updateChats", (newValue) => {
     chatList.value = newValue;
   });
+  emitter.on("updateTheme", (newValue) => {
+    theme.value = newValue;
+  });
 });
 
 onUnmounted(() => {
   emitter.off("updateFolders");
   emitter.off("updateChats");
+  emitter.off("updateTheme");
 });
 </script>
 
 <template>
-  <div class="folders">
+  <div :class="`folders ${theme}`">
     <SidebarResizing />
     <div class="first-nested-list">
       <NestedList :items="folderList" />
