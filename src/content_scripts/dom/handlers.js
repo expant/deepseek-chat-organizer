@@ -1,6 +1,11 @@
 import { getData } from "@/storage";
 import { classNames } from "@/variables.js";
-import { renameChat, deleteChat } from "@/utils/chatAndFolderLogic.js";
+import {
+  renameChat,
+  deleteChat,
+  setActiveChatInFolders,
+  setActiveChatInChatList,
+} from "@/utils/chatAndFolderLogic.js";
 import {
   showDSContextMenu,
   simulateContextMenuAction,
@@ -10,6 +15,7 @@ import {
   observationType,
   names,
   setNames,
+  emitter,
 } from "./state.js";
 
 const { CHAT_TEXT, CHAT_INPUT, DELETE_BTN } = classNames;
@@ -45,8 +51,10 @@ export const handleRenameFromList = async (el) => {
 
   if (folders) {
     await chrome.storage.sync.set({ folders: newFolders });
+    emitter.emit("updateFolders", newFolders);
   }
   await chrome.storage.sync.set({ chats: newChats });
+  emitter.emit("updateChats", newChats);
   setObservationType("");
 };
 
@@ -69,6 +77,25 @@ export const handleChatDeletion = async (id) => {
     const newChats = chats.filter((item) => item.id !== chatId);
     await chrome.storage.sync.set({ chats: newChats });
     await chrome.storage.sync.set({ folders: newFolders });
+    emitter.emit("updateChats", newChats);
+    emitter.emit("updateFolders", newFolders);
     setObservationType("");
+  }
+};
+
+export const handleActiveChat = async (el) => {
+  const chatTextEl = el.querySelector(`.${CHAT_TEXT}`);
+  const { folders, chats } = await getData();
+
+  if (folders) {
+    const newFolders = setActiveChatInFolders(folders, chatTextEl.textContent);
+    await chrome.storage.sync.set({ folders: newFolders });
+    emitter.emit("updateFolders", newFolders);
+  }
+
+  if (chats) {
+    const newChats = setActiveChatInChatList(chats, chatTextEl.textContent);
+    await chrome.storage.sync.set({ chats: newChats });
+    emitter.emit("updateChats", newChats);
   }
 };

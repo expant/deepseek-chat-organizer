@@ -111,3 +111,23 @@ export const deleteChat = (folders, chatId) => {
   });
   return result;
 };
+
+export const setActiveChatInFolders = (folders, name) => {
+  const result = folders.map((item) => {
+    if (item.type === "chat") {
+      return item.name === name
+        ? { ...item, isActive: true }
+        : { ...item, isActive: false };
+    }
+    item.children = setActiveChatInFolders(item.children, name);
+    return item;
+  });
+  return result;
+};
+
+export const setActiveChatInChatList = (chats, name) =>
+  chats.map((item) =>
+    item.name === name
+      ? { ...item, isActive: true }
+      : { ...item, isActive: false }
+  );

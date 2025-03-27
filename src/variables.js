@@ -1,5 +1,6 @@
 export const classNames = {
   CHAT: "_83421f9",
+  CHAT_ACTIVE: "b64fb9ae",
   CHAT_TEXT: "c08e6e93",
   CHAT_MAIN_TITLE: "d8ed659a",
   CHAT_INPUT: "ds-input__input",

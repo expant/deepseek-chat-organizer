@@ -75,14 +75,7 @@ const handleRename = async () => {
 };
 
 const openDialog = () => {
-  const id = props.chat.id;
   emit("click");
-  // chatList.value = chatList.value.map((chat) => {
-  //   if (chat.id === id) {
-  //     return { ...chat, isActive:  }
-  //   }
-  // });
-
   const el = getDSChatEl(props.chat.name);
   el.click();
 };
@@ -101,7 +94,7 @@ const openDialog = () => {
   />
   <div
     v-else
-    class="chat-item"
+    :class="`${chat.isActive ? 'chat-item chat-active' : 'chat-item'}`"
     :data-id="chat.id"
     :title="chat.name"
     @click="openDialog"

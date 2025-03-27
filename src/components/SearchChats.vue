@@ -16,7 +16,6 @@ const props = defineProps({
   required: true,
 });
 const emit = defineEmits(["close"]);
-const classNamesChats = "c08e6e93";
 const chatList = inject("chatList");
 const folderList = inject("folderList");
 const contextMenu = inject("contextMenu");
@@ -45,6 +44,7 @@ const onSelectedChats = async (event) => {
   const chats = chatList.value.filter((chat) =>
     selectedChats.value.includes(chat.id)
   );
+
   const newFolderId = generateId();
   const args = [
     _.cloneDeep(chats),
@@ -62,17 +62,15 @@ const onSelectedChats = async (event) => {
 
   await chrome.storage.sync.set({ folders: folderList.value });
   await chrome.storage.sync.set({ chats: chatList.value });
-
-  const log = await chrome.storage.sync.get(["chats"]);
 };
 
 const searchedChats = computed(() => {
   if (!search.value) return chatList.value;
-  return chatList.value.filter(
-    (chat) =>
-      chat.name.toLowerCase().includes(search.value.toLowerCase()) &&
-      !chat.folderId
-  );
+  return chatList.value.filter((chat) => {
+    const chatName = chat.name.toLowerCase();
+    const searchValue = search.value.toLowerCase();
+    return chatName.includes(searchValue);
+  });
 });
 
 onMounted(async () => {

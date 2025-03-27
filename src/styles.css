@@ -71,7 +71,7 @@ ul {
 
 .chat-item:hover,
 .folder-name:hover {
-  background-color: #ddd;
+  background-color: #dbeafe;
   cursor: pointer;
 }
 
@@ -80,6 +80,11 @@ ul {
   font-weight: 400;
   margin: 0;
   padding-left: 5px;
+  color: #262626;
+}
+
+.chat-active {
+  background-color: #dbeafe;
 }
 
 .chat-name__input,
@@ -465,7 +470,7 @@ ul {
 }
 
 .sidebar-resizing__menu .active-scale {
-  background-color: purple;
+  background-color: #4d6dfe;
   color: #dbeafe;
 }
 

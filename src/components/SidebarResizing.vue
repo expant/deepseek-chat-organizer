@@ -61,7 +61,7 @@ onMounted(() => {
   setTimeout(async () => {
     await setPositions();
     await setActiveScale();
-  }, 100);
+  }, 500);
   document.addEventListener("click", (event) => {
     if (isOutsideClick(event, ".sidebar-resizing__menu")) return;
     showMenu.value = false;

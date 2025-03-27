@@ -2,14 +2,14 @@ import { createApp } from "vue";
 import { classNames } from "@/variables.js";
 import { setObservationType, observationType, names } from "./state.js";
 import {
-  handleRenameFromList,
   saveChatNameFromInput,
+  handleRenameFromList,
   handleChatDeletion,
+  handleActiveChat,
 } from "./handlers.js";
 import App from "@/App.vue";
-// import sidebarWidthResizing from "./utils/sidebarWidthResizing.js";
 
-const { LIST_ROOT, CHAT, CHAT_TEXT, SIDEBAR, CHAT_MAIN_TITLE } = classNames;
+const { LIST_ROOT, CHAT, CHAT_TEXT, SIDEBAR, CHAT_ACTIVE } = classNames;
 const htmlElType = "[object HTMLDivElement]";
 const appContainer = document.createElement("div");
 let debounceTimer = null;
@@ -50,9 +50,16 @@ const handleMutation = async (mutation) => {
     }, 500);
   }
 
+  if (mutation.type === "attributes") {
+    const targetClassList = mutation.target.classList;
+
+    if (targetClassList.contains(CHAT_ACTIVE)) {
+      handleActiveChat(mutation.target);
+    }
+  }
+
   if (mutation.previousSibling && added) {
     if (mutation.previousSibling.className === "ebaea5d2") {
-      console.log("variant 1");
       insertAppToDeepseek();
       return;
     }
@@ -60,8 +67,6 @@ const handleMutation = async (mutation) => {
 
   if (removedType === htmlElType) {
     if (!removed.classList.contains(CHAT)) return;
-
-    console.log(removed);
 
     switch (observationType) {
       case "renameFromFolder":
@@ -75,7 +80,7 @@ const handleMutation = async (mutation) => {
       default:
         return;
     }
-    insertAppToDeepseek();
+    // insertAppToDeepseek();
   }
 
   if (addedType === htmlElType) {
@@ -92,7 +97,6 @@ const handleMutation = async (mutation) => {
       added.classList.contains(CHAT)
     ) {
       await handleRenameFromList(added);
-      insertAppToDeepseek();
       return;
     }
   }
@@ -100,7 +104,6 @@ const handleMutation = async (mutation) => {
   if (mutation.target.className === SIDEBAR) {
     if (mutation.addedNodes.length > 0) {
       insertAppToDeepseek();
-      // setTimeout(() => sidebarWidthResizing(), 500);
     }
   }
 };

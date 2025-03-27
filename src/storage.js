@@ -1,18 +1,18 @@
 import { generateId, convertObjToArrDeep } from "./utils/helpers.js";
 import { classNames } from "./variables.js";
 
-// TODO: Наблюдение через Observer за списком чатов
 export const initChatsInStorage = async (chats) => {
   const elements = document.querySelectorAll(`.${classNames.CHAT_TEXT}`);
   const newChats = Object.entries(elements).map(([_, el]) => {
     const chat = chats.find((item) => item.name === el.textContent);
+    const isActive = el.closest(`.${classNames.CHAT_ACTIVE}`) ? true : false;
     return chat
       ? chat
       : {
           id: generateId(),
           name: el.textContent,
           folderId: null,
-          isActive: false,
+          isActive,
         };
   });
   await chrome.storage.sync.set({ chats: newChats });
