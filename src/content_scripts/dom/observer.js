@@ -1,11 +1,17 @@
 import { createApp } from "vue";
 import { classNames } from "@/variables.js";
-import { setObservationType, observationType, names, emitter } from "./state.js";
+import {
+  setObservationType,
+  observationType,
+  names,
+  emitter,
+} from "./state.js";
 import {
   saveChatNameFromInput,
   handleRenameFromList,
   handleChatDeletion,
   handleActiveChat,
+  updateData,
 } from "./handlers.js";
 import App from "@/App.vue";
 
@@ -25,8 +31,9 @@ const insertAppToDeepseek = () => {
 
 // Отлавливание удаления чата из основного списка deepseek
 chrome.runtime.onMessage.addListener((message) => {
-  if (message.action !== "chatDeleted") return;
-  insertAppToDeepseek();
+  if (message.action === "chatDeleted") {
+    updateData();
+  }
 });
 
 const handleMutation = async (mutation) => {
@@ -87,7 +94,6 @@ const handleMutation = async (mutation) => {
       default:
         return;
     }
-    // insertAppToDeepseek();
   }
 
   if (addedType === htmlElType) {

@@ -1,4 +1,4 @@
-import { getData } from "@/storage";
+import { getData, initData } from "@/storage";
 import { classNames } from "@/variables.js";
 import {
   renameChat,
@@ -56,6 +56,13 @@ export const handleRenameFromList = async (el) => {
   await chrome.storage.sync.set({ chats: newChats });
   emitter.emit("updateChats", newChats);
   setObservationType("");
+};
+
+export const updateData = async () => {
+  const { folders, chats } = await initData();
+  emitter.emit("updateChats", chats);
+  if (!folders) return;
+  emitter.emit("updateFolders", folders);
 };
 
 export const handleChatDeletion = async (id) => {

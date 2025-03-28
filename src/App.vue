@@ -64,17 +64,16 @@ const onCreateFolder = async () => {
 onMounted(async () => {
   const { folders, chats } = await initData();
   chatList.value = chats;
+  if (folders) {
+    folderList.value = folders;
+    const baseNames = getBaseFolderNames(folderList.value, []);
+    baseFolderNames.value = baseNames.sort(sortBaseNames);
+  }
   await setCurrentWidth();
-
-  if (!folders) return;
-  folderList.value = folders;
-  const baseNames = getBaseFolderNames(folderList.value, []);
-  baseFolderNames.value = baseNames.sort(sortBaseNames);
 
   if (document.body.classList.contains("dark")) {
     theme.value = "dark";
   }
-
   emitter.on("updateFolders", (newValue) => {
     folderList.value = newValue;
   });
