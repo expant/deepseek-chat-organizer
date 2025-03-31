@@ -1,12 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "modified-deepseek-sidebar",
-  "version": "1.0",
-  "description": "Extension for sorting chats by directories in deepseek",
+  "name": "DeepSeek Chat Organizer",
+  "version": "1.0.0",
+  "description": "Organize DeepSeek chat conversations into custom folders for easy navigation and management.",
   "permissions": [
     "webRequest",
-    "activeTab", 
-    "scripting", 
+    "activeTab",  
     "storage"
   ],
   "host_permissions": [
