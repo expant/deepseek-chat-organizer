@@ -5,6 +5,7 @@ export const classNames = {
   CHAT_MAIN_TITLE: "d8ed659a",
   CHAT_INPUT: "ds-input__input",
   CHAT_LIST: "_03210fb",
+  CHAT_LIST_EMPTY: "f27d1011",
   SIDEBAR: "dc04ec1d",
   LIST_ROOT: "._03210fb",
   MODAL_DELETE: "ds-button--error",

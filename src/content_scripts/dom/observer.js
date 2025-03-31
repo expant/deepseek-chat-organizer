@@ -15,7 +15,8 @@ import {
 } from "./handlers.js";
 import App from "@/App.vue";
 
-const { LIST_ROOT, CHAT, CHAT_TEXT, SIDEBAR, CHAT_ACTIVE } = classNames;
+const { LIST_ROOT, CHAT, CHAT_TEXT, CHAT_LIST_EMPTY, SIDEBAR, CHAT_ACTIVE } =
+  classNames;
 const htmlElType = "[object HTMLDivElement]";
 const appContainer = document.createElement("div");
 let debounceTimer = null;
@@ -23,6 +24,11 @@ appContainer.id = "folders-list";
 
 const insertAppToDeepseek = () => {
   const deepseekContainer = document.querySelector(LIST_ROOT);
+
+  if (deepseekContainer.classList.contains(CHAT_LIST_EMPTY)) {
+    deepseekContainer.classList.add("content-alignment");
+  }
+
   if (deepseekContainer) {
     deepseekContainer.prepend(appContainer);
     createApp(App).mount(`#${appContainer.id}`);
@@ -76,6 +82,9 @@ const handleMutation = async (mutation) => {
     if (mutation.previousSibling.className === "ebaea5d2") {
       insertAppToDeepseek();
       return;
+    }
+    if (added.classList?.contains(CHAT_LIST_EMPTY)) {
+      added.parentElement.classList.add("content-alignment");
     }
   }
 

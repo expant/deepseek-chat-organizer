@@ -9,6 +9,15 @@
   z-index: 1;
 }
 
+.content-alignment {
+  justify-content: flex-start !important;
+  flex-direction: column;
+}
+
+#folders-list {
+  width: 100%;
+}
+
 #folders-list * {
   box-sizing: border-box;
 }
