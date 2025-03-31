@@ -81,29 +81,31 @@ const openDialog = () => {
 </script>
 
 <template>
-  <input
-    v-if="isEditingChatName && chat.id === contextMenuChat.chatId"
-    ref="inputRef"
-    class="chat-name__input"
-    type="text"
-    name="chat-name"
-    :value="chat.name"
-    @blur="handleRename"
-    @keydown.enter="handleRename"
-  />
-  <div
-    v-else
-    ref="chatRef"
-    :class="`${chat.isActive ? 'chat-item chat-active' : 'chat-item'}`"
-    :data-id="chat.id"
-    :title="chat.name"
-    @click="openDialog"
-    @mouseover="showDots = true"
-    @mouseleave="showDots = false"
-  >
-    <span class="chat-name">{{ chat.name }}</span>
-    <div class="icon-dots" v-show="showDots" @click.stop="openContextMenu">
-      <IconDots />
+  <div class="chat-wrapper">
+    <input
+      v-if="isEditingChatName && chat.id === contextMenuChat.chatId"
+      ref="inputRef"
+      class="chat-name__input"
+      type="text"
+      name="chat-name"
+      :value="chat.name"
+      @blur="handleRename"
+      @keydown.enter="handleRename"
+    />
+    <div
+      v-else
+      ref="chatRef"
+      :class="`${chat.isActive ? 'chat-item chat-active' : 'chat-item'}`"
+      :data-id="chat.id"
+      :title="chat.name"
+      @click="openDialog"
+      @mouseover="showDots = true"
+      @mouseleave="showDots = false"
+    >
+      <span class="chat-name">{{ chat.name }}</span>
+      <div class="icon-dots" v-show="showDots" @click.stop="openContextMenu">
+        <IconDots />
+      </div>
     </div>
     <ContextMenu
       v-show="contextMenuChat.isOpen"

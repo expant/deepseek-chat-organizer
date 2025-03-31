@@ -64,29 +64,31 @@ const handleRename = async () => {
 };
 </script>
 <template>
-  <input
-    v-if="isEditingFolderName && id === contextMenu.folderId"
-    ref="inputRef"
-    class="folder-name__input"
-    type="text"
-    name="folder-name"
-    :value="name"
-    @blur="handleRename"
-    @keydown.enter="handleRename"
-  />
-  <div
-    v-else
-    ref="folderRef"
-    class="folder-name"
-    :data-id="id"
-    @click="toggleFolder"
-    @mouseover="showDots = true"
-    @mouseleave="showDots = false"
-  >
-    <IconArrow :isFolderOpen="isFolderOpen" />
-    <span class="folder-name__text">{{ name }}</span>
-    <div class="icon-dots" v-show="showDots" @click.stop="openContextMenu">
-      <IconDots />
+  <div class="folder-wrapper">
+    <input
+      v-if="isEditingFolderName && id === contextMenu.folderId"
+      ref="inputRef"
+      class="folder-name__input"
+      type="text"
+      name="folder-name"
+      :value="name"
+      @blur="handleRename"
+      @keydown.enter="handleRename"
+    />
+    <div
+      v-else
+      ref="folderRef"
+      class="folder-name"
+      :data-id="id"
+      @click="toggleFolder"
+      @mouseover="showDots = true"
+      @mouseleave="showDots = false"
+    >
+      <IconArrow :isFolderOpen="isFolderOpen" />
+      <span class="folder-name__text">{{ name }}</span>
+      <div class="icon-dots" v-show="showDots" @click.stop="openContextMenu">
+        <IconDots />
+      </div>
     </div>
     <ContextMenu
       v-show="contextMenu.isOpen"
