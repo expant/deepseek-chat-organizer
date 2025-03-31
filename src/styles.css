@@ -87,8 +87,6 @@ ul {
   background-color: #dbeafe;
 }
 
-
-
 .chat-name__input,
 .folder-name__input {
   width: 100%;
@@ -187,7 +185,7 @@ ul {
   padding: 5px;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  z-index: 100;
+  z-index: 2000;
 }
 
 .context-menu__btn {

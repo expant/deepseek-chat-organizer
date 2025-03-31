@@ -1,6 +1,6 @@
 <script setup>
 import _ from "lodash";
-import { onMounted, onUnmounted, inject, nextTick } from "vue";
+import { inject, nextTick, watch } from "vue";
 import { isOutsideClick } from "@/utils/helpers";
 import { getBaseFolderNames, sortBaseNames } from "@/utils/baseFolderNames.js";
 import {
@@ -10,6 +10,7 @@ import {
 } from "@/utils/chatAndFolderLogic";
 import { handleChatDeletion } from "@/content_scripts/dom/handlers";
 import { setObservationType } from "@/content_scripts/dom/state";
+import { classNames } from "@/variables.js";
 import ContextMenuButton from "./buttons/ContextMenuButton.vue";
 
 const props = defineProps({
@@ -19,6 +20,10 @@ const props = defineProps({
   },
   position: {
     type: Object,
+    required: true,
+  },
+  targetEl: {
+    type: HTMLElement,
     required: true,
   },
 });
@@ -31,6 +36,7 @@ const baseFolderNames = inject("baseFolderNames");
 const showSearchChats = inject("showSearchChats");
 const isEditingChatName = inject("isEditingChatName");
 const isEditingFolderName = inject("isEditingFolderName");
+const scrollContainer = document.querySelector(`.${classNames.CHAT_LIST}`);
 
 // Общие функции
 const deleteFolderIdFromList = (id) =>
@@ -116,14 +122,50 @@ const onDeleteChat = async () => {
   await handleChatDeletion(chatId);
 };
 
-onMounted(async () =>
-  document.addEventListener("click", (event) => {
-    const selector = `${props.type === "chat" ? ".cm-chat" : ".cm-folder"}`;
-    if (isOutsideClick(event, selector)) return;
-    emit("close");
-  })
-);
-onUnmounted(() => document.removeEventListener("click", isOutsideClick));
+const setPositions = () => {
+  const rect = props.targetEl.getBoundingClientRect();
+  const position = {
+    top: rect.top + rect.height,
+    left: rect.right - rect.height,
+  };
+
+  if (props.type === "chat") {
+    contextMenuChat.value = { ...contextMenuChat.value, position };
+    return;
+  }
+  contextMenu.value = { ...contextMenu.value, position };
+};
+const getActiveContextMenuState = () =>
+  props.type === "chat"
+    ? contextMenuChat.value.isOpen
+    : contextMenu.value.isOpen;
+const handleDocumentClick = (event) => {
+  const selector = `${props.type === "chat" ? ".cm-chat" : ".cm-folder"}`;
+  if (isOutsideClick(event, selector)) return;
+  emit("close");
+};
+
+watch(getActiveContextMenuState, (newIsOpen) => {
+  const id = props.targetEl?.dataset.id || null;
+  const wrongEl =
+    (props.type === "chat" && id !== contextMenuChat.value.chatId) ||
+    (props.type === "folder" && id !== contextMenu.value.folderId);
+  if (wrongEl) return;
+
+  switch (newIsOpen) {
+    case true:
+      setPositions();
+      scrollContainer.addEventListener("scroll", setPositions);
+      document.addEventListener("click", handleDocumentClick);
+      break;
+    case false:
+      scrollContainer.removeEventListener("scroll", setPositions);
+      document.removeEventListener("click", handleDocumentClick);
+      break;
+    default:
+      throw new Error(`Unknown newIsOpen: ${newIsOpen}`);
+  }
+});
 </script>
 
 <template>

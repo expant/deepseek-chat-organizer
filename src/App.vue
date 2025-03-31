@@ -6,7 +6,6 @@ import { emitter } from "@/content_scripts/dom/state.js";
 import { createFolder } from "@/utils/chatAndFolderLogic.js";
 import { setCurrentWidth } from "./utils/sidebarWidthResizing";
 import { sortBaseNames, getBaseFolderNames } from "./utils/baseFolderNames.js";
-import ContextMenu from "./components/ContextMenu.vue";
 import SearchChats from "./components/SearchChats.vue";
 import NestedList from "./components/NestedList.vue";
 import SidebarResizing from "./components/SidebarResizing.vue";
@@ -102,18 +101,6 @@ onUnmounted(() => {
         <span>New folder</span>
       </button>
     </div>
-    <ContextMenu
-      v-show="contextMenu.isOpen"
-      @close="contextMenu.isOpen = false"
-      :type="'folder'"
-      :position="contextMenu.position"
-    />
-    <ContextMenu
-      v-show="contextMenuChat.isOpen"
-      @close="contextMenuChat.isOpen = false"
-      :type="'chat'"
-      :position="contextMenuChat.position"
-    />
     <SearchChats
       v-if="showSearchChats"
       @close="showSearchChats = false"

@@ -6,6 +6,7 @@ import { renameChat } from "@/utils/chatAndFolderLogic";
 import { renameDSChat } from "@/content_scripts/dom/handlers";
 import { getDSChatEl, simulateContextMenuAction } from "@/utils/helpers";
 import { setObservationType, setNames } from "@/content_scripts/dom/state";
+import ContextMenu from "./ContextMenu.vue";
 import IconDots from "./icons/IconDots.vue";
 
 const props = defineProps({
@@ -23,6 +24,7 @@ const contextMenuChat = inject("contextMenuChat");
 const isEditingChatName = inject("isEditingChatName");
 const showDots = ref(false);
 const inputRef = ref(null);
+const chatRef = ref(null);
 
 const openContextMenu = (event) => {
   if (contextMenu.value.isOpen) {
@@ -32,14 +34,11 @@ const openContextMenu = (event) => {
     contextMenuChat.value = { ...contextMenuChat.value, isOpen: false };
     return;
   }
-
-  // Получаем координаты кнопки
-  const buttonRect = event.target.getBoundingClientRect();
-  const position = {
-    top: buttonRect.bottom + window.scrollY + 10,
-    left: buttonRect.left + window.scrollX,
+  contextMenuChat.value = {
+    ...contextMenuChat.value,
+    isOpen: true,
+    chatId: props.chat.id,
   };
-  contextMenuChat.value = { isOpen: true, position, chatId: props.chat.id };
 };
 
 const handleRename = async () => {
@@ -94,6 +93,7 @@ const openDialog = () => {
   />
   <div
     v-else
+    ref="chatRef"
     :class="`${chat.isActive ? 'chat-item chat-active' : 'chat-item'}`"
     :data-id="chat.id"
     :title="chat.name"
@@ -105,5 +105,12 @@ const openDialog = () => {
     <div class="icon-dots" v-show="showDots" @click.stop="openContextMenu">
       <IconDots />
     </div>
+    <ContextMenu
+      v-show="contextMenuChat.isOpen"
+      @close="contextMenuChat.isOpen = false"
+      :type="'chat'"
+      :position="contextMenuChat.position"
+      :target-el="chatRef"
+    />
   </div>
 </template>

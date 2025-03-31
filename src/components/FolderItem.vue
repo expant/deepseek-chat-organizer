@@ -1,9 +1,9 @@
 <script setup>
 import _ from "lodash";
-import { ref, inject, onMounted, onUnmounted } from "vue";
+import { ref, inject } from "vue";
 import { isNameNotUnique } from "@/utils/helpers.js";
 import { renameFolder } from "@/utils/chatAndFolderLogic";
-import { classNames } from "@/variables.js";
+import ContextMenu from "./ContextMenu.vue";
 import IconArrow from "./icons/IconArrow.vue";
 import IconDots from "./icons/IconDots.vue";
 
@@ -22,7 +22,7 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(["update:isFolderOpen"]);
-const chatRef = ref(null);
+const folderRef = ref(null);
 const inputRef = ref(null);
 const showDots = ref(false);
 const showNotification = ref(false);
@@ -31,16 +31,6 @@ const contextMenu = inject("contextMenu");
 const contextMenuChat = inject("contextMenuChat");
 const baseFolderNames = inject("baseFolderNames");
 const isEditingFolderName = inject("isEditingFolderName");
-const scrollContainer = document.querySelector(`.${classNames.CHAT_LIST}`);
-
-const setPositions = () => {
-  const rect = chatRef.value.getBoundingClientRect();
-  const position = {
-    top: rect.top + rect.height,
-    left: rect.right - rect.height,
-  };
-  contextMenu.value = { ...contextMenu.value, position };
-};
 
 const toggleFolder = () => emit("update:isFolderOpen", !props.isFolderOpen);
 const openContextMenu = (event) => {
@@ -51,8 +41,11 @@ const openContextMenu = (event) => {
     contextMenu.value = { ...contextMenu.value, isOpen: false };
     return;
   }
-  contextMenu.value = { ...contextMenu.value, isOpen: true, folderId: props.id };
-  setPositions();
+  contextMenu.value = {
+    ...contextMenu.value,
+    isOpen: true,
+    folderId: props.id,
+  };
 };
 
 const handleRename = async () => {
@@ -69,11 +62,6 @@ const handleRename = async () => {
   await chrome.storage.sync.set({ folders: folderList.value });
   isEditingFolderName.value = false;
 };
-
-onMounted(() => scrollContainer.addEventListener("scroll", setPositions));
-onUnmounted(() => {
-  scrollContainer.removeEventListener("scroll", setPositions);
-});
 </script>
 <template>
   <input
@@ -88,7 +76,7 @@ onUnmounted(() => {
   />
   <div
     v-else
-    ref="chatRef"
+    ref="folderRef"
     class="folder-name"
     :data-id="id"
     @click="toggleFolder"
@@ -100,6 +88,12 @@ onUnmounted(() => {
     <div class="icon-dots" v-show="showDots" @click.stop="openContextMenu">
       <IconDots />
     </div>
-    <!-- TODO: Переместить вызов ContextMenu из App сюда -->
+    <ContextMenu
+      v-show="contextMenu.isOpen"
+      @close="contextMenu.isOpen = false"
+      :type="'folder'"
+      :position="contextMenu.position"
+      :target-el="folderRef"
+    />
   </div>
 </template>
