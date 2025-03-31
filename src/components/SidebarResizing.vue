@@ -17,24 +17,43 @@ const scales = ref([
   { num: 1.75, isActive: false },
   { num: 2, isActive: false },
 ]);
-const menuWidth = 235;
+
 const scrollContainer = document.querySelector(`.${classNames.CHAT_LIST}`);
 
+const getElementWidth = (element) => {
+  element.style.display = 'block';
+  element.style.visibility = 'hidden';
+  const width = element.offsetWidth;
+  element.style.display = 'none';
+  return width;
+}
+
 const setPositions = async () => {
+  const container = document.querySelector(".sidebar-resizing");
+  const notification = container.querySelector(".notification");
+  const menu = container.querySelector(".sidebar-resizing__menu");
   const resizingEl = document.querySelector(".sidebar-resizing__icon");
-  const rect = resizingEl.getBoundingClientRect();
   const { sidebarResizing } = await chrome.storage.sync.get([
     "sidebarResizing",
   ]);
+  const notiWidth = getElementWidth(notification);
+  const menuWidth = getElementWidth(menu);
 
+  const elementRect = container.getBoundingClientRect();
+  const parentRect = scrollContainer.getBoundingClientRect();
+  const marginRight = (parentRect.right - scrollContainer.scrollLeft) - elementRect.right;
+
+  const rect = resizingEl.getBoundingClientRect();
   const sidebarWidthInt = parseInt(sidebarResizing.width, 10);
+  const menuPositionLeft = sidebarWidthInt - menuWidth - marginRight - (rect.width / 2);
+  const notiPositionLeft = sidebarWidthInt - marginRight - (rect.width / 2) - (notiWidth / 2);
 
   menuPosition.value = {
-    left: `${sidebarWidthInt - menuWidth + 15}px`,
+    left: `${menuPositionLeft}px`,
     top: `${rect.top + 30}px`,
   };
   notiPosition.value = {
-    left: `${sidebarWidthInt - 115}px`,
+    left: `${notiPositionLeft}px`,
     top: `${rect.top - 50}px`,
   };
 };
@@ -62,12 +81,15 @@ onMounted(() => {
     await setPositions();
     await setActiveScale();
   }, 500);
+
   document.addEventListener("click", (event) => {
     if (isOutsideClick(event, ".sidebar-resizing__menu")) return;
     showMenu.value = false;
   });
+
   scrollContainer.addEventListener("scroll", setPositions);
 });
+
 onUnmounted(() => {
   document.removeEventListener("click", isOutsideClick);
   scrollContainer.removeEventListener("scroll", setPositions);
