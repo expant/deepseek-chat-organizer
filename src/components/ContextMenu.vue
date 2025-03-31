@@ -145,26 +145,24 @@ const handleDocumentClick = (event) => {
   emit("close");
 };
 
-watch(getActiveContextMenuState, (newIsOpen) => {
+watch(getActiveContextMenuState, (isOpen) => {
   const id = props.targetEl?.dataset.id || null;
+
   const wrongEl =
     (props.type === "chat" && id !== contextMenuChat.value.chatId) ||
     (props.type === "folder" && id !== contextMenu.value.folderId);
+
   if (wrongEl) return;
 
-  switch (newIsOpen) {
-    case true:
-      setPositions();
-      scrollContainer.addEventListener("scroll", setPositions);
-      document.addEventListener("click", handleDocumentClick);
-      break;
-    case false:
-      scrollContainer.removeEventListener("scroll", setPositions);
-      document.removeEventListener("click", handleDocumentClick);
-      break;
-    default:
-      throw new Error(`Unknown newIsOpen: ${newIsOpen}`);
+  if (isOpen) {
+    setPositions();
+    scrollContainer.addEventListener("scroll", setPositions);
+    document.addEventListener("click", handleDocumentClick);
+    return;
   }
+
+  scrollContainer.removeEventListener("scroll", setPositions);
+  document.removeEventListener("click", handleDocumentClick);
 });
 </script>
 
