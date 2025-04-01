@@ -160,4 +160,4 @@ chrome.runtime.onMessage.addListener((message) => {
   }
 });
 
-export { insertAppToDeepseek };
+export { insertAppToDeepseek, observer };

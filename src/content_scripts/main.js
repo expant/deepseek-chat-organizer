@@ -1,3 +1,5 @@
+import { observer } from "./dom/observer";
+
 // Подключаем CSS-файл
 const link = document.createElement("link");
 link.rel = "stylesheet";
