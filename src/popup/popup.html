@@ -4,9 +4,31 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <link rel="stylesheet" href="./popup.css" />
   </head>
   <body>
-    <div id="root"></div>
+    <div class="container off">
+      <h2 class="title">DeepSeek Chat Organizer</h2>
+      <div class="status-wrap">
+        <span class="status">Off</span>
+        <span class="status-color"></span>
+      </div>
+      <button class="btn-toggle">
+        <svg
+          class="btn-toggle__icon"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M6.34315 6.34315C5.22433 7.46197 4.4624 8.88743 4.15372 10.4393C3.84504 11.9911 4.00346 13.5997 4.60896 15.0615C5.21447 16.5233 6.23985 17.7727 7.55544 18.6518C8.87103 19.5308 10.4178 20 12 20C13.5823 20 15.129 19.5308 16.4446 18.6518C17.7602 17.7727 18.7855 16.5233 19.391 15.0615C19.9965 13.5997 20.155 11.9911 19.8463 10.4393C19.5376 8.88743 18.7757 7.46197 17.6569 6.34315"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+          <path d="M12 8L12 4" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </button>
+      <!-- <div id="status" class="status">Расширение выключено</div> -->
+    </div>
     <script type="module" src="popup.js"></script>
   </body>
 </html>

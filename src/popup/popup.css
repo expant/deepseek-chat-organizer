@@ -1,0 +1,116 @@
+:root {
+  --dark-bg: #212327;
+  --dark-toggle-btn-on: #4d6bfe;
+  --dark-toggle-btn-on-hover: #4166d5;
+  --dark-toggle-btn-off: #404045;
+  --dark-toggle-btn-off-hover: #49494f;
+  --light-bg: #f9fbff;
+  --light-text: #ffffff;
+  --title-off: #ffffff;
+  --title-on: #4d6bfe;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  width: 200px;
+  padding: 10px;
+  background-color: var(--dark-bg);
+}
+
+.title {
+  color: var(--title-on);
+}
+
+.status-wrap {
+  font-size: 13px;
+  text-align: center;
+}
+
+.status-color {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-left: 5px;
+}
+
+.btn-toggle {
+  padding: 7px;
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.btn-toggle__icon {
+  width: 20px;
+  fill: var(--dark-toggle-btn-off);
+  stroke: var(--light-text);
+}
+
+.btn-toggle__icon path {
+  stroke: var(--light-text);
+}
+
+.off .btn-toggle {
+  background-color: var(--dark-toggle-btn-off);
+}
+
+.on .btn-toggle {
+  background-color: var(--dark-toggle-btn-on);
+}
+
+.off .btn-toggle:hover {
+  background-color: var(--dark-toggle-btn-off-hover);
+}
+
+.on .btn-toggle:hover {
+  background-color: var(--dark-toggle-btn-on-hover);
+}
+
+.off .btn-toggle__icon {
+  fill: var(--dark-toggle-btn-off);
+}
+
+.on .btn-toggle__icon {
+  fill: var(--dark-toggle-btn-on);
+}
+
+.container.off {
+  background-color: var(--dark-bg);
+}
+
+.container.on {
+  background-color: var(--light-bg);
+}
+
+.off .title {
+  color: var(--title-off);
+}
+
+.on .title {
+  color: var(--title-on);
+}
+
+.off .status {
+  color: var(--light-text);
+}
+
+.on .status {
+  color: var(--dark-toggle-btn-off);
+}
+
+.off .status-color {
+  background-color: red;
+}
+
+.on .status-color {
+  background-color: green;
+}

@@ -18,8 +18,9 @@ import App from "@/App.vue";
 const { LIST_ROOT, CHAT, CHAT_TEXT, CHAT_LIST_EMPTY, SIDEBAR, CHAT_ACTIVE } =
   classNames;
 const htmlElType = "[object HTMLDivElement]";
-const appContainer = document.createElement("div");
 let debounceTimer = null;
+
+const appContainer = document.createElement("div");
 appContainer.id = "folders-list";
 
 const insertAppToDeepseek = () => {
@@ -35,13 +36,6 @@ const insertAppToDeepseek = () => {
   }
 };
 
-// Отлавливание удаления чата из основного списка deepseek
-chrome.runtime.onMessage.addListener((message) => {
-  if (message.action === "chatDeleted") {
-    updateData();
-  }
-});
-
 const handleMutation = async (mutation) => {
   const added = mutation.addedNodes[0];
   const removed = mutation.removedNodes[0];
@@ -51,10 +45,10 @@ const handleMutation = async (mutation) => {
   if (added instanceof Comment) return;
   if (removed instanceof Comment) return;
 
-  // Отлавливание нового чата
   if (mutation.type === "characterData") {
     const parentElement = mutation.target.parentElement;
     const isChatTitle = parentElement.classList.contains(CHAT_TEXT);
+
     if (!isChatTitle || debounceTimer) return;
 
     debounceTimer = setTimeout(() => {
@@ -135,6 +129,35 @@ const callback = async (mutationsList, observer) => {
     await handleMutation(mutation);
   }
 };
-const observer = new MutationObserver(callback);
 
-export { insertAppToDeepseek, observer };
+const observer = new MutationObserver(callback);
+const config = {
+  childList: true,
+  characterData: true,
+  attributes: true,
+  subtree: true,
+};
+
+chrome.storage.local.get(["extensionEnabled"], (result) => {
+  if (result.extensionEnabled) {
+    observer.observe(document.body, config);
+  }
+});
+
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.action === "toggle") {
+    if (message.state === true) {
+      insertAppToDeepseek();
+      observer.observe(document.body, config);
+      return;
+    }
+    appContainer.remove();
+    observer.disconnect();
+  }
+
+  if (message.action === "chatDeleted") {
+    updateData();
+  }
+});
+
+export { insertAppToDeepseek };
