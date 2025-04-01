@@ -7,6 +7,7 @@ export const classNames = {
   CHAT_LIST: "_03210fb",
   CHAT_LIST_EMPTY: "f27d1011",
   SIDEBAR: "dc04ec1d",
+  SIDEBAR_CLOSED: "a02af2e6",
   LIST_ROOT: "._03210fb",
   MODAL_DELETE: "ds-button--error",
   CONTEXT_MENU: "ds-floating-position-wrapper",

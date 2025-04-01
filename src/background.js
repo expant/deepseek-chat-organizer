@@ -29,6 +29,12 @@ const trackExtensionState = (request) => {
   }
 };
 
+const updateAction = async (tabId) => {
+  const tab = await chrome.tabs.get(tabId);
+  const isAllowed = tab.url?.includes("chat.deepseek.com");
+  chrome.action[isAllowed ? "enable" : "disable"](tabId);
+};
+
 const clearStorage = (details) => {
   if (details.reason === "uninstall") {
     chrome.storage.sync.clear();
@@ -38,3 +44,5 @@ const clearStorage = (details) => {
 chrome.webRequest.onCompleted.addListener(trackСhatDeletion, { urls });
 chrome.runtime.onMessage.addListener(trackExtensionState);
 chrome.runtime.onInstalled.addListener(clearStorage);
+chrome.tabs.onActivated.addListener(({ tabId }) => updateAction(tabId));
+chrome.tabs.onUpdated.addListener((tabId) => updateAction(tabId));

@@ -15,13 +15,22 @@ import {
 } from "./handlers.js";
 import App from "@/App.vue";
 
-const { LIST_ROOT, CHAT, CHAT_TEXT, CHAT_LIST_EMPTY, SIDEBAR, CHAT_ACTIVE } =
-  classNames;
+const { 
+  LIST_ROOT, 
+  CHAT, 
+  CHAT_TEXT, 
+  CHAT_LIST_EMPTY, 
+  SIDEBAR, 
+  CHAT_ACTIVE, 
+  SIDEBAR_CLOSED 
+} = classNames;
 const htmlElType = "[object HTMLDivElement]";
-let debounceTimer = null;
-
 const appContainer = document.createElement("div");
 appContainer.id = "folders-list";
+
+let debounceTimer = null;
+let vueApp = null;
+let isSidebarOpen = document.querySelector(`.${SIDEBAR_CLOSED}`) ? false : true;
 
 const insertAppToDeepseek = () => {
   const deepseekContainer = document.querySelector(LIST_ROOT);
@@ -32,7 +41,8 @@ const insertAppToDeepseek = () => {
 
   if (deepseekContainer) {
     deepseekContainer.prepend(appContainer);
-    createApp(App).mount(`#${appContainer.id}`);
+    vueApp = createApp(App);
+    vueApp.mount(`#${appContainer.id}`);
   }
 };
 
@@ -69,6 +79,11 @@ const handleMutation = async (mutation) => {
     }
     if (targetClassList.contains("light")) {
       emitter.emit("updateTheme", "light");
+    }
+    
+    if (targetClassList.contains(SIDEBAR_CLOSED)) {
+      isSidebarOpen = false;
+      console.log(isSidebarOpen);
     }
   }
 
@@ -119,6 +134,8 @@ const handleMutation = async (mutation) => {
 
   if (mutation.target.className === SIDEBAR) {
     if (mutation.addedNodes.length > 0) {
+      isSidebarOpen = true;
+      console.log(isSidebarOpen);
       insertAppToDeepseek();
     }
   }
@@ -147,10 +164,20 @@ chrome.storage.local.get(["extensionEnabled"], (result) => {
 chrome.runtime.onMessage.addListener((message) => {
   if (message.action === "toggle") {
     if (message.state === true) {
-      insertAppToDeepseek();
       observer.observe(document.body, config);
+      
+      console.log(isSidebarOpen);
+      if (!isSidebarOpen) return;
+
+      insertAppToDeepseek();
       return;
     }
+    
+    if (vueApp) {
+      console.log(vueApp);
+      vueApp.unmount(); 
+    }
+
     appContainer.remove();
     observer.disconnect();
   }
