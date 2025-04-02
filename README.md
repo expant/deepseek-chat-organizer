@@ -1,6 +1,6 @@
-# modified-deepseek-sidebar
+# Deepseek Chat-Organizer
 
-This template should help get you started developing with Vue 3 in Vite.
+Organize DeepSeek chat conversations into custom folders for easy navigation and management.
 
 ## Recommended IDE Setup
 

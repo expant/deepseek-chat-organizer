@@ -15,14 +15,14 @@ import {
 } from "./handlers.js";
 import App from "@/App.vue";
 
-const { 
-  LIST_ROOT, 
-  CHAT, 
-  CHAT_TEXT, 
-  CHAT_LIST_EMPTY, 
-  SIDEBAR, 
-  CHAT_ACTIVE, 
-  SIDEBAR_CLOSED 
+const {
+  LIST_ROOT,
+  CHAT,
+  CHAT_TEXT,
+  CHAT_LIST_EMPTY,
+  SIDEBAR,
+  CHAT_ACTIVE,
+  SIDEBAR_CLOSED,
 } = classNames;
 const htmlElType = "[object HTMLDivElement]";
 const appContainer = document.createElement("div");
@@ -80,10 +80,9 @@ const handleMutation = async (mutation) => {
     if (targetClassList.contains("light")) {
       emitter.emit("updateTheme", "light");
     }
-    
+
     if (targetClassList.contains(SIDEBAR_CLOSED)) {
       isSidebarOpen = false;
-      console.log(isSidebarOpen);
     }
   }
 
@@ -135,7 +134,6 @@ const handleMutation = async (mutation) => {
   if (mutation.target.className === SIDEBAR) {
     if (mutation.addedNodes.length > 0) {
       isSidebarOpen = true;
-      console.log(isSidebarOpen);
       insertAppToDeepseek();
     }
   }
@@ -165,17 +163,15 @@ chrome.runtime.onMessage.addListener((message) => {
   if (message.action === "toggle") {
     if (message.state === true) {
       observer.observe(document.body, config);
-      
-      console.log(isSidebarOpen);
+
       if (!isSidebarOpen) return;
 
       insertAppToDeepseek();
       return;
     }
-    
+
     if (vueApp) {
-      console.log(vueApp);
-      vueApp.unmount(); 
+      vueApp.unmount();
     }
 
     appContainer.remove();
