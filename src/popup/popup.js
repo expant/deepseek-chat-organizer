@@ -1,5 +1,7 @@
-document.addEventListener("DOMContentLoaded", async () => {
-  const container = document.querySelector(".container");
+const container = document.querySelector(".container");
+const notificationText = "Deepseek not detected! :(";
+
+const renderMainContent = async () => {
   const statusEl = container.querySelector(".status");
   const btnToggle = container.querySelector(".btn-toggle");
 
@@ -34,4 +36,26 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   btnToggle.addEventListener("click", switchMode);
+};
+
+const notifyUser = () => {
+  container.classList.replace("off", "error");
+  container.textContent = notificationText;
+};
+
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const response = await chrome.runtime.sendMessage({
+      action: "checkCurrentTab",
+    });
+
+    if (response.isDeepseek) {
+      renderMainContent();
+      return;
+    }
+    notifyUser();
+  } catch (err) {
+    console.error("Ошибка при проверке вкладки:", err);
+    container.textContent = "Error checking page";
+  }
 });

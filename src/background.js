@@ -1,14 +1,21 @@
 const urls = ["https://chat.deepseek.com/*"];
 const apiPath = "/api/v0/chat_session";
 
-const sendMessage = async (message) => {
-  const [activeTab] = await chrome.tabs.query({
+const getActiveTargetTab = async () => {
+  const [url] = urls;
+  const [tab] = await chrome.tabs.query({
     active: true,
     currentWindow: true,
+    url,
   });
+  return tab;
+};
 
-  if (activeTab) {
-    await chrome.tabs.sendMessage(activeTab.id, message);
+const sendMessage = async (message) => {
+  const tab = await getActiveTargetTab();
+
+  if (tab) {
+    await chrome.tabs.sendMessage(tab.id, message);
   }
 };
 
@@ -21,18 +28,22 @@ const trackСhatDeletion = async (details) => {
   await sendMessage({ action: "chatDeleted" });
 };
 
-const trackExtensionState = (request) => {
+const trackExtensionState = (request, sender, sendResponse) => {
   const { action, state } = request;
 
   if (action === "toggle") {
     sendMessage({ action, state });
   }
-};
 
-const updateAction = async (tabId) => {
-  const tab = await chrome.tabs.get(tabId);
-  const isAllowed = tab.url?.includes("chat.deepseek.com");
-  chrome.action[isAllowed ? "enable" : "disable"](tabId);
+  if (action === "checkCurrentTab") {
+    (async () => {
+      const tab = await getActiveTargetTab();
+      const isDeepseek = tab ? true : false;
+      sendResponse({ isDeepseek });
+    })();
+
+    return true;
+  }
 };
 
 const clearStorage = (details) => {
@@ -42,7 +53,8 @@ const clearStorage = (details) => {
 };
 
 chrome.webRequest.onCompleted.addListener(trackСhatDeletion, { urls });
-chrome.runtime.onMessage.addListener(trackExtensionState);
+
 chrome.runtime.onInstalled.addListener(clearStorage);
-chrome.tabs.onActivated.addListener(({ tabId }) => updateAction(tabId));
-chrome.tabs.onUpdated.addListener((tabId) => updateAction(tabId));
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>
+  trackExtensionState(request, sender, sendResponse)
+);
