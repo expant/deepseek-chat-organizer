@@ -6,6 +6,8 @@ import { classNames } from "@/variables";
 import IconWidth from "./icons/IconWidth.vue";
 import BaseNotification from "./BaseNotification.vue";
 
+let timeoutId = null;
+
 const showMenu = ref(false);
 const notificationRef = ref(null);
 const menuPosition = ref({ left: "0px", top: "0px" });
@@ -21,12 +23,12 @@ const scales = ref([
 const scrollContainer = document.querySelector(`.${classNames.CHAT_LIST}`);
 
 const getElementWidth = (element) => {
-  element.style.display = 'block';
-  element.style.visibility = 'hidden';
+  element.style.display = "block";
+  element.style.visibility = "hidden";
   const width = element.offsetWidth;
-  element.style.display = 'none';
+  element.style.display = "none";
   return width;
-}
+};
 
 const setPositions = async () => {
   const container = document.querySelector(".sidebar-resizing");
@@ -41,12 +43,15 @@ const setPositions = async () => {
 
   const elementRect = container.getBoundingClientRect();
   const parentRect = scrollContainer.getBoundingClientRect();
-  const marginRight = (parentRect.right - scrollContainer.scrollLeft) - elementRect.right;
+  const marginRight =
+    parentRect.right - scrollContainer.scrollLeft - elementRect.right;
 
   const rect = resizingEl.getBoundingClientRect();
   const sidebarWidthInt = parseInt(sidebarResizing.width, 10);
-  const menuPositionLeft = sidebarWidthInt - menuWidth - marginRight - (rect.width / 2);
-  const notiPositionLeft = sidebarWidthInt - marginRight - (rect.width / 2) - (notiWidth / 2);
+  const menuPositionLeft =
+    sidebarWidthInt - menuWidth - marginRight - rect.width / 2;
+  const notiPositionLeft =
+    sidebarWidthInt - marginRight - rect.width / 2 - notiWidth / 2;
 
   menuPosition.value = {
     left: `${menuPositionLeft}px`,
@@ -77,7 +82,7 @@ const onResizing = async (scale) => {
 };
 
 onMounted(() => {
-  setTimeout(async () => {
+  timeoutId = setTimeout(async () => {
     await setPositions();
     await setActiveScale();
   }, 500);
@@ -93,6 +98,7 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener("click", isOutsideClick);
   scrollContainer.removeEventListener("scroll", setPositions);
+  clearTimeout(timeoutId);
 });
 </script>
 <template>
