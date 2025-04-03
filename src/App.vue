@@ -84,7 +84,6 @@ onMounted(async () => {
 onUnmounted(() => {
   emitter.off("updateFolders");
   emitter.off("updateChats");
-  emitter.off("updateTheme");
 });
 </script>
 

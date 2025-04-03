@@ -1,4 +1,4 @@
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { emitter } from "@/content_scripts/dom/state";
 
 export function useTheme() {
@@ -17,6 +17,10 @@ export function useTheme() {
     emitter.on("updateTheme", (newValue) => {
       theme.value = newValue;
     });
+  });
+
+  onUnmounted(() => {
+    emitter.off("updateTheme");
   });
 
   return { theme };
