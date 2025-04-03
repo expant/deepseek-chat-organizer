@@ -6,12 +6,15 @@ import { emitter } from "@/content_scripts/dom/state.js";
 import { createFolder } from "@/utils/chatAndFolderLogic.js";
 import { setCurrentWidth } from "./utils/sidebarWidthResizing";
 import { sortBaseNames, getBaseFolderNames } from "./utils/baseFolderNames.js";
+import { useTheme } from "./composables/useTheme.js";
+
 import SearchChats from "./components/SearchChats.vue";
 import NestedList from "./components/NestedList.vue";
 import SidebarResizing from "./components/SidebarResizing.vue";
 import IconFolder from "./components/icons/IconFolder.vue";
 
-const theme = ref("light");
+const { theme } = useTheme();
+
 const chatList = ref([]);
 const folderList = ref([]);
 const baseFolderNames = ref([]);
@@ -29,7 +32,6 @@ const contextMenuChat = ref({
   chatId: null,
 });
 
-provide("theme", theme);
 provide("chatList", chatList);
 provide("folderList", folderList);
 provide("contextMenu", contextMenu);
@@ -63,6 +65,7 @@ const onCreateFolder = async () => {
 onMounted(async () => {
   const { folders, chats } = await initData();
   chatList.value = chats;
+
   if (folders) {
     folderList.value = folders;
     const baseNames = getBaseFolderNames(folderList.value, []);
@@ -70,17 +73,11 @@ onMounted(async () => {
   }
   await setCurrentWidth();
 
-  if (document.body.classList.contains("dark")) {
-    theme.value = "dark";
-  }
   emitter.on("updateFolders", (newValue) => {
     folderList.value = newValue;
   });
   emitter.on("updateChats", (newValue) => {
     chatList.value = newValue;
-  });
-  emitter.on("updateTheme", (newValue) => {
-    theme.value = newValue;
   });
 });
 
