@@ -1,22 +1,23 @@
 <script setup>
 import _ from "lodash";
 import { ref, onMounted, onUnmounted, provide, nextTick } from "vue";
-import { initData } from "./storage.js";
 import { emitter } from "@/content_scripts/dom/state.js";
-import { createFolder } from "@/utils/chatAndFolderLogic.js";
 import { setCurrentWidth } from "./utils/sidebarWidthResizing";
+import { getChatsFromDomElements } from "@/storage.js";
 import { sortBaseNames, getBaseFolderNames } from "./utils/baseFolderNames.js";
+import {
+  createFolder,
+  filterFoldersByExistingChats,
+} from "@/utils/chatAndFolderLogic.js";
+
 import { useTheme } from "./composables/useTheme.js";
+import { useStorage } from "./composables/useStorage.js";
 
 import SearchChats from "./components/SearchChats.vue";
 import NestedList from "./components/NestedList.vue";
 import SidebarResizing from "./components/SidebarResizing.vue";
 import IconFolder from "./components/icons/IconFolder.vue";
 
-const { theme } = useTheme();
-
-const chatList = ref([]);
-const folderList = ref([]);
 const baseFolderNames = ref([]);
 const showSearchChats = ref(false);
 const isEditingChatName = ref(false);
@@ -32,8 +33,6 @@ const contextMenuChat = ref({
   chatId: null,
 });
 
-provide("chatList", chatList);
-provide("folderList", folderList);
 provide("contextMenu", contextMenu);
 provide("contextMenuChat", contextMenuChat);
 provide("baseFolderNames", baseFolderNames);
@@ -41,44 +40,55 @@ provide("showSearchChats", showSearchChats);
 provide("isEditingChatName", isEditingChatName);
 provide("isEditingFolderName", isEditingFolderName);
 
+const { theme } = useTheme();
+const { data: folders, update: setFolders } = useStorage("folders", []);
+const { data: chats, update: setChats } = useStorage("chats", []);
+
 const onCreateFolder = async () => {
-  const newFolderArgs = [
-    _.cloneDeep(folderList.value),
-    0,
-    baseFolderNames.value,
-  ];
-  const [folders, newFolderId] = createFolder(...newFolderArgs);
-  folderList.value = folders;
-  const baseNames = getBaseFolderNames(folderList.value, []);
+  const newFolderArgs = [_.cloneDeep(folders.value), 0, baseFolderNames.value];
+  const [newFolders, newFolderId] = createFolder(...newFolderArgs);
+
+  setFolders(newFolders);
+
+  const baseNames = getBaseFolderNames(folders.value, []);
   baseFolderNames.value = baseNames.sort(sortBaseNames);
+
   contextMenu.value = {
     ...contextMenu.value,
     isOpen: false,
     folderId: newFolderId,
   };
   isEditingFolderName.value = true;
-  await chrome.storage.sync.set({ folders });
+
   await nextTick();
   document.querySelector(".folder-name__input").focus();
 };
 
 onMounted(async () => {
-  const { folders, chats } = await initData();
-  chatList.value = chats;
+  setTimeout(async () => {
+    const clonedChats = _.cloneDeep(chats.value);
+    const clonedFolders = _.cloneDeep(folders.value);
 
-  if (folders) {
-    folderList.value = folders;
-    const baseNames = getBaseFolderNames(folderList.value, []);
-    baseFolderNames.value = baseNames.sort(sortBaseNames);
-  }
-  await setCurrentWidth();
+    const newChats = getChatsFromDomElements(clonedChats);
+    const newFolders = filterFoldersByExistingChats(clonedFolders);
 
-  emitter.on("updateFolders", (newValue) => {
-    folderList.value = newValue;
-  });
-  emitter.on("updateChats", (newValue) => {
-    chatList.value = newValue;
-  });
+    await setChats(newChats);
+    await setFolders(newFolders);
+
+    if (folders.value) {
+      const baseNames = getBaseFolderNames(folders.value, []);
+      baseFolderNames.value = baseNames.sort(sortBaseNames);
+    }
+
+    await setCurrentWidth();
+
+    emitter.on("updateFolders", (newValue) => {
+      setFolders(newValue);
+    });
+    emitter.on("updateChats", (newValue) => {
+      setChats(newValue);
+    });
+  }, 200);
 });
 
 onUnmounted(() => {
@@ -91,7 +101,7 @@ onUnmounted(() => {
   <div :class="`folders ${theme}`">
     <SidebarResizing />
     <div class="first-nested-list">
-      <NestedList :items="folderList" />
+      <NestedList :items="folders" />
       <button class="new-folder-app" @click="onCreateFolder">
         <IconFolder />
         <span>New folder</span>

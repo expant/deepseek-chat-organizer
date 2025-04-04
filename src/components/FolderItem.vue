@@ -3,6 +3,8 @@ import _ from "lodash";
 import { ref, inject } from "vue";
 import { isNameNotUnique } from "@/utils/helpers.js";
 import { renameFolder } from "@/utils/chatAndFolderLogic";
+import { useStorage } from "@/composables/useStorage";
+
 import ContextMenu from "./ContextMenu.vue";
 import IconArrow from "./icons/IconArrow.vue";
 import IconDots from "./icons/IconDots.vue";
@@ -22,17 +24,21 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(["update:isFolderOpen"]);
-const folderRef = ref(null);
+
 const inputRef = ref(null);
+const folderRef = ref(null);
 const showDots = ref(false);
 const showNotification = ref(false);
-const folderList = inject("folderList");
+
 const contextMenu = inject("contextMenu");
 const contextMenuChat = inject("contextMenuChat");
 const baseFolderNames = inject("baseFolderNames");
 const isEditingFolderName = inject("isEditingFolderName");
 
+const { data: folders, update: setFolders } = useStorage("folders", []);
+
 const toggleFolder = () => emit("update:isFolderOpen", !props.isFolderOpen);
+
 const openContextMenu = (event) => {
   if (contextMenuChat.value.isOpen) {
     contextMenuChat.value = { ...contextMenuChat.value, isOpen: false };
@@ -50,16 +56,18 @@ const openContextMenu = (event) => {
 
 const handleRename = async () => {
   if (!inputRef.value) return;
+
   const inputValue = inputRef.value.value.trim();
-  const clonedFolders = _.cloneDeep(folderList.value);
+  const clonedFolders = _.cloneDeep(folders.value);
 
   if (isNameNotUnique(clonedFolders, inputValue)) {
-    // TODO: Активация showNotification и рендеринг соответствующего компонента
     isEditingFolderName.value = false;
     return;
   }
-  folderList.value = renameFolder(clonedFolders, props.id, inputValue);
-  await chrome.storage.sync.set({ folders: folderList.value });
+
+  const newFolders = renameFolder(clonedFolders, props.id, inputValue);
+  setFolders(newFolders);
+
   isEditingFolderName.value = false;
 };
 </script>

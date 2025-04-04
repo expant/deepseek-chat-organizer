@@ -131,3 +131,14 @@ export const setActiveChatInChatList = (chats, name) =>
       ? { ...item, isActive: true }
       : { ...item, isActive: false }
   );
+
+export const filterFoldersByExistingChats = (folders, chats) =>
+  folders.filter((item) => {
+    if (item.type === "folder") {
+      if (!item.children) return true;
+      item.children = filterFoldersByExistingChats(item.children);
+      return true;
+    }
+    const chat = chats.find((chat) => chat.id === item.id);
+    return chat ? true : false;
+  });

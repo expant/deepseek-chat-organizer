@@ -11,6 +11,8 @@ import {
 import { handleChatDeletion } from "@/content_scripts/dom/handlers";
 import { setObservationType } from "@/content_scripts/dom/state";
 import { classNames } from "@/variables.js";
+import { useStorage } from "@/composables/useStorage";
+
 import ContextMenuButton from "./buttons/ContextMenuButton.vue";
 
 const props = defineProps({
@@ -28,23 +30,25 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(["close"]);
-const folderList = inject("folderList");
-const chatList = inject("chatList");
+
 const contextMenu = inject("contextMenu");
 const contextMenuChat = inject("contextMenuChat");
 const baseFolderNames = inject("baseFolderNames");
 const showSearchChats = inject("showSearchChats");
 const isEditingChatName = inject("isEditingChatName");
 const isEditingFolderName = inject("isEditingFolderName");
+
 const scrollContainer = document.querySelector(`.${classNames.CHAT_LIST}`);
+
+const { data: folders, update: setFolders } = useStorage("folders", []);
+const { data: chats, update: setChats } = useStorage("chats", []);
 
 // Общие функции
 const deleteFolderIdFromList = (id) =>
-  chatList.value.map((item) =>
+  chats.value.map((item) =>
     item.id === id ? { ...item, folderId: null } : item
   );
-const deleteChatFromList = (id) =>
-  chatList.value.filter((item) => item.id !== id);
+const deleteChatFromList = (id) => chats.value.filter((item) => item.id !== id);
 
 const onRename = async (type) => {
   if (type === "chat") {
@@ -61,38 +65,46 @@ const onRename = async (type) => {
 // type: folder
 const onDeleteFolder = async () => {
   const id = contextMenu.value.folderId;
-  folderList.value = deleteFolder(folderList.value, id);
-  chatList.value = chatList.value.map((item) =>
+
+  const newFolders = deleteFolder(folders.value, id);
+  const newChats = chats.value.map((item) =>
     item.folderId === id ? { ...item, folderId: null } : item
   );
-  const baseNames = getBaseFolderNames(folderList.value, []);
+
+  const baseNames = getBaseFolderNames(newFolders, []);
   baseFolderNames.value = baseNames.sort(sortBaseNames);
-  await chrome.storage.sync.set({ folders: folderList.value });
-  await chrome.storage.sync.set({ chats: chatList.value });
+
+  await setChats(newChats);
+  await setFolders(newFolders);
+
   contextMenu.value = { ...contextMenu.value, isOpen: false };
 };
 
 const onCreateFolder = async () => {
   const id = contextMenu.value.folderId;
-  const [folders, newFolderId, newParentFolderId] = createFolder(
-    _.cloneDeep(folderList.value),
+
+  const [newFolders, newFolderId, newParentFolderId] = createFolder(
+    _.cloneDeep(folders.value),
     id,
     baseFolderNames.value
   );
-  folderList.value = folders;
-  chatList.value = chatList.value.map((chat) =>
+  const newChats = chats.value.map((chat) =>
     chat.folderId === id ? { ...chat, folderId: newParentFolderId } : chat
   );
-  const baseNames = getBaseFolderNames(folderList.value, []);
+
+  const baseNames = getBaseFolderNames(newFolders, []);
   baseFolderNames.value = baseNames.sort(sortBaseNames);
+
   contextMenu.value = {
     ...contextMenu.value,
     isOpen: false,
     folderId: newFolderId,
   };
   isEditingFolderName.value = true;
-  await chrome.storage.sync.set({ folders });
-  await chrome.storage.sync.set({ chats: chatList.value });
+
+  await setChats(newChats);
+  await setFolders(newFolders);
+
   await nextTick();
   document.querySelector(".folder-name__input").focus();
 };
@@ -106,14 +118,16 @@ const onAddChat = () => {
 const onDeleteChatFromFolder = async (target) => {
   const chatId = contextMenuChat.value.chatId;
   contextMenuChat.value = { ...contextMenuChat.value, isOpen: false };
-  folderList.value = deleteChat(folderList.value, chatId);
-  chatList.value =
+
+  const clonedFolders = _.cloneDeep(folders.value);
+  const newFolders = deleteChat(clonedFolders, chatId);
+  const newChats =
     target === "from folder"
       ? deleteFolderIdFromList(chatId)
       : deleteChatFromList(chatId);
 
-  await chrome.storage.sync.set({ folders: folderList.value });
-  await chrome.storage.sync.set({ chats: chatList.value });
+  await setChats(newChats);
+  await setFolders(newFolders);
 };
 
 const onDeleteChat = async () => {

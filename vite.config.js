@@ -22,6 +22,14 @@ export default defineConfig({
     }),
   ],
   build: {
+    // minify: "terser",
+    // terserOptions: {
+    //   mangle: false,
+    //   format: {
+    //     beautify: true,
+    //   },
+    //   compress: false,
+    // },
     rollupOptions: {
       input: {
         content: "src/content_scripts/main.js",

@@ -59,7 +59,7 @@ export const handleRenameFromList = async (el) => {
 };
 
 export const updateData = async () => {
-  const { folders, chats } = await initData();
+  const { folders, chats } = await getData();
   emitter.emit("updateChats", chats);
   if (!folders) return;
   emitter.emit("updateFolders", folders);
@@ -71,6 +71,7 @@ export const handleChatDeletion = async (id) => {
   if (observationType === "deleteFromFolder") {
     chatId = id;
     const chat = chats.find((item) => item.id === id);
+
     showDSContextMenu(chat.name);
     setTimeout(() => {
       simulateContextMenuAction(DELETE_BTN);
@@ -82,10 +83,13 @@ export const handleChatDeletion = async (id) => {
   if (observationType === "deleteFromList") {
     const newFolders = deleteChat(folders, chatId);
     const newChats = chats.filter((item) => item.id !== chatId);
+
     await chrome.storage.sync.set({ chats: newChats });
     await chrome.storage.sync.set({ folders: newFolders });
+
     emitter.emit("updateChats", newChats);
     emitter.emit("updateFolders", newFolders);
+
     setObservationType("");
   }
 };

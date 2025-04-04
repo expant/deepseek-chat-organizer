@@ -6,6 +6,8 @@ import { renameChat } from "@/utils/chatAndFolderLogic";
 import { renameDSChat } from "@/content_scripts/dom/handlers";
 import { getDSChatEl, simulateContextMenuAction } from "@/utils/helpers";
 import { setObservationType, setNames } from "@/content_scripts/dom/state";
+import { useStorage } from "@/composables/useStorage";
+
 import ContextMenu from "./ContextMenu.vue";
 import IconDots from "./icons/IconDots.vue";
 
@@ -17,16 +19,18 @@ const props = defineProps({
 });
 const emit = defineEmits(["click"]);
 
-const chatList = inject("chatList");
-const folderList = inject("folderList");
 const contextMenu = inject("contextMenu");
 const contextMenuChat = inject("contextMenuChat");
 const isEditingChatName = inject("isEditingChatName");
+
 const showDots = ref(false);
 const inputRef = ref(null);
 const chatRef = ref(null);
 
-const openContextMenu = (event) => {
+const { data: folders, update: setFolders } = useStorage("folders", []);
+const { data: chats, update: setChats } = useStorage("chats", []);
+
+const openContextMenu = () => {
   if (contextMenu.value.isOpen) {
     contextMenu.value = { ...contextMenu.value, isOpen: false };
   }
@@ -45,7 +49,7 @@ const handleRename = async () => {
   if (!inputRef.value) return;
   const prevName = props.chat.name;
   const inputValue = inputRef.value.value.trim();
-  const chatName = chatList.value.some((item) => item.name === inputValue);
+  const chatName = chats.value.some((item) => item.name === inputValue);
 
   if (chatName) {
     isEditingChatName.value = false;
@@ -53,13 +57,15 @@ const handleRename = async () => {
   }
 
   setObservationType("renameFromFolder");
-  chatList.value = chatList.value.map((item) =>
+
+  const newChats = chats.value.map((item) =>
     item.id === props.chat.id ? { ...item, name: inputValue } : item
   );
-  folderList.value = renameChat(folderList.value, props.chat.id, inputValue);
+  const newFolders = renameChat(folders.value, props.chat.id, inputValue);
 
-  await chrome.storage.sync.set({ chats: chatList.value });
-  await chrome.storage.sync.set({ folders: folderList.value });
+  await setChats(newChats);
+  await setFolders(newFolders);
+
   setNames(prevName, inputValue);
 
   const el = getDSChatEl(prevName);

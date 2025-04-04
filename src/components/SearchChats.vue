@@ -2,11 +2,9 @@
 import _ from "lodash";
 import { ref, onMounted, inject, computed } from "vue";
 import { addChatsToFolder } from "@/utils/chatAndFolderLogic";
-import {
-  convertObjToArrDeep,
-  generateId,
-  isOutsideClick,
-} from "@/utils/helpers.js";
+import { generateId, isOutsideClick } from "@/utils/helpers.js";
+import { useStorage } from "@/composables/useStorage";
+
 import SearchChatsItem from "./SearchChatsItem.vue";
 import IconSearch from "./icons/IconSearch.vue";
 import IconExit from "./icons/IconExit.vue";
@@ -16,11 +14,14 @@ const props = defineProps({
   required: true,
 });
 const emit = defineEmits(["close"]);
-const chatList = inject("chatList");
-const folderList = inject("folderList");
+
 const contextMenu = inject("contextMenu");
+
 const search = ref("");
 const selectedChats = ref([]);
+
+const { data: folders, update: setFolders } = useStorage("folders", []);
+const { data: chats, update: setChats } = useStorage("chats", []);
 
 const removeEventListeners = () => {
   const searchChatsWrap = document.querySelector(".search-chats-wrap");
@@ -36,37 +37,38 @@ const onKeydown = (event) => {
 
 const onSelectedChats = async (event) => {
   event.stopPropagation();
+
   if (!isOutsideClick(event, ".search-chats")) {
     removeEventListeners();
   }
 
   const folderId = contextMenu.value.folderId;
-  const chats = chatList.value.filter((chat) =>
+  const newFolderId = generateId();
+  const filteredChats = chats.value.filter((chat) =>
     selectedChats.value.includes(chat.id)
   );
-
-  const newFolderId = generateId();
   const args = [
-    _.cloneDeep(chats),
-    _.cloneDeep(folderList.value),
+    _.cloneDeep(filteredChats),
+    _.cloneDeep(folders.value),
     folderId,
     newFolderId,
   ];
 
-  folderList.value = addChatsToFolder(...args);
-  chatList.value = chatList.value.map((chat) => {
+  const newFolders = addChatsToFolder(...args);
+  const newChats = chats.value.map((chat) => {
     return selectedChats.value.includes(chat.id) || chat.folderId === folderId
       ? { ...chat, folderId: newFolderId }
       : chat;
   });
 
-  await chrome.storage.sync.set({ folders: folderList.value });
-  await chrome.storage.sync.set({ chats: chatList.value });
+  await setChats(newChats);
+  await setFolders(newFolders);
 };
 
 const searchedChats = computed(() => {
-  if (!search.value) return chatList.value;
-  return chatList.value.filter((chat) => {
+  if (!search.value) return chats.value;
+
+  return chats.value.filter((chat) => {
     const chatName = chat.name.toLowerCase();
     const searchValue = search.value.toLowerCase();
     return chatName.includes(searchValue);
@@ -76,7 +78,9 @@ const searchedChats = computed(() => {
 onMounted(async () => {
   const searchChatsWrap = document.querySelector(".search-chats-wrap");
   const input = searchChatsWrap.querySelector("input[name='search-chats']");
+
   input.focus();
+
   searchChatsWrap.addEventListener("click", (event) => {
     if (isOutsideClick(event, ".search-chats")) return;
     removeEventListeners();
