@@ -66,16 +66,14 @@ const onCreateFolder = async () => {
 
 onMounted(async () => {
   setTimeout(async () => {
-    const clonedChats = _.cloneDeep(chats.value);
-    const clonedFolders = _.cloneDeep(folders.value);
-
-    const newChats = getChatsFromDomElements(clonedChats);
-    const newFolders = filterFoldersByExistingChats(clonedFolders);
+    const newChats = await getChatsFromDomElements(chats.value);
+    const newFolders = filterFoldersByExistingChats(folders.value, chats.value);
 
     await setChats(newChats);
     await setFolders(newFolders);
 
     if (folders.value) {
+      console.log(folders.value);
       const baseNames = getBaseFolderNames(folders.value, []);
       baseFolderNames.value = baseNames.sort(sortBaseNames);
     }

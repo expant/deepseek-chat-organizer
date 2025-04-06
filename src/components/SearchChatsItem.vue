@@ -34,7 +34,7 @@ const handleCheckboxChange = (event) => {
 
 const isChatInFolder = computed(() => {
   const chat = chats.value.find((item) => item.id === props.chat.id);
-  return chat.folderId ? true : false;
+  return !!chat.folderId;
 });
 
 const onDeleteFromFolder = async () => {

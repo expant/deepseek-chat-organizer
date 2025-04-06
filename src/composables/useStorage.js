@@ -1,17 +1,19 @@
-import { ref } from "vue";
 import _ from "lodash";
+import { ref } from "vue";
+import { convertObjToArrDeep } from "@/utils/helpers";
 
-export function useStorage(key, defaultValue = null) {
+export function useStorage(key, defaultValue = []) {
   const data = ref(defaultValue);
 
   const load = async () => {
     const result = await chrome.storage.sync.get([key]);
-    data.value = result[key] || defaultValue;
+    data.value = convertObjToArrDeep(result[key], key) || defaultValue;
   };
 
   const update = async (newValue) => {
-    data.value = _.cloneDeep(newValue);
-    await chrome.storage.sync.set({ [key]: newValue });
+    const value = convertObjToArrDeep(newValue, key);
+    data.value = value;
+    await chrome.storage.sync.set({ [key]: value });
   };
 
   load();

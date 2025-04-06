@@ -40,6 +40,10 @@ export const isOutsideClick = (event, selector) => {
 };
 
 export const convertObjToArrDeep = (object, type) => {
+  if (typeof object !== "object") {
+    return object;
+  }
+
   const arr = Object.values(object);
 
   switch (type) {

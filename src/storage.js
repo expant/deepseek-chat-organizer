@@ -42,16 +42,17 @@ export const getChatsFromDomElements = async (chats) => {
 //   return { folders, chats: newChats };
 // };
 
-export const getData = async () => {
-  const { folders: foldersObj } = await chrome.storage.sync.get(["folders"]);
-  const { chats: chatsObj } = await chrome.storage.sync.get(["chats"]);
-  const folders =
-    typeof foldersObj === "object"
-      ? convertObjToArrDeep(foldersObj, "folders")
-      : foldersObj;
-  const chats =
-    typeof chatsObj === "object"
-      ? convertObjToArrDeep(chatsObj, "chats")
-      : chatsObj;
-  return { folders, chats };
+export const getDeepStorageArray = async (key) => {
+  const data = await chrome.storage.sync.get([key]);
+  return convertObjToArrDeep(data[key], key);
 };
+
+
+// export const getData = async () => {
+//   const { folders: foldersObj } = await chrome.storage.sync.get(["folders"]);
+//   const { chats: chatsObj } = await chrome.storage.sync.get(["chats"]);
+
+//   const folders = convertObjToArrDeep(foldersObj, "folders");
+//   const chats = convertObjToArrDeep(chatsObj, "chats");  
+//   return { folders, chats }
+// };

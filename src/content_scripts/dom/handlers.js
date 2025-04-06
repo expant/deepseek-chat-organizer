@@ -1,4 +1,4 @@
-import { getData, initData } from "@/storage";
+import { getDeepStorageArray } from "@/storage";
 import { classNames } from "@/variables.js";
 import {
   renameChat,
@@ -39,9 +39,12 @@ export const saveChatNameFromInput = () => {
 };
 
 export const handleRenameFromList = async (el) => {
-  const { folders, chats } = await getData();
+  const folders = await getDeepStorageArray("folders");
+  const chats = await getDeepStorageArray("chats");
+
   const chatEl = el.querySelector(`.${CHAT_TEXT}`);
   const chat = chats.find((item) => item.name === names.prev);
+
   const newFolders = folders
     ? renameChat(folders, chat.id, chatEl.textContent)
     : [];
@@ -59,14 +62,17 @@ export const handleRenameFromList = async (el) => {
 };
 
 export const updateData = async () => {
-  const { folders, chats } = await getData();
+  const folders = await getDeepStorageArray("folders");
+  const chats = await getDeepStorageArray("chats");
+
   emitter.emit("updateChats", chats);
   if (!folders) return;
   emitter.emit("updateFolders", folders);
 };
 
 export const handleChatDeletion = async (id) => {
-  const { folders, chats } = await getData();
+  const folders = await getDeepStorageArray("folders");
+  const chats = await getDeepStorageArray("chats");
 
   if (observationType === "deleteFromFolder") {
     chatId = id;
@@ -96,7 +102,8 @@ export const handleChatDeletion = async (id) => {
 
 export const handleActiveChat = async (el) => {
   const chatTextEl = el.querySelector(`.${CHAT_TEXT}`);
-  const { folders, chats } = await getData();
+  const folders = await getDeepStorageArray("folders");
+  const chats = await getDeepStorageArray("chats");
 
   if (folders) {
     const newFolders = setActiveChatInFolders(folders, chatTextEl.textContent);
