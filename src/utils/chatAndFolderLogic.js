@@ -27,6 +27,7 @@ export const createFolder = (folders, id, baseNames) => {
   let newFolderId = generateId();
   let newParentFolderId = generateId();
   const name = getNewBaseFolderName(baseNames);
+  console.log("New folder name: ", name);
   const newFolder = {
     id: newFolderId,
     type: "folder",
@@ -136,9 +137,10 @@ export const filterFoldersByExistingChats = (folders, chats) =>
   folders.filter((item) => {
     if (item.type === "folder") {
       if (!item.children) return true;
-      item.children = filterFoldersByExistingChats(item.children);
+      item.children = filterFoldersByExistingChats(item.children, chats);
       return true;
     }
+    console.log(chats);
     const chat = chats.find((chat) => chat.id === item.id);
     return chat ? true : false;
   });

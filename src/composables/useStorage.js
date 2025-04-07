@@ -4,10 +4,12 @@ import { convertObjToArrDeep } from "@/utils/helpers";
 
 export function useStorage(key, defaultValue = []) {
   const data = ref(defaultValue);
+  const isLoaded = ref(false);
 
   const load = async () => {
     const result = await chrome.storage.sync.get([key]);
     data.value = convertObjToArrDeep(result[key], key) || defaultValue;
+    isLoaded.value = true;
   };
 
   const update = async (newValue) => {
@@ -24,5 +26,5 @@ export function useStorage(key, defaultValue = []) {
     }
   });
 
-  return { data, update };
+  return { data, update, isLoaded };
 }

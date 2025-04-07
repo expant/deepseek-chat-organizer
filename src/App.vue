@@ -45,13 +45,16 @@ const { data: folders, update: setFolders } = useStorage("folders", []);
 const { data: chats, update: setChats } = useStorage("chats", []);
 
 const onCreateFolder = async () => {
-  const newFolderArgs = [_.cloneDeep(folders.value), 0, baseFolderNames.value];
+  const newFolderArgs = [folders.value, 0, baseFolderNames.value];
   const [newFolders, newFolderId] = createFolder(...newFolderArgs);
 
   setFolders(newFolders);
 
-  const baseNames = getBaseFolderNames(folders.value, []);
-  baseFolderNames.value = baseNames.sort(sortBaseNames);
+  // console.log("new folders: ", newFolders);
+  // console.log("base folder names: ", getBaseFolderNames(newFolders, []));
+
+  // const baseNames = getBaseFolderNames(newFolders, []);
+  // baseFolderNames.value = baseNames.sort(sortBaseNames);
 
   contextMenu.value = {
     ...contextMenu.value,
@@ -64,21 +67,20 @@ const onCreateFolder = async () => {
   document.querySelector(".folder-name__input").focus();
 };
 
-onMounted(async () => {
-  setTimeout(async () => {
-    const newChats = await getChatsFromDomElements(chats.value);
-    const newFolders = filterFoldersByExistingChats(folders.value, chats.value);
+onMounted(() => {
+  setTimeout(() => {
+    const newChats = getChatsFromDomElements(chats.value);
+    const newFolders = filterFoldersByExistingChats(folders.value, newChats);
 
-    await setChats(newChats);
-    await setFolders(newFolders);
+    setChats(newChats);
+    setFolders(newFolders);
 
-    if (folders.value) {
-      console.log(folders.value);
-      const baseNames = getBaseFolderNames(folders.value, []);
+    if (newFolders) {
+      const baseNames = getBaseFolderNames(newFolders, []);
       baseFolderNames.value = baseNames.sort(sortBaseNames);
     }
 
-    await setCurrentWidth();
+    setCurrentWidth();
 
     emitter.on("updateFolders", (newValue) => {
       setFolders(newValue);

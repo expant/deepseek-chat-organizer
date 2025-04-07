@@ -1,7 +1,7 @@
 import { generateId, convertObjToArrDeep } from "./utils/helpers.js";
 import { classNames } from "./variables.js";
 
-export const getChatsFromDomElements = async (chats) => {
+export const getChatsFromDomElements = (chats) => {
   const elements = document.querySelectorAll(`.${classNames.CHAT_TEXT}`);
   const entries = Object.entries(elements);
 
@@ -47,12 +47,11 @@ export const getDeepStorageArray = async (key) => {
   return convertObjToArrDeep(data[key], key);
 };
 
-
 // export const getData = async () => {
 //   const { folders: foldersObj } = await chrome.storage.sync.get(["folders"]);
 //   const { chats: chatsObj } = await chrome.storage.sync.get(["chats"]);
 
 //   const folders = convertObjToArrDeep(foldersObj, "folders");
-//   const chats = convertObjToArrDeep(chatsObj, "chats");  
+//   const chats = convertObjToArrDeep(chatsObj, "chats");
 //   return { folders, chats }
 // };

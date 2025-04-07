@@ -21,7 +21,11 @@ const search = ref("");
 const selectedChats = ref([]);
 
 const { data: folders, update: setFolders } = useStorage("folders", []);
-const { data: chats, update: setChats } = useStorage("chats", []);
+const {
+  data: chats,
+  update: setChats,
+  isLoaded: isChatsLoaded,
+} = useStorage("chats", []);
 
 const removeEventListeners = () => {
   const searchChatsWrap = document.querySelector(".search-chats-wrap");
@@ -61,8 +65,8 @@ const onSelectedChats = async (event) => {
       : chat;
   });
 
-  await setChats(newChats);
-  await setFolders(newFolders);
+  setChats(newChats);
+  setFolders(newFolders);
 };
 
 const searchedChats = computed(() => {
@@ -107,12 +111,16 @@ onMounted(async () => {
         <IconExit @click="removeEventListeners" />
       </div>
       <ul class="search-chats__list">
-        <SearchChatsItem
-          v-for="chat in searchedChats"
-          :key="chat.id"
-          :chat="chat"
-          v-model="selectedChats"
-        />
+        <div v-if="isChatsLoaded" class="search-chats__wrapper">
+          <SearchChatsItem
+            v-for="chat in searchedChats"
+            :key="chat.id"
+            :chat="chat"
+            :chats="chats"
+            v-model="selectedChats"
+            @set-chats="setChats"
+          />
+        </div>
       </ul>
     </div>
     <button

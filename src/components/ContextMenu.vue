@@ -84,7 +84,7 @@ const onCreateFolder = async () => {
   const id = contextMenu.value.folderId;
 
   const [newFolders, newFolderId, newParentFolderId] = createFolder(
-    _.cloneDeep(folders.value),
+    folders.value,
     id,
     baseFolderNames.value
   );

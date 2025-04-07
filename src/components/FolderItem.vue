@@ -28,7 +28,6 @@ const emit = defineEmits(["update:isFolderOpen"]);
 const inputRef = ref(null);
 const folderRef = ref(null);
 const showDots = ref(false);
-const showNotification = ref(false);
 
 const contextMenu = inject("contextMenu");
 const contextMenuChat = inject("contextMenuChat");
@@ -58,15 +57,17 @@ const handleRename = async () => {
   if (!inputRef.value) return;
 
   const inputValue = inputRef.value.value.trim();
-  const clonedFolders = _.cloneDeep(folders.value);
 
-  if (isNameNotUnique(clonedFolders, inputValue)) {
+  if (isNameNotUnique(folders.value, inputValue)) {
     isEditingFolderName.value = false;
     return;
   }
 
-  const newFolders = renameFolder(clonedFolders, props.id, inputValue);
+  const newFolders = renameFolder(folders.value, props.id, inputValue);
   setFolders(newFolders);
+
+  const baseNames = getBaseFolderNames(newFolders, []);
+  baseFolderNames.value = baseNames.sort(sortBaseNames);
 
   isEditingFolderName.value = false;
 };

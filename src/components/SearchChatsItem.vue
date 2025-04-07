@@ -15,14 +15,17 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  chats: {
+    type: Array,
+    required: true,
+  },
 });
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue", "setChats"]);
 
 const showIconReturn = ref(false);
 const folderName = ref("");
 
 const { data: folders, update: setFolders } = useStorage("folders", []);
-const { data: chats, update: setChats } = useStorage("chats", []);
 
 const handleCheckboxChange = (event) => {
   const updatedSelectedChats = event.target.checked
@@ -33,22 +36,23 @@ const handleCheckboxChange = (event) => {
 };
 
 const isChatInFolder = computed(() => {
-  const chat = chats.value.find((item) => item.id === props.chat.id);
+  const chat = props.chats.find((item) => item.id === props.chat.id);
   return !!chat.folderId;
 });
 
 const onDeleteFromFolder = async () => {
   folderName.value = "";
 
-  const newChats = chats.value.map((chat) =>
+  const newChats = props.chats.map((chat) =>
     props.chat.id === chat.id ? { ...chat, folderId: null } : chat
   );
 
   const clonedFolders = _.cloneDeep(folders.value);
   const newFolders = deleteChat(clonedFolders, props.chat.id);
 
-  await setChats(newChats);
-  await setFolders(newFolders);
+  emit("setChats", newChats);
+  // setChats(newChats);
+  setFolders(newFolders);
 };
 
 const getFolderName = (id) => {
