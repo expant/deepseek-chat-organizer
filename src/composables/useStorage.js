@@ -22,7 +22,7 @@ export function useStorage(key, defaultValue = []) {
 
   chrome.storage.onChanged.addListener((changes) => {
     if (changes[key]) {
-      data.value = _.cloneDeep(changes[key].newValue);
+      data.value = convertObjToArrDeep(changes[key].newValue, key);
     }
   });
 

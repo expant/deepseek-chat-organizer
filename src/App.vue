@@ -11,7 +11,7 @@ import {
 } from "@/utils/chatAndFolderLogic.js";
 
 import { useTheme } from "./composables/useTheme.js";
-import { useStorage } from "./composables/useStorage.js";
+import { useFolders } from "./composables/useFolders.js";
 
 import SearchChats from "./components/SearchChats.vue";
 import NestedList from "./components/NestedList.vue";
@@ -41,25 +41,11 @@ provide("isEditingChatName", isEditingChatName);
 provide("isEditingFolderName", isEditingFolderName);
 
 const { theme } = useTheme();
-const { data: folders, update: setFolders } = useStorage("folders", []);
-const { data: chats, update: setChats } = useStorage("chats", []);
-
-const onCreateFolder = async () => {
-  const newFolderArgs = [folders.value, 0, baseFolderNames.value];
-  const [newFolders, newFolderId] = createFolder(...newFolderArgs);
-
-  await setFolders(newFolders);
-
-  contextMenu.value = {
-    ...contextMenu.value,
-    isOpen: false,
-    folderId: newFolderId,
-  };
-  isEditingFolderName.value = true;
-
-  await nextTick();
-  document.querySelector(".folder-name__input").focus();
-};
+const { chats, folders, setFolders, setChats, onCreate } = useFolders(
+  baseFolderNames,
+  contextMenu,
+  isEditingFolderName
+);
 
 onMounted(() => {
   setTimeout(() => {
@@ -96,7 +82,7 @@ onUnmounted(() => {
     <SidebarResizing />
     <div class="first-nested-list">
       <NestedList :items="folders" />
-      <button class="new-folder-app" @click="onCreateFolder">
+      <button class="new-folder-app" @click="onCreate('app')">
         <IconFolder />
         <span>New folder</span>
       </button>

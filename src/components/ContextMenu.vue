@@ -1,18 +1,11 @@
 <script setup>
 import _ from "lodash";
-import { inject, nextTick, watch } from "vue";
+import { inject, watch } from "vue";
 import { isOutsideClick } from "@/utils/helpers";
-import { getBaseFolderNames, sortBaseNames } from "@/utils/baseFolderNames.js";
-import {
-  deleteFolder,
-  createFolder,
-  deleteChat,
-} from "@/utils/chatAndFolderLogic";
-import { handleChatDeletion } from "@/content_scripts/dom/handlers";
-import { setObservationType } from "@/content_scripts/dom/state";
 import { classNames } from "@/variables.js";
 import { useStorage } from "@/composables/useStorage";
-
+import { useFolders } from "@/composables/useFolders";
+import { useChats } from "@/composables/useChats";
 import ContextMenuButton from "./buttons/ContextMenuButton.vue";
 
 const props = defineProps({
@@ -40,97 +33,24 @@ const isEditingFolderName = inject("isEditingFolderName");
 
 const scrollContainer = document.querySelector(`.${classNames.CHAT_LIST}`);
 
-const { data: folders, update: setFolders } = useStorage("folders", []);
 const { data: chats, update: setChats } = useStorage("chats", []);
+const {
+  folders,
+  setFolders,
+  onCreate: onCreateFolder,
+  onDelete: onDeleteFolder,
+  onRename: onRenameFolder,
+} = useFolders(baseFolderNames, contextMenu, isEditingFolderName);
 
-// Общие функции
-const deleteFolderIdFromList = (id) =>
-  chats.value.map((item) =>
-    item.id === id ? { ...item, folderId: null } : item
-  );
-const deleteChatFromList = (id) => chats.value.filter((item) => item.id !== id);
-
-const onRename = async (type) => {
-  if (type === "chat") {
-    isEditingChatName.value = true;
-    contextMenuChat.value = { ...contextMenuChat.value, isOpen: false };
-  } else {
-    isEditingFolderName.value = true;
-    contextMenu.value = { ...contextMenu.value, isOpen: false };
-  }
-  await nextTick();
-  document.querySelector(`.${type}-name__input`).focus();
-};
-
-// type: folder
-const onDeleteFolder = async () => {
-  const id = contextMenu.value.folderId;
-
-  const newFolders = deleteFolder(folders.value, id);
-  const newChats = chats.value.map((item) =>
-    item.folderId === id ? { ...item, folderId: null } : item
-  );
-
-  const baseNames = getBaseFolderNames(newFolders, []);
-  baseFolderNames.value = baseNames.sort(sortBaseNames);
-
-  await setChats(newChats);
-  await setFolders(newFolders);
-
-  contextMenu.value = { ...contextMenu.value, isOpen: false };
-};
-
-const onCreateFolder = async () => {
-  const id = contextMenu.value.folderId;
-
-  const [newFolders, newFolderId, newParentFolderId] = createFolder(
-    folders.value,
-    id,
-    baseFolderNames.value
-  );
-  const newChats = chats.value.map((chat) =>
-    chat.folderId === id ? { ...chat, folderId: newParentFolderId } : chat
-  );
-
-  contextMenu.value = {
-    ...contextMenu.value,
-    isOpen: false,
-    folderId: newFolderId,
-  };
-  isEditingFolderName.value = true;
-
-  await setChats(newChats);
-  await setFolders(newFolders);
-
-  await nextTick();
-  document.querySelector(".folder-name__input").focus();
-};
+const {
+  onRename: onRenameChat,
+  onDelete: onDeleteChat,
+  onDeleteFromFolder,
+} = useChats(baseFolderNames, contextMenuChat, isEditingChatName);
 
 const onAddChat = () => {
   showSearchChats.value = true;
   contextMenu.value = { ...contextMenu.value, isOpen: false };
-};
-
-//type: chat
-const onDeleteChatFromFolder = async (target) => {
-  const chatId = contextMenuChat.value.chatId;
-  contextMenuChat.value = { ...contextMenuChat.value, isOpen: false };
-
-  const clonedFolders = _.cloneDeep(folders.value);
-  const newFolders = deleteChat(clonedFolders, chatId);
-  const newChats =
-    target === "from folder"
-      ? deleteFolderIdFromList(chatId)
-      : deleteChatFromList(chatId);
-
-  await setChats(newChats);
-  await setFolders(newFolders);
-};
-
-const onDeleteChat = async () => {
-  const chatId = contextMenuChat.value.chatId;
-  setObservationType("deleteFromFolder");
-  await handleChatDeletion(chatId);
 };
 
 const setPositions = () => {
@@ -146,10 +66,12 @@ const setPositions = () => {
   }
   contextMenu.value = { ...contextMenu.value, position };
 };
+
 const getActiveContextMenuState = () =>
   props.type === "chat"
     ? contextMenuChat.value.isOpen
     : contextMenu.value.isOpen;
+
 const handleDocumentClick = (event) => {
   const selector = `${props.type === "chat" ? ".cm-chat" : ".cm-folder"}`;
   if (isOutsideClick(event, selector)) return;
@@ -188,9 +110,12 @@ watch(getActiveContextMenuState, (isOpen) => {
       }"
     >
       <ContextMenuButton name="Add chat(s)" @click="onAddChat" />
-      <ContextMenuButton name="New folder" @click="onCreateFolder" />
+      <ContextMenuButton
+        name="New folder"
+        @click="onCreateFolder('context-menu')"
+      />
       <div class="line"></div>
-      <ContextMenuButton name="Rename" @click="onRename('folder')" />
+      <ContextMenuButton name="Rename" @click="onRenameFolder" />
       <ContextMenuButton name="Delete" @click="onDeleteFolder" />
     </div>
     <div
@@ -202,10 +127,10 @@ watch(getActiveContextMenuState, (isOpen) => {
       }"
     >
       <!-- <div class="line"></div> -->
-      <ContextMenuButton name="Rename" @click="onRename('chat')" />
+      <ContextMenuButton name="Rename" @click="onRenameChat" />
       <ContextMenuButton
         name="Delete from folder"
-        @click="onDeleteChatFromFolder('from folder')"
+        @click="onDeleteFromFolder('from folder')"
       />
       <ContextMenuButton name="Delete" @click="onDeleteChat" />
     </div>
