@@ -1,6 +1,13 @@
 import { generateId } from "./helpers";
 import { getNewBaseFolderName } from "./baseFolderNames";
 
+export const getFolder = (folders, id) =>
+  folders.reduce((acc, item) => {
+    if (item.type === "chat") return acc;
+    if (item.id === id) return item;
+    return getFolder(item.children, id);
+  }, {});
+
 export const renameFolder = (folders, id, name) =>
   folders.map((item) => {
     if (item.type === "chat") return item;
@@ -26,8 +33,8 @@ export const deleteFolder = (folders, id) =>
 export const createFolder = (folders, id, baseNames) => {
   let newFolderId = generateId();
   let newParentFolderId = generateId();
+
   const name = getNewBaseFolderName(baseNames);
-  console.log("New folder name: ", name);
   const newFolder = {
     id: newFolderId,
     type: "folder",
@@ -140,7 +147,7 @@ export const filterFoldersByExistingChats = (folders, chats) =>
       item.children = filterFoldersByExistingChats(item.children, chats);
       return true;
     }
-    console.log(chats);
+
     const chat = chats.find((chat) => chat.id === item.id);
     return chat ? true : false;
   });

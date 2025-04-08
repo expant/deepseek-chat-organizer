@@ -48,13 +48,7 @@ const onCreateFolder = async () => {
   const newFolderArgs = [folders.value, 0, baseFolderNames.value];
   const [newFolders, newFolderId] = createFolder(...newFolderArgs);
 
-  setFolders(newFolders);
-
-  // console.log("new folders: ", newFolders);
-  // console.log("base folder names: ", getBaseFolderNames(newFolders, []));
-
-  // const baseNames = getBaseFolderNames(newFolders, []);
-  // baseFolderNames.value = baseNames.sort(sortBaseNames);
+  await setFolders(newFolders);
 
   contextMenu.value = {
     ...contextMenu.value,

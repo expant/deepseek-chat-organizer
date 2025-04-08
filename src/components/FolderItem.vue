@@ -2,7 +2,8 @@
 import _ from "lodash";
 import { ref, inject } from "vue";
 import { isNameNotUnique } from "@/utils/helpers.js";
-import { renameFolder } from "@/utils/chatAndFolderLogic";
+import { sortBaseNames } from "@/utils/baseFolderNames";
+import { renameFolder, getFolder } from "@/utils/chatAndFolderLogic";
 import { useStorage } from "@/composables/useStorage";
 
 import ContextMenu from "./ContextMenu.vue";
@@ -56,18 +57,26 @@ const openContextMenu = (event) => {
 const handleRename = async () => {
   if (!inputRef.value) return;
 
+  const newFolder = getFolder(folders.value, contextMenu.value.folderId);
   const inputValue = inputRef.value.value.trim();
 
-  if (isNameNotUnique(folders.value, inputValue)) {
+  if (
+    isNameNotUnique(folders.value, inputValue) &&
+    inputValue !== newFolder.name
+  ) {
     isEditingFolderName.value = false;
     return;
   }
 
+  const isBaseName = inputValue.match(/^Untitled( \d+)?$/)[0];
+  if (isBaseName) {
+    baseFolderNames.value = [...baseFolderNames.value, inputValue].sort(
+      sortBaseNames
+    );
+  }
+
   const newFolders = renameFolder(folders.value, props.id, inputValue);
   setFolders(newFolders);
-
-  const baseNames = getBaseFolderNames(newFolders, []);
-  baseFolderNames.value = baseNames.sort(sortBaseNames);
 
   isEditingFolderName.value = false;
 };

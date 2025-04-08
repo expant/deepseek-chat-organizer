@@ -92,9 +92,6 @@ const onCreateFolder = async () => {
     chat.folderId === id ? { ...chat, folderId: newParentFolderId } : chat
   );
 
-  const baseNames = getBaseFolderNames(newFolders, []);
-  baseFolderNames.value = baseNames.sort(sortBaseNames);
-
   contextMenu.value = {
     ...contextMenu.value,
     isOpen: false,
