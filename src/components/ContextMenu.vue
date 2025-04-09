@@ -33,20 +33,12 @@ const isEditingFolderName = inject("isEditingFolderName");
 
 const scrollContainer = document.querySelector(`.${classNames.CHAT_LIST}`);
 
-const { data: chats, update: setChats } = useStorage("chats", []);
-const {
-  folders,
-  setFolders,
-  onCreate: onCreateFolder,
-  onDelete: onDeleteFolder,
-  onRename: onRenameFolder,
-} = useFolders(baseFolderNames, contextMenu, isEditingFolderName);
-
-const {
-  onRename: onRenameChat,
-  onDelete: onDeleteChat,
-  onDeleteFromFolder,
-} = useChats(baseFolderNames, contextMenuChat, isEditingChatName);
+const folderStore = useFolders(
+  baseFolderNames,
+  contextMenu,
+  isEditingFolderName
+);
+const chatStore = useChats(baseFolderNames, contextMenuChat, isEditingChatName);
 
 const onAddChat = () => {
   showSearchChats.value = true;
@@ -112,11 +104,11 @@ watch(getActiveContextMenuState, (isOpen) => {
       <ContextMenuButton name="Add chat(s)" @click="onAddChat" />
       <ContextMenuButton
         name="New folder"
-        @click="onCreateFolder('context-menu')"
+        @click="folderStore.onCreate('context-menu')"
       />
       <div class="line"></div>
-      <ContextMenuButton name="Rename" @click="onRenameFolder" />
-      <ContextMenuButton name="Delete" @click="onDeleteFolder" />
+      <ContextMenuButton name="Rename" @click="folderStore.prepareForRename" />
+      <ContextMenuButton name="Delete" @click="folderStore.onDelete" />
     </div>
     <div
       v-else
@@ -126,13 +118,12 @@ watch(getActiveContextMenuState, (isOpen) => {
         left: `${position.left}px`,
       }"
     >
-      <!-- <div class="line"></div> -->
-      <ContextMenuButton name="Rename" @click="onRenameChat" />
+      <ContextMenuButton name="Rename" @click="chatStore.onRename" />
       <ContextMenuButton
         name="Delete from folder"
-        @click="onDeleteFromFolder('from folder')"
+        @click="chatStore.onDeleteFromFolder('from folder')"
       />
-      <ContextMenuButton name="Delete" @click="onDeleteChat" />
+      <ContextMenuButton name="Delete" @click="chatStore.onDelete" />
     </div>
   </transition>
 </template>

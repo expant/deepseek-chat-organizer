@@ -1,11 +1,7 @@
 <script setup>
 import _ from "lodash";
 import { ref, inject } from "vue";
-import { isNameNotUnique } from "@/utils/helpers.js";
-import { sortBaseNames } from "@/utils/baseFolderNames";
-import { renameFolder, getFolder } from "@/utils/chatAndFolderLogic";
-import { useStorage } from "@/composables/useStorage";
-
+import { useFolders } from "@/composables/useFolders";
 import ContextMenu from "./ContextMenu.vue";
 import IconArrow from "./icons/IconArrow.vue";
 import IconDots from "./icons/IconDots.vue";
@@ -26,20 +22,20 @@ const props = defineProps({
 });
 const emit = defineEmits(["update:isFolderOpen"]);
 
-const inputRef = ref(null);
-const folderRef = ref(null);
-const showDots = ref(false);
-
 const contextMenu = inject("contextMenu");
 const contextMenuChat = inject("contextMenuChat");
 const baseFolderNames = inject("baseFolderNames");
 const isEditingFolderName = inject("isEditingFolderName");
 
-const { data: folders, update: setFolders } = useStorage("folders", []);
+const folderStore = useFolders(
+  baseFolderNames,
+  contextMenu,
+  isEditingFolderName
+);
 
 const toggleFolder = () => emit("update:isFolderOpen", !props.isFolderOpen);
 
-const openContextMenu = (event) => {
+const openContextMenu = () => {
   if (contextMenuChat.value.isOpen) {
     contextMenuChat.value = { ...contextMenuChat.value, isOpen: false };
   }
@@ -53,58 +49,35 @@ const openContextMenu = (event) => {
     folderId: props.id,
   };
 };
-
-const handleRename = async () => {
-  if (!inputRef.value) return;
-
-  const newFolder = getFolder(folders.value, contextMenu.value.folderId);
-  const inputValue = inputRef.value.value.trim();
-
-  if (
-    isNameNotUnique(folders.value, inputValue) &&
-    inputValue !== newFolder.name
-  ) {
-    isEditingFolderName.value = false;
-    return;
-  }
-
-  const isBaseName = inputValue.match(/^Untitled( \d+)?$/)[0];
-  if (isBaseName) {
-    baseFolderNames.value = [...baseFolderNames.value, inputValue].sort(
-      sortBaseNames
-    );
-  }
-
-  const newFolders = renameFolder(folders.value, props.id, inputValue);
-  setFolders(newFolders);
-
-  isEditingFolderName.value = false;
-};
 </script>
 <template>
   <div class="folder-wrapper">
     <input
       v-if="isEditingFolderName && id === contextMenu.folderId"
-      ref="inputRef"
+      :ref="folderStore.inputRef"
       class="folder-name__input"
       type="text"
       name="folder-name"
       :value="name"
-      @blur="handleRename"
-      @keydown.enter="handleRename"
+      @blur="folderStore.onRename"
+      @keydown.enter="folderStore.onRename"
     />
     <div
       v-else
-      ref="folderRef"
+      :ref="folderStore.folderRef"
       class="folder-name"
       :data-id="id"
       @click="toggleFolder"
-      @mouseover="showDots = true"
-      @mouseleave="showDots = false"
+      @mouseover="folderStore.showDots = true"
+      @mouseleave="folderStore.showDots = false"
     >
       <IconArrow :isFolderOpen="isFolderOpen" />
       <span class="folder-name__text">{{ name }}</span>
-      <div class="icon-dots" v-show="showDots" @click.stop="openContextMenu">
+      <div
+        class="icon-dots"
+        v-show="folderStore.showDots"
+        @click.stop="openContextMenu"
+      >
         <IconDots />
       </div>
     </div>
@@ -113,7 +86,7 @@ const handleRename = async () => {
       @close="contextMenu.isOpen = false"
       :type="'folder'"
       :position="contextMenu.position"
-      :target-el="folderRef"
+      :target-el="folderStore.folderRef"
     />
   </div>
 </template>

@@ -1,13 +1,23 @@
 import { nextTick } from "vue";
 import { useStorage } from "./useStorage";
-import { createFolder, deleteFolder } from "@/utils/chatAndFolderLogic";
+import { isNameNotUnique } from "@/utils/helpers.js";
 import { getBaseFolderNames, sortBaseNames } from "@/utils/baseFolderNames";
+import {
+  createFolder,
+  deleteFolder,
+  renameFolder,
+  getFolder,
+} from "@/utils/chatAndFolderLogic";
 
 const inputClassname = "folder-name__input";
 
 export function useFolders(baseNames, contextMenu, isEditing) {
   const { data: folders, update: setFolders } = useStorage("folders", []);
   const { data: chats, update: setChats } = useStorage("chats", []);
+
+  const showDots = ref(false);
+  const inputRef = ref(null);
+  const folderRef = ref(null);
 
   const onCreate = async (callerContext) => {
     const id = contextMenu.value.folderId;
@@ -55,6 +65,30 @@ export function useFolders(baseNames, contextMenu, isEditing) {
   };
 
   const onRename = async () => {
+    if (!inputRef.value) return;
+
+    const newFolder = getFolder(folders.value, contextMenu.value.folderId);
+    const inputValue = inputRef.value.value.trim();
+
+    if (
+      isNameNotUnique(folders.value, inputValue) &&
+      inputValue !== newFolder.name
+    ) {
+      isEditing.value = false;
+      return;
+    }
+
+    const isBaseName = inputValue.match(/^Untitled( \d+)?$/)[0];
+    if (isBaseName) {
+      baseNames.value = [...baseNames.value, inputValue].sort(sortBaseNames);
+    }
+
+    const newFolders = renameFolder(folders.value, props.id, inputValue);
+    setFolders(newFolders);
+    isEditing.value = false;
+  };
+
+  const prepareForRename = async () => {
     isEditing.value = true;
     contextMenu.value = { ...contextMenu.value, isOpen: false };
     await nextTick();
@@ -62,6 +96,9 @@ export function useFolders(baseNames, contextMenu, isEditing) {
   };
 
   return {
+    showDots,
+    folderRef,
+    inputRef,
     chats,
     folders,
     setFolders,
@@ -69,5 +106,6 @@ export function useFolders(baseNames, contextMenu, isEditing) {
     onCreate,
     onDelete,
     onRename,
+    prepareForRename,
   };
 }
