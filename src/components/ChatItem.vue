@@ -1,13 +1,8 @@
 <script setup>
 import _ from "lodash";
 import { ref, inject } from "vue";
-import { classNames } from "@/variables";
-import { renameChat } from "@/utils/chatAndFolderLogic";
-import { renameDSChat } from "@/content_scripts/dom/handlers";
-import { getDSChatEl, simulateContextMenuAction } from "@/utils/helpers";
-import { setObservationType, setNames } from "@/content_scripts/dom/state";
-import { useStorage } from "@/composables/useStorage";
-
+import { useChats } from "@/composables/useChats";
+import { getDSChatEl } from "@/utils/helpers";
 import ContextMenu from "./ContextMenu.vue";
 import IconDots from "./icons/IconDots.vue";
 
@@ -27,8 +22,7 @@ const showDots = ref(false);
 const inputRef = ref(null);
 const chatRef = ref(null);
 
-const { data: folders, update: setFolders } = useStorage("folders", []);
-const { data: chats, update: setChats } = useStorage("chats", []);
+const chatStore = useChats(contextMenuChat, isEditingChatName);
 
 const openContextMenu = () => {
   if (contextMenu.value.isOpen) {
@@ -45,40 +39,6 @@ const openContextMenu = () => {
   };
 };
 
-const handleRename = async () => {
-  if (!inputRef.value) return;
-  const prevName = props.chat.name;
-  const inputValue = inputRef.value.value.trim();
-  const chatName = chats.value.some((item) => item.name === inputValue);
-
-  if (chatName) {
-    isEditingChatName.value = false;
-    return;
-  }
-
-  setObservationType("renameFromFolder");
-
-  const newChats = chats.value.map((item) =>
-    item.id === props.chat.id ? { ...item, name: inputValue } : item
-  );
-  const newFolders = renameChat(folders.value, props.chat.id, inputValue);
-
-  await setChats(newChats);
-  await setFolders(newFolders);
-
-  setNames(prevName, inputValue);
-
-  const el = getDSChatEl(prevName);
-  const dotsEl = el.nextElementSibling;
-  dotsEl.click();
-
-  setTimeout(() => {
-    simulateContextMenuAction(classNames.RENAME_BTN);
-    renameDSChat();
-  }, 100);
-  isEditingChatName.value = false;
-};
-
 const openDialog = () => {
   emit("click");
   const el = getDSChatEl(props.chat.name);
@@ -89,17 +49,20 @@ const openDialog = () => {
 <template>
   <div class="chat-wrapper">
     <input
-      v-if="isEditingChatName && chat.id === contextMenuChat.chatId"
+      v-show="isEditingChatName && chat.id === contextMenuChat.chatId"
       ref="inputRef"
       class="chat-name__input"
       type="text"
       name="chat-name"
       :value="chat.name"
-      @blur="handleRename"
-      @keydown.enter="handleRename"
+      :data-id="chat.id"
+      @blur="chatStore.onRename(chat.name, inputRef.value.trim(), chat.id)"
+      @keydown.enter="
+        chatStore.onRename(chat.name, inputRef.value.trim(), chat.id)
+      "
     />
     <div
-      v-else
+      v-show="!isEditingChatName || chat.id !== contextMenuChat.chatId"
       ref="chatRef"
       :class="`${chat.isActive ? 'chat-item chat-active' : 'chat-item'}`"
       :data-id="chat.id"

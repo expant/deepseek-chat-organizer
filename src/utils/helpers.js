@@ -74,3 +74,6 @@ export const simulateContextMenuAction = (btnClassName) => {
   const btn = menu.querySelector(`.${btnClassName}`);
   btn.click();
 };
+
+export const getChatOrFolderInput = (type, id) =>
+  document.querySelector(`.${type}-name__input[data-id='${id}']`);

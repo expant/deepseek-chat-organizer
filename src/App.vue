@@ -1,16 +1,13 @@
 <script setup>
 import _ from "lodash";
-import { ref, onMounted, onUnmounted, provide, nextTick } from "vue";
+import { ref, onMounted, onUnmounted, provide } from "vue";
 import { emitter } from "@/content_scripts/dom/state.js";
 import { setCurrentWidth } from "./utils/sidebarWidthResizing";
 import { getChatsFromDomElements } from "@/storage.js";
 import { sortBaseNames, getBaseFolderNames } from "./utils/baseFolderNames.js";
-import {
-  createFolder,
-  filterFoldersByExistingChats,
-} from "@/utils/chatAndFolderLogic.js";
-
+import { filterFoldersByExistingChats } from "@/utils/chatAndFolderLogic.js";
 import { useTheme } from "./composables/useTheme.js";
+import { useChats } from "./composables/useChats";
 import { useFolders } from "./composables/useFolders.js";
 
 import SearchChats from "./components/SearchChats.vue";
@@ -41,7 +38,8 @@ provide("isEditingChatName", isEditingChatName);
 provide("isEditingFolderName", isEditingFolderName);
 
 const { theme } = useTheme();
-const { chats, folders, setFolders, setChats, onCreate } = useFolders(
+const { chats, setChats } = useChats();
+const { folders, setFolders, onCreate } = useFolders(
   baseFolderNames,
   contextMenu,
   isEditingFolderName
@@ -81,11 +79,11 @@ onUnmounted(() => {
   <div :class="`folders ${theme}`">
     <SidebarResizing />
     <div class="first-nested-list">
-      <NestedList :items="folders" />
       <button class="new-folder-app" @click="onCreate('app')">
         <IconFolder />
         <span>New folder</span>
       </button>
+      <NestedList :items="folders" />
     </div>
     <SearchChats
       v-if="showSearchChats"

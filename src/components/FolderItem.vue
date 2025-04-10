@@ -27,6 +27,10 @@ const contextMenuChat = inject("contextMenuChat");
 const baseFolderNames = inject("baseFolderNames");
 const isEditingFolderName = inject("isEditingFolderName");
 
+const showDots = ref(false);
+const inputRef = ref(null);
+const folderRef = ref(null);
+
 const folderStore = useFolders(
   baseFolderNames,
   contextMenu,
@@ -53,31 +57,28 @@ const openContextMenu = () => {
 <template>
   <div class="folder-wrapper">
     <input
-      v-if="isEditingFolderName && id === contextMenu.folderId"
-      :ref="folderStore.inputRef"
+      v-show="isEditingFolderName && id === contextMenu.folderId"
+      ref="inputRef"
       class="folder-name__input"
       type="text"
       name="folder-name"
       :value="name"
-      @blur="folderStore.onRename"
-      @keydown.enter="folderStore.onRename"
+      :data-id="id"
+      @blur="folderStore.onRename(inputRef.value.trim(), id)"
+      @keydown.enter="folderStore.onRename(inputRef.value.trim(), id)"
     />
     <div
-      v-else
-      :ref="folderStore.folderRef"
+      v-show="!isEditingFolderName || id !== contextMenu.folderId"
+      ref="folderRef"
       class="folder-name"
       :data-id="id"
       @click="toggleFolder"
-      @mouseover="folderStore.showDots = true"
-      @mouseleave="folderStore.showDots = false"
+      @mouseover="showDots = true"
+      @mouseleave="showDots = false"
     >
       <IconArrow :isFolderOpen="isFolderOpen" />
       <span class="folder-name__text">{{ name }}</span>
-      <div
-        class="icon-dots"
-        v-show="folderStore.showDots"
-        @click.stop="openContextMenu"
-      >
+      <div class="icon-dots" v-show="showDots" @click.stop="openContextMenu">
         <IconDots />
       </div>
     </div>
@@ -86,7 +87,7 @@ const openContextMenu = () => {
       @close="contextMenu.isOpen = false"
       :type="'folder'"
       :position="contextMenu.position"
-      :target-el="folderStore.folderRef"
+      :target-el="folderRef"
     />
   </div>
 </template>

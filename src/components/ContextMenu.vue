@@ -3,7 +3,6 @@ import _ from "lodash";
 import { inject, watch } from "vue";
 import { isOutsideClick } from "@/utils/helpers";
 import { classNames } from "@/variables.js";
-import { useStorage } from "@/composables/useStorage";
 import { useFolders } from "@/composables/useFolders";
 import { useChats } from "@/composables/useChats";
 import ContextMenuButton from "./buttons/ContextMenuButton.vue";
@@ -38,7 +37,7 @@ const folderStore = useFolders(
   contextMenu,
   isEditingFolderName
 );
-const chatStore = useChats(baseFolderNames, contextMenuChat, isEditingChatName);
+const chatStore = useChats(contextMenuChat, isEditingChatName);
 
 const onAddChat = () => {
   showSearchChats.value = true;
@@ -118,7 +117,7 @@ watch(getActiveContextMenuState, (isOpen) => {
         left: `${position.left}px`,
       }"
     >
-      <ContextMenuButton name="Rename" @click="chatStore.onRename" />
+      <ContextMenuButton name="Rename" @click="chatStore.prepareForRename" />
       <ContextMenuButton
         name="Delete from folder"
         @click="chatStore.onDeleteFromFolder('from folder')"

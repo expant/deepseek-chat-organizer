@@ -1,6 +1,6 @@
 import { nextTick } from "vue";
 import { useStorage } from "./useStorage";
-import { isNameNotUnique } from "@/utils/helpers.js";
+import { isNameNotUnique, getChatOrFolderInput } from "@/utils/helpers.js";
 import { getBaseFolderNames, sortBaseNames } from "@/utils/baseFolderNames";
 import {
   createFolder,
@@ -9,15 +9,9 @@ import {
   getFolder,
 } from "@/utils/chatAndFolderLogic";
 
-const inputClassname = "folder-name__input";
-
 export function useFolders(baseNames, contextMenu, isEditing) {
   const { data: folders, update: setFolders } = useStorage("folders", []);
   const { data: chats, update: setChats } = useStorage("chats", []);
-
-  const showDots = ref(false);
-  const inputRef = ref(null);
-  const folderRef = ref(null);
 
   const onCreate = async (callerContext) => {
     const id = contextMenu.value.folderId;
@@ -42,9 +36,10 @@ export function useFolders(baseNames, contextMenu, isEditing) {
     };
 
     await setFolders(newFolders);
+
     isEditing.value = true;
     await nextTick();
-    document.querySelector(`.${inputClassname}`).focus();
+    getChatOrFolderInput("folder", newFolderId).focus();
   };
 
   const onDelete = async () => {
@@ -64,45 +59,42 @@ export function useFolders(baseNames, contextMenu, isEditing) {
     contextMenu.value = { ...contextMenu.value, isOpen: false };
   };
 
-  const onRename = async () => {
-    if (!inputRef.value) return;
+  const onRename = async (newName, id) => {
+    if (!newName) return;
 
-    const newFolder = getFolder(folders.value, contextMenu.value.folderId);
-    const inputValue = inputRef.value.value.trim();
+    const newFolder = getFolder(folders.value, id);
 
-    if (
-      isNameNotUnique(folders.value, inputValue) &&
-      inputValue !== newFolder.name
-    ) {
+    if (isNameNotUnique(folders.value, newName) && newName !== newFolder.name) {
       isEditing.value = false;
       return;
     }
 
-    const isBaseName = inputValue.match(/^Untitled( \d+)?$/)[0];
+    const isBaseName = !!newName.match(/^Untitled( \d+)?$/)?.[0];
     if (isBaseName) {
-      baseNames.value = [...baseNames.value, inputValue].sort(sortBaseNames);
+      baseNames.value = [...baseNames.value, newName].sort(sortBaseNames);
     }
 
-    const newFolders = renameFolder(folders.value, props.id, inputValue);
+    const newFolders = renameFolder(folders.value, id, newName);
+    const newNames = getBaseFolderNames(newFolders, []);
+    baseNames.value = newNames.sort(sortBaseNames);
+
     setFolders(newFolders);
     isEditing.value = false;
   };
 
   const prepareForRename = async () => {
+    const id = contextMenu.value.folderId;
+
     isEditing.value = true;
     contextMenu.value = { ...contextMenu.value, isOpen: false };
+
     await nextTick();
-    document.querySelector(`.${inputClassname}`).focus();
+    getChatOrFolderInput("folder", id).focus();
   };
 
   return {
-    showDots,
-    folderRef,
-    inputRef,
-    chats,
     folders,
     setFolders,
-    setChats,
     onCreate,
     onDelete,
     onRename,
