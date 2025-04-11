@@ -1,10 +1,11 @@
-import { getDeepStorageArray } from "@/storage";
+import { getDeepStorageArray, getChatsFromDomElements } from "@/storage";
 import { classNames } from "@/variables.js";
 import {
   renameChat,
   deleteChat,
   setActiveChatInFolders,
   setActiveChatInChatList,
+  filterFoldersByExistingChats,
 } from "@/utils/chatAndFolderLogic.js";
 import {
   showDSContextMenu,
@@ -62,12 +63,15 @@ export const handleRenameFromList = async (el) => {
 };
 
 export const updateData = async () => {
-  const folders = await getDeepStorageArray("folders");
   const chats = await getDeepStorageArray("chats");
+  const folders = await getDeepStorageArray("folders");
 
-  emitter.emit("updateChats", chats);
-  if (!folders) return;
-  emitter.emit("updateFolders", folders);
+  const newChats = getChatsFromDomElements(chats);
+  const newFolders = filterFoldersByExistingChats(folders, newChats);
+
+  emitter.emit("updateChats", newChats);
+  if (!newFolders) return;
+  emitter.emit("updateFolders", newFolders);
 };
 
 export const handleChatDeletion = async (id) => {
@@ -87,6 +91,7 @@ export const handleChatDeletion = async (id) => {
   }
 
   if (observationType === "deleteFromList") {
+    console.log(observationType);
     const newFolders = deleteChat(folders, chatId);
     const newChats = chats.filter((item) => item.id !== chatId);
 
