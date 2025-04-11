@@ -1,10 +1,7 @@
 <script setup>
-import _ from "lodash";
-import { ref, onMounted, inject, computed } from "vue";
-import { addChatsToFolder } from "@/utils/chatAndFolderLogic";
-import { generateId, isOutsideClick } from "@/utils/helpers.js";
-import { useStorage } from "@/composables/useStorage";
-
+import { inject } from "vue";
+import { useChats } from "@/composables/useChats";
+import { useSearchChats } from "@/composables/useSearchChats";
 import SearchChatsItem from "./SearchChatsItem.vue";
 import IconSearch from "./icons/IconSearch.vue";
 import IconExit from "./icons/IconExit.vue";
@@ -17,80 +14,9 @@ const emit = defineEmits(["close"]);
 
 const contextMenu = inject("contextMenu");
 
-const search = ref("");
-const selectedChats = ref([]);
-
-const { data: folders, update: setFolders } = useStorage("folders", []);
-const {
-  data: chats,
-  update: setChats,
-  isLoaded: isChatsLoaded,
-} = useStorage("chats", []);
-
-const removeEventListeners = () => {
-  const searchChatsWrap = document.querySelector(".search-chats-wrap");
-  searchChatsWrap.removeEventListener("click", isOutsideClick);
-  window.removeEventListener("keydown", onKeydown);
-  emit("close");
-};
-
-const onKeydown = (event) => {
-  if (event.key !== "Escape") return;
-  removeEventListeners();
-};
-
-const onSelectedChats = async (event) => {
-  event.stopPropagation();
-
-  if (!isOutsideClick(event, ".search-chats")) {
-    removeEventListeners();
-  }
-
-  const folderId = contextMenu.value.folderId;
-  const newFolderId = generateId();
-  const filteredChats = chats.value.filter((chat) =>
-    selectedChats.value.includes(chat.id)
-  );
-  const args = [
-    _.cloneDeep(filteredChats),
-    _.cloneDeep(folders.value),
-    folderId,
-    newFolderId,
-  ];
-
-  const newFolders = addChatsToFolder(...args);
-  const newChats = chats.value.map((chat) => {
-    return selectedChats.value.includes(chat.id) || chat.folderId === folderId
-      ? { ...chat, folderId: newFolderId }
-      : chat;
-  });
-
-  setChats(newChats);
-  setFolders(newFolders);
-};
-
-const searchedChats = computed(() => {
-  if (!search.value) return chats.value;
-
-  return chats.value.filter((chat) => {
-    const chatName = chat.name.toLowerCase();
-    const searchValue = search.value.toLowerCase();
-    return chatName.includes(searchValue);
-  });
-});
-
-onMounted(async () => {
-  const searchChatsWrap = document.querySelector(".search-chats-wrap");
-  const input = searchChatsWrap.querySelector("input[name='search-chats']");
-
-  input.focus();
-
-  searchChatsWrap.addEventListener("click", (event) => {
-    if (isOutsideClick(event, ".search-chats")) return;
-    removeEventListeners();
-  });
-  window.addEventListener("keydown", onKeydown);
-});
+const { chats, setChats } = useChats();
+const { onSelected, selected, filteredChatsByQuery, searchQuery } =
+  useSearchChats(emit);
 </script>
 
 <template>
@@ -105,28 +31,26 @@ onMounted(async () => {
             name="search-chats"
             id="search-chats"
             placeholder="Search chat"
-            v-model.trim="search"
+            v-model.trim="searchQuery"
           />
         </div>
         <IconExit @click="removeEventListeners" />
       </div>
       <ul class="search-chats__list">
-        <div v-if="isChatsLoaded" class="search-chats__wrapper">
-          <SearchChatsItem
-            v-for="chat in searchedChats"
-            :key="chat.id"
-            :chat="chat"
-            :chats="chats"
-            v-model="selectedChats"
-            @set-chats="setChats"
-          />
-        </div>
+        <SearchChatsItem
+          v-for="chat in filteredChatsByQuery"
+          :key="chat.id"
+          :chat="chat"
+          :chats="chats"
+          v-model="selected"
+          @set-chats="setChats"
+        />
       </ul>
     </div>
     <button
-      v-show="selectedChats.length > 0"
+      v-show="selected.length > 0"
       class="search-chats__btn"
-      @click="onSelectedChats"
+      @click="(e) => onSelected(e, contextMenu.folderId)"
     >
       Add chat(s)
     </button>
