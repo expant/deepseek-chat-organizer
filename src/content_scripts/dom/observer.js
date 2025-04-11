@@ -30,7 +30,7 @@ appContainer.id = "folders-list";
 
 let debounceTimer = null;
 let vueApp = null;
-let isSidebarOpen = document.querySelector(`.${SIDEBAR_CLOSED}`) ? false : true;
+let isSidebarOpen = !document.querySelector(`.${SIDEBAR_CLOSED}`);
 
 const insertAppToDeepseek = () => {
   const deepseekContainer = document.querySelector(LIST_ROOT);
@@ -160,7 +160,7 @@ chrome.storage.local.get(["extensionEnabled"], (result) => {
 });
 
 chrome.runtime.onMessage.addListener((message) => {
-  if (message.action === "toggle") {
+  const toggleApp = (message) => {
     if (message.state === true) {
       observer.observe(document.body, config);
 
@@ -176,10 +176,19 @@ chrome.runtime.onMessage.addListener((message) => {
 
     appContainer.remove();
     observer.disconnect();
-  }
+  };
 
-  if (message.action === "chatDeleted") {
-    updateData();
+  switch (message.action) {
+    case "toggle":
+      toggleApp(message);
+      break;
+    case "chatDeleted":
+      updateData();
+      break;
+    case "chatRenamed":
+      break;
+    default:
+      throw new Error(`Unknown message.action: ${message.action}`);
   }
 });
 

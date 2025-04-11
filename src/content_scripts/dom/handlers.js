@@ -46,9 +46,7 @@ export const handleRenameFromList = async (el) => {
   const chatEl = el.querySelector(`.${CHAT_TEXT}`);
   const chat = chats.find((item) => item.name === names.prev);
 
-  const newFolders = folders
-    ? renameChat(folders, chat.id, chatEl.textContent)
-    : [];
+  const newFolders = renameChat(folders, chat.id, chatEl.textContent);
   const newChats = chats.map((item) =>
     item.id === chat.id ? { ...item, name: chatEl.textContent } : item
   );

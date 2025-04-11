@@ -1,6 +1,14 @@
 const urls = ["https://chat.deepseek.com/*"];
 const apiPath = "/api/v0/chat_session";
 
+const isApiOperation = (method, url, operation) => {
+  const endpoints = {
+    delete: `${apiPath}/delete`,
+    rename: `${apiPath}/update_title`,
+  };
+  return method === "POST" && url.includes(endpoints[operation]);
+};
+
 const getActiveTargetTab = async () => {
   const [url] = urls;
   const [tab] = await chrome.tabs.query({
@@ -19,13 +27,17 @@ const sendMessage = async (message) => {
   }
 };
 
-const trackСhatDeletion = async (details) => {
+const trackСhatActions = async (details) => {
   const { method, url } = details;
-  const isDelete = method === "POST" && url.includes(`${apiPath}/delete`);
+  const isDelete = isApiOperation(method, url, "delete");
+  const isRename = isApiOperation(method, url, "rename");
 
-  if (!isDelete) return;
-
-  await sendMessage({ action: "chatDeleted" });
+  if (isDelete) {
+    await sendMessage({ action: "chatDeleted" });
+  }
+  if (isRename) {
+    await sendMessage({ action: "chatRenamed" });
+  }
 };
 
 const trackExtensionState = (request, sender, sendResponse) => {
@@ -52,7 +64,7 @@ const clearStorage = (details) => {
   }
 };
 
-chrome.webRequest.onCompleted.addListener(trackСhatDeletion, { urls });
+chrome.webRequest.onCompleted.addListener(trackСhatActions, { urls });
 
 chrome.runtime.onInstalled.addListener(clearStorage);
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>
