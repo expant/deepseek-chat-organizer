@@ -12,7 +12,7 @@ const props = defineProps({
 });
 const emit = defineEmits(["close"]);
 
-const contextMenu = inject("contextMenu");
+const folderMenu = inject("folderMenu");
 
 const { chats } = useChats();
 const { onSelected, selected, filteredChatsByQuery, searchQuery } =
@@ -49,7 +49,7 @@ const { onSelected, selected, filteredChatsByQuery, searchQuery } =
     <button
       v-show="selected.length > 0"
       class="search-chats__btn"
-      @click="(e) => onSelected(e, contextMenu.folderId)"
+      @click="(e) => onSelected(e, folderMenu.folderId)"
     >
       Add chat(s)
     </button>

@@ -19,19 +19,19 @@ const baseFolderNames = ref([]);
 const showSearchChats = ref(false);
 const isEditingChatName = ref(false);
 const isEditingFolderName = ref(false);
-const contextMenu = ref({
+const folderMenu = ref({
   isOpen: false,
   position: { top: 0, left: 0 },
   folderId: null,
 });
-const contextMenuChat = ref({
+const chatMenu = ref({
   isOpen: false,
   position: { top: 0, left: 0 },
   chatId: null,
 });
 
-provide("contextMenu", contextMenu);
-provide("contextMenuChat", contextMenuChat);
+provide("folderMenu", folderMenu);
+provide("chatMenu", chatMenu);
 provide("baseFolderNames", baseFolderNames);
 provide("showSearchChats", showSearchChats);
 provide("isEditingChatName", isEditingChatName);
@@ -41,7 +41,7 @@ const { theme } = useTheme();
 const { chats, setChats } = useChats();
 const { folders, setFolders, onCreate } = useFolders(
   baseFolderNames,
-  contextMenu,
+  folderMenu,
   isEditingFolderName
 );
 

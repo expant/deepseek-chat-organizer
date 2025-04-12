@@ -68,7 +68,6 @@ export function useChats(contextMenu, isEditing) {
     contextMenu.value = { ...contextMenu.value, isOpen: false };
 
     await nextTick();
-    console.log(getChatOrFolderInput("chat", id), id);
 
     getChatOrFolderInput("chat", id).focus();
   };

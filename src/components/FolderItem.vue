@@ -2,7 +2,7 @@
 import _ from "lodash";
 import { ref, inject } from "vue";
 import { useFolders } from "@/composables/useFolders";
-import ContextMenu from "./ContextMenu.vue";
+import ContextMenu from "./ContextMenu/ContextMenu.vue";
 import IconArrow from "./icons/IconArrow.vue";
 import IconDots from "./icons/IconDots.vue";
 
@@ -22,8 +22,8 @@ const props = defineProps({
 });
 const emit = defineEmits(["update:isFolderOpen"]);
 
-const contextMenu = inject("contextMenu");
-const contextMenuChat = inject("contextMenuChat");
+const chatMenu = inject("chatMenu");
+const folderMenu = inject("folderMenu");
 const baseFolderNames = inject("baseFolderNames");
 const isEditingFolderName = inject("isEditingFolderName");
 
@@ -33,22 +33,22 @@ const folderRef = ref(null);
 
 const folderStore = useFolders(
   baseFolderNames,
-  contextMenu,
+  folderMenu,
   isEditingFolderName
 );
 
 const toggleFolder = () => emit("update:isFolderOpen", !props.isFolderOpen);
 
 const openContextMenu = () => {
-  if (contextMenuChat.value.isOpen) {
-    contextMenuChat.value = { ...contextMenuChat.value, isOpen: false };
+  if (chatMenu.value.isOpen) {
+    chatMenu.value = { ...chatMenu.value, isOpen: false };
   }
-  if (contextMenu.value.isOpen) {
-    contextMenu.value = { ...contextMenu.value, isOpen: false };
+  if (folderMenu.value.isOpen) {
+    folderMenu.value = { ...folderMenu.value, isOpen: false };
     return;
   }
-  contextMenu.value = {
-    ...contextMenu.value,
+  folderMenu.value = {
+    ...folderMenu.value,
     isOpen: true,
     folderId: props.id,
   };
@@ -57,7 +57,7 @@ const openContextMenu = () => {
 <template>
   <div class="folder-wrapper">
     <input
-      v-show="isEditingFolderName && id === contextMenu.folderId"
+      v-show="isEditingFolderName && id === folderMenu.folderId"
       ref="inputRef"
       class="folder-name__input"
       type="text"
@@ -68,7 +68,7 @@ const openContextMenu = () => {
       @keydown.enter="folderStore.onRename(inputRef.value.trim(), id)"
     />
     <div
-      v-show="!isEditingFolderName || id !== contextMenu.folderId"
+      v-show="!isEditingFolderName || id !== folderMenu.folderId"
       ref="folderRef"
       class="folder-name"
       :data-id="id"
@@ -83,10 +83,10 @@ const openContextMenu = () => {
       </div>
     </div>
     <ContextMenu
-      v-show="contextMenu.isOpen"
-      @close="contextMenu.isOpen = false"
+      v-show="folderMenu.isOpen"
+      @close="folderMenu.isOpen = false"
       :type="'folder'"
-      :position="contextMenu.position"
+      :position="folderMenu.position"
       :target-el="folderRef"
     />
   </div>
