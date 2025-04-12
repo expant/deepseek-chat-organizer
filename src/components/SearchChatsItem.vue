@@ -1,9 +1,8 @@
 <script setup>
-import _ from "lodash";
-import { inject, ref, computed, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { getFolderNameById } from "@/utils/helpers.js";
-import { deleteChat } from "@/utils/chatAndFolderLogic";
-import { useStorage } from "@/composables/useStorage";
+import { useChats } from "@/composables/useChats";
+import { useFolders } from "@/composables/useFolders";
 import IconReturn from "./icons/IconReturn.vue";
 
 const props = defineProps({
@@ -20,14 +19,15 @@ const props = defineProps({
     required: true,
   },
 });
-const emit = defineEmits(["update:modelValue", "setChats"]);
+const emit = defineEmits(["update:modelValue"]);
 
 const showIconReturn = ref(false);
 const folderName = ref("");
 
-const { data: folders, update: setFolders } = useStorage("folders", []);
+const { folders } = useFolders();
+const { onDeleteFromFolder, isChatInFolder } = useChats();
 
-const handleCheckboxChange = (event) => {
+const onCheckboxChange = (event) => {
   const updatedSelectedChats = event.target.checked
     ? [...props.modelValue, props.chat.id]
     : props.modelValue.filter((id) => id !== props.chat.id);
@@ -35,38 +35,18 @@ const handleCheckboxChange = (event) => {
   emit("update:modelValue", updatedSelectedChats);
 };
 
-const isChatInFolder = computed(() => {
-  const chat = props.chats.find((item) => item.id === props.chat.id);
-  return !!chat.folderId;
-});
-
-const onDeleteFromFolder = async () => {
+const resetAndRemoveFromFolder = async () => {
   folderName.value = "";
-
-  const newChats = props.chats.map((chat) =>
-    props.chat.id === chat.id ? { ...chat, folderId: null } : chat
-  );
-
-  const clonedFolders = _.cloneDeep(folders.value);
-  const newFolders = deleteChat(clonedFolders, props.chat.id);
-
-  emit("setChats", newChats);
-  // setChats(newChats);
-  setFolders(newFolders);
+  await onDeleteFromFolder(props.chat.id);
 };
 
-const getFolderName = (id) => {
-  if (!id) return "";
+onMounted(() => setTimeout(() => {
+  const folderId = props.chat.folderId;
 
-  const folderName = getFolderNameById(folders.value, id);
-  return folderName ? `${folderName}` : "";
-};
-
-onMounted(() => {
-  setTimeout(() => {
-    folderName.value = getFolderName(props.chat.folderId);
-  }, 100);
-});
+  if (folderId) {
+    folderName.value = getFolderNameById(folders.value, folderId) || "";
+  } 
+}, 100));
 </script>
 
 <template>
@@ -75,8 +55,8 @@ onMounted(() => {
       type="checkbox"
       :id="'chat-' + chat.id"
       :value="chat.id"
-      :disabled="isChatInFolder"
-      @change="handleCheckboxChange"
+      :disabled="isChatInFolder(chat.id)"
+      @change="onCheckboxChange"
     />
     <label :for="'chat-' + chat.id">
       <span class="chat-name" :title="chat.name">{{ chat.name }}</span>
@@ -86,9 +66,9 @@ onMounted(() => {
     </label>
     <span
       class="icon-return-wrap"
-      v-show="showIconReturn && isChatInFolder"
+      v-show="showIconReturn && isChatInFolder(chat.id)"
       title="Remove from folder"
-      @click="onDeleteFromFolder"
+      @click="resetAndRemoveFromFolder"
     >
       <IconReturn title="" />
     </span>

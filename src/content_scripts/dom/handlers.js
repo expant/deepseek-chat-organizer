@@ -40,6 +40,7 @@ export const saveChatNameFromInput = () => {
 };
 
 export const handleRenameFromList = async (el) => {
+  console.log("rename from list");
   const folders = await getDeepStorageArray("folders");
   const chats = await getDeepStorageArray("chats");
 
@@ -89,7 +90,6 @@ export const handleChatDeletion = async (id) => {
   }
 
   if (observationType === "deleteFromList") {
-    console.log(observationType);
     const newFolders = deleteChat(folders, chatId);
     const newChats = chats.filter((item) => item.id !== chatId);
 

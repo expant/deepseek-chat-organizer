@@ -1,21 +1,15 @@
-import { nextTick } from "vue";
+import { nextTick, computed } from "vue";
 import { classNames } from "@/variables";
 import { useStorage } from "./useStorage";
 import { renameDSChat } from "@/content_scripts/dom/handlers";
 import { handleChatDeletion } from "@/content_scripts/dom/handlers";
-import { deleteChat, renameChat } from "@/utils/chatAndFolderLogic";
 import { setObservationType, setNames } from "@/content_scripts/dom/state";
+import { deleteChat, renameChat, deleteFolderIdFromChats } from "@/utils/chatAndFolderLogic";
 import {
   simulateContextMenuAction,
   getDSChatEl,
   getChatOrFolderInput,
 } from "@/utils/helpers";
-
-const deleteFolderId = (id, chats) =>
-  chats.map((item) => (item.id === id ? { ...item, folderId: null } : item));
-
-const deleteChatFromList = (id, chats) =>
-  chats.filter((item) => item.id !== id);
 
 export function useChats(contextMenu, isEditing) {
   const { data: folders, update: setFolders } = useStorage("folders", []);
@@ -27,15 +21,9 @@ export function useChats(contextMenu, isEditing) {
     await handleChatDeletion(id);
   };
 
-  const onDeleteFromFolder = async (target) => {
-    const id = contextMenu.value.chatId;
-    contextMenu.value = { ...contextMenu.value, isOpen: false };
-
+  const onDeleteFromFolder = async (id) => {
     const newFolders = deleteChat(folders.value, id);
-    const newChats =
-      target === "from folder"
-        ? deleteFolderId(id, chats.value)
-        : deleteChatFromList(id, chats.value);
+    const newChats = deleteFolderIdFromChats(id, chats.value);
 
     await setChats(newChats);
     await setFolders(newFolders);
@@ -85,6 +73,11 @@ export function useChats(contextMenu, isEditing) {
     getChatOrFolderInput("chat", id).focus();
   };
 
+  const isChatInFolder = computed(() => (id) => {
+    const chat = chats.value.find((item) => item.id === id);
+    return !!chat?.folderId;
+  });
+
   return {
     chats,
     setChats,
@@ -92,5 +85,6 @@ export function useChats(contextMenu, isEditing) {
     onRename,
     prepareForRename,
     onDeleteFromFolder,
+    isChatInFolder
   };
 }

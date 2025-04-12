@@ -69,6 +69,13 @@ const handleDocumentClick = (event) => {
   emit("close");
 };
 
+const closeMenuAndRemoveFromFolder = async () => {
+  const id = contextMenuChat.value.chatId;
+
+  contextMenuChat.value = { ...contextMenuChat.value, isOpen: false };
+  await chatStore.onDeleteFromFolder(id);
+};
+
 watch(getActiveContextMenuState, (isOpen) => {
   const id = props.targetEl?.dataset.id || null;
 
@@ -120,7 +127,7 @@ watch(getActiveContextMenuState, (isOpen) => {
       <ContextMenuButton name="Rename" @click="chatStore.prepareForRename" />
       <ContextMenuButton
         name="Delete from folder"
-        @click="chatStore.onDeleteFromFolder('from folder')"
+        @click="closeMenuAndRemoveFromFolder"
       />
       <ContextMenuButton name="Delete" @click="chatStore.onDelete" />
     </div>

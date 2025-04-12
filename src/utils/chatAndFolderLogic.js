@@ -151,3 +151,6 @@ export const filterFoldersByExistingChats = (folders, chats) =>
     const chat = chats.find((chat) => chat.id === item.id);
     return chat ? true : false;
   });
+
+export const deleteFolderIdFromChats = (id, chats) =>
+  chats.map((item) => (item.id === id ? { ...item, folderId: null } : item));
