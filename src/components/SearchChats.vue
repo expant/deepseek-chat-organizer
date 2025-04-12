@@ -14,7 +14,7 @@ const emit = defineEmits(["close"]);
 
 const contextMenu = inject("contextMenu");
 
-const { chats, setChats } = useChats();
+const { chats } = useChats();
 const { onSelected, selected, filteredChatsByQuery, searchQuery } =
   useSearchChats(emit);
 </script>
@@ -43,7 +43,6 @@ const { onSelected, selected, filteredChatsByQuery, searchQuery } =
           :chat="chat"
           :chats="chats"
           v-model="selected"
-          @set-chats="setChats"
         />
       </ul>
     </div>
