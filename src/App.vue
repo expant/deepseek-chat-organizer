@@ -12,7 +12,7 @@ import { useFolders } from "./composables/useFolders.js";
 
 import SearchChats from "./components/SearchChats.vue";
 import NestedList from "./components/NestedList.vue";
-import SidebarResizing from "./components/SidebarResizing.vue";
+import SidebarResizing from "./components/SidebarResizing/SidebarResizing.vue";
 import IconFolder from "./components/icons/IconFolder.vue";
 
 const baseFolderNames = ref([]);
