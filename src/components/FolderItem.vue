@@ -1,5 +1,4 @@
 <script setup>
-import _ from "lodash";
 import { ref, inject } from "vue";
 import { useFolders } from "@/composables/useFolders";
 import ContextMenu from "./ContextMenu/ContextMenu.vue";

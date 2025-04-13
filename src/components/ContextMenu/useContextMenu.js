@@ -1,10 +1,11 @@
 import { watch } from "vue";
-import { classNames } from "@/variables.js";
+import { classNames } from "@/constants.js";
 import { isOutsideClick } from "@/utils/helpers";
 import { useChats } from "@/composables/useChats";
 
 export function useContextMenu(menus, props, showSearchChats, emit) {
-  const scrollContainer = document.querySelector(`.${classNames.CHAT_LIST}`);
+  const { CHAT_LIST } = classNames;
+  const scrollContainer = document.querySelector(`.${CHAT_LIST.BASE}`);
 
   const { onDeleteFromFolder } = useChats(menus.chat);
 

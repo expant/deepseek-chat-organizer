@@ -2,7 +2,7 @@ import mitt from "mitt";
 
 export const emitter = mitt();
 
-// variables
+// constants
 export let observationType = "";
 export const names = { prev: "", new: "" };
 

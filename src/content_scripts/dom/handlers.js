@@ -1,5 +1,5 @@
 import { getDeepStorageArray, getChatsFromDomElements } from "@/storage";
-import { classNames } from "@/variables.js";
+import { classNames } from "@/constants.js";
 import {
   renameChat,
   deleteChat,
@@ -19,32 +19,35 @@ import {
   emitter,
 } from "./state.js";
 
-const { CHAT_TEXT, CHAT_INPUT, DELETE_BTN } = classNames;
+const { CHAT, UI } = classNames;
 let chatId = "";
 
 export const renameDSChat = () =>
   setTimeout(() => {
     const input = document.querySelector(
-      `input.${CHAT_INPUT}[value="${names.prev}"]`
+      `input.${CHAT.INPUT}[value="${names.prev}"]`
     );
+  
     input.value = names.new;
     input.blur();
+
     setObservationType("");
   }, 100);
 
 export const saveChatNameFromInput = () => {
   setObservationType("renameFromList");
-  const input = document.querySelector(`.${CHAT_INPUT}`);
+
+  const input = document.querySelector(`.${CHAT.INPUT}`);
+
   setNames(input.value, "");
   return;
 };
 
 export const handleRenameFromList = async (el) => {
-  console.log("rename from list");
   const folders = await getDeepStorageArray("folders");
   const chats = await getDeepStorageArray("chats");
 
-  const chatEl = el.querySelector(`.${CHAT_TEXT}`);
+  const chatEl = el.querySelector(`.${CHAT.TITLE}`);
   const chat = chats.find((item) => item.name === names.prev);
 
   const newFolders = renameChat(folders, chat.id, chatEl.textContent);
@@ -58,6 +61,7 @@ export const handleRenameFromList = async (el) => {
   }
   await chrome.storage.sync.set({ chats: newChats });
   emitter.emit("updateChats", newChats);
+
   setObservationType("");
 };
 
@@ -83,7 +87,7 @@ export const handleChatDeletion = async (id) => {
 
     showDSContextMenu(chat.name);
     setTimeout(() => {
-      simulateContextMenuAction(DELETE_BTN);
+      simulateContextMenuAction(UI.DELETE_BTN);
       setObservationType("deleteFromList");
     }, 100);
     return;
@@ -104,7 +108,7 @@ export const handleChatDeletion = async (id) => {
 };
 
 export const handleActiveChat = async (el) => {
-  const chatTextEl = el.querySelector(`.${CHAT_TEXT}`);
+  const chatTextEl = el.querySelector(`.${CHAT.TITLE}`);
   const folders = await getDeepStorageArray("folders");
   const chats = await getDeepStorageArray("chats");
 

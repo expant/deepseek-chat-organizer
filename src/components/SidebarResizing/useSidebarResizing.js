@@ -1,9 +1,10 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import { isOutsideClick } from "@/utils/helpers";
 import { setNewWidth } from "@/utils/sidebarWidthResizing";
-import { classNames } from "@/variables";
+import { classNames } from "@/constants";
 
 let timeoutId = null;
+const { CHAT_LIST } = classNames;
 
 const getElementWidth = (element) => {
   element.style.display = "block";
@@ -15,7 +16,7 @@ const getElementWidth = (element) => {
 };
 
 export function useSidebarResizing() {
-  const scrollContainer = document.querySelector(`.${classNames.CHAT_LIST}`);
+  const scrollContainer = document.querySelector(`.${CHAT_LIST.BASE}`);
 
   const showMenu = ref(false);
   const menuPosition = ref({ left: "0px", top: "0px" });
@@ -74,6 +75,7 @@ export function useSidebarResizing() {
   
   const onResizing = async (scale) => {
     showMenu.value = false;
+  
     await setNewWidth(scale);
     await setPositions();
     await setActiveScale();

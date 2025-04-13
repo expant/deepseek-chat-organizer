@@ -1,5 +1,5 @@
 import { nextTick, computed } from "vue";
-import { classNames } from "@/variables";
+import { classNames } from "@/constants";
 import { useStorage } from "./useStorage";
 import { renameDSChat } from "@/content_scripts/dom/handlers";
 import { handleChatDeletion } from "@/content_scripts/dom/handlers";
@@ -32,6 +32,7 @@ export function useChats(contextMenu, isEditing) {
   const onRename = async (oldName, newName, id) => {
     if (!newName) return;
 
+    const { UI } = classNames;
     const chatName = chats.value.some((item) => item.name === newName);
 
     if (chatName) {
@@ -55,7 +56,7 @@ export function useChats(contextMenu, isEditing) {
     dotsEl.click();
 
     setTimeout(() => {
-      simulateContextMenuAction(classNames.RENAME_BTN);
+      simulateContextMenuAction(UI.RENAME_BTN);
       renameDSChat();
     }, 100);
     isEditing.value = false;
