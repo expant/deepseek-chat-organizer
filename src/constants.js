@@ -18,10 +18,6 @@ export const classNames = {
     CONTEXT_MENU: "ds-floating-position-wrapper",
     RENAME_BTN: "ds-dropdown-menu-option--none",
     DELETE_BTN: "ds-dropdown-menu-option--error",
+    NEW_CHAT: "ebaea5d2",
   },
 }
-
-export const API = {
-  BASE_URLS: ["https://chat.deepseek.com/*"],
-  CHAT_SESSION_PATH: "/api/v0/chat_session",
-};

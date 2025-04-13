@@ -15,7 +15,7 @@ import {
 } from "./handlers.js";
 import App from "@/App.vue";
 
-const { CHAT, CHAT_LIST, SIDEBAR } = classNames;
+const { CHAT, CHAT_LIST, SIDEBAR, UI } = classNames;
 const htmlElType = "[object HTMLDivElement]";
 const appContainer = document.createElement("div");
 appContainer.id = "folders-list";
@@ -38,15 +38,7 @@ const insertAppToDeepseek = () => {
   }
 };
 
-const handleMutation = async (mutation) => {
-  const added = mutation.addedNodes[0];
-  const removed = mutation.removedNodes[0];
-  const addedType = Object.prototype.toString.call(added);
-  const removedType = Object.prototype.toString.call(removed);
-
-  if (added instanceof Comment) return;
-  if (removed instanceof Comment) return;
-
+const handleMutationByType = (mutation) => {
   if (mutation.type === "characterData") {
     const parentElement = mutation.target.parentElement;
     const isChatTitle = parentElement.classList.contains(CHAT.TITLE);
@@ -77,9 +69,21 @@ const handleMutation = async (mutation) => {
       isSidebarOpen = false;
     }
   }
+}
+
+const handleMutation = async (mutation) => {
+  const added = mutation.addedNodes[0];
+  const removed = mutation.removedNodes[0];
+  const addedType = Object.prototype.toString.call(added);
+  const removedType = Object.prototype.toString.call(removed);
+
+  if (added instanceof Comment) return;
+  if (removed instanceof Comment) return;
+
+  handleMutationByType(mutation);
 
   if (mutation.previousSibling && added) {
-    if (mutation.previousSibling.className === "ebaea5d2") {
+    if (mutation.previousSibling.className === UI.NEW_CHAT) {
       insertAppToDeepseek();
       return;
     }
@@ -90,7 +94,7 @@ const handleMutation = async (mutation) => {
 
   if (removedType === htmlElType) {
     if (!removed.classList.contains(CHAT.BASE)) return;
-
+ 
     switch (observationType) {
       case "renameFromFolder":
         const chatTextEl = removed.querySelector(`.${CHAT.TITLE}`);
@@ -131,13 +135,13 @@ const handleMutation = async (mutation) => {
   }
 };
 
-const callback = async (mutationsList, observer) => {
-  for (let mutation of mutationsList) {
-    await handleMutation(mutation);
+const observer = new MutationObserver(
+  async (mutationsList, observer) => {
+    for (let mutation of mutationsList) {
+      await handleMutation(mutation);
+    }
   }
-};
-
-const observer = new MutationObserver(callback);
+);
 const config = {
   childList: true,
   characterData: true,
