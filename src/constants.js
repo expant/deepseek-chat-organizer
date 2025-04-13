@@ -20,3 +20,8 @@ export const classNames = {
     DELETE_BTN: "ds-dropdown-menu-option--error",
   },
 }
+
+export const API = {
+  BASE_URLS: ["https://chat.deepseek.com/*"],
+  CHAT_SESSION_PATH: "/api/v0/chat_session",
+};

@@ -1,19 +1,19 @@
 <script setup>
-import _ from "lodash";
 import { ref, onMounted, onUnmounted, provide } from "vue";
 import { emitter } from "@/content_scripts/dom/state.js";
-import { setCurrentWidth } from "./utils/sidebarWidthResizing";
 import { getChatsFromDomElements } from "@/storage.js";
-import { sortBaseNames, getBaseFolderNames } from "./utils/baseFolderNames.js";
+import { setCurrentWidth } from "./utils/sidebarWidthResizing";
 import { filterFoldersByExistingChats } from "@/utils/chatAndFolderLogic.js";
-import { useTheme } from "./composables/useTheme.js";
+import { sortBaseNames, getBaseFolderNames } from "./utils/baseFolderNames.js";
+
 import { useChats } from "./composables/useChats";
+import { useTheme } from "./composables/useTheme.js";
 import { useFolders } from "./composables/useFolders.js";
 
-import SearchChats from "./components/SearchChats.vue";
 import NestedList from "./components/NestedList.vue";
-import SidebarResizing from "./components/SidebarResizing/SidebarResizing.vue";
+import SearchChats from "./components/SearchChats.vue";
 import IconFolder from "./components/icons/IconFolder.vue";
+import SidebarResizing from "./components/SidebarResizing/SidebarResizing.vue";
 
 const baseFolderNames = ref([]);
 const showSearchChats = ref(false);

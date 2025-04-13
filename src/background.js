@@ -1,16 +1,16 @@
-const urls = ["https://chat.deepseek.com/*"];
-const apiPath = "/api/v0/chat_session";
+import { API } from "./constants";
 
 const isApiOperation = (method, url, operation) => {
+  const { CHAT_SESSION_PATH } = API;
   const endpoints = {
-    delete: `${apiPath}/delete`,
-    rename: `${apiPath}/update_title`,
+    delete: `${CHAT_SESSION_PATH}/delete`,
+    rename: `${CHAT_SESSION_PATH}/update_title`,
   };
   return method === "POST" && url.includes(endpoints[operation]);
 };
 
 const getActiveTargetTab = async () => {
-  const [url] = urls;
+  const [url] = API.BASE_URLS;
   const [tab] = await chrome.tabs.query({
     active: true,
     currentWindow: true,
@@ -64,7 +64,7 @@ const clearStorage = (details) => {
   }
 };
 
-chrome.webRequest.onCompleted.addListener(trackСhatActions, { urls });
+chrome.webRequest.onCompleted.addListener(trackСhatActions, { urls: API.BASE_URLS });
 
 chrome.runtime.onInstalled.addListener(clearStorage);
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>
