@@ -1,4 +1,4 @@
-import { ref, onMounted, onUnmounted, provide } from "vue";
+import { ref, provide, onMounted, onUnmounted } from "vue";
 import { emitter } from "@/content_scripts/dom/state.js";
 import { getChatsFromDomElements } from "@/storage.js";
 import { setCurrentWidth } from "@/utils/sidebarWidthResizing";
@@ -8,28 +8,14 @@ import { sortBaseNames, getBaseFolderNames } from "@/utils/baseFolderNames.js";
 import { useChats } from "@/composables/useChats";
 import { useFolders } from "@/composables/useFolders.js";
 
-export function useAppInitialization() {
-  const baseFolderNames = ref([]);
-  const showSearchChats = ref(false);
-  const isEditingChatName = ref(false);
-  const isEditingFolderName = ref(false);
-  const folderMenu = ref({
-    isOpen: false,
-    position: { top: 0, left: 0 },
-    id: null,
-  });
-  const chatMenu = ref({
-    isOpen: false,
-    position: { top: 0, left: 0 },
-    id: null,
-  });
-
-  provide("chatMenu", chatMenu);
-  provide("folderMenu", folderMenu);
-  provide("baseFolderNames", baseFolderNames);
-  provide("showSearchChats", showSearchChats);
-  provide("isEditingChatName", isEditingChatName);
-  provide("isEditingFolderName", isEditingFolderName);
+export function useAppInitialization(sharedState) {
+  const {
+    chatMenu,
+    folderMenu,
+    baseFolderNames,
+    isEditingChatName,
+    isEditingFolderName,
+  } = sharedState;
 
   const { chats, setChats } = useChats(chatMenu, isEditingChatName);
   const { folders, setFolders } = useFolders(
@@ -72,7 +58,6 @@ export function useAppInitialization() {
     chatMenu,
     folderMenu,
     baseFolderNames,
-    showSearchChats,
     isEditingChatName,
     isEditingFolderName,
   }
