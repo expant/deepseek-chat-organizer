@@ -1,8 +1,7 @@
 <script setup>
-import { inject } from "vue";
 import { useFolders } from "@/composables/useFolders";
 import { useChats } from "@/composables/useChats";
-import { useContextMenu } from "./useContextMenu"
+import { useContextMenuHandlers } from "./useContextMenuHandlers";
 import ContextMenuButton from "../buttons/ContextMenuButton.vue";
 
 const props = defineProps({
@@ -21,25 +20,12 @@ const props = defineProps({
 });
 const emit = defineEmits(["close"]);
 
-const chatMenu = inject("chatMenu");
-const folderMenu = inject("folderMenu");
-const baseFolderNames = inject("baseFolderNames");
-const showSearchChats = inject("showSearchChats");
-const isEditingChatName = inject("isEditingChatName");
-const isEditingFolderName = inject("isEditingFolderName");
-
-const folderStore = useFolders(
-  baseFolderNames,
-  folderMenu,
-  isEditingFolderName
-);
-const chatStore = useChats(chatMenu, isEditingChatName);
-const { openChatSearch, closeMenuAndRemoveFromFolder } = useContextMenu(
-  { chat: chatMenu, folder: folderMenu },
+const chatStore = useChats();
+const folderStore = useFolders();
+const { handleAddChats, closeMenuAndRemoveFromFolder } = useContextMenuHandlers(
   props,
-  showSearchChats,
-  emit,
-)
+  emit
+);
 </script>
 
 <template>
@@ -52,7 +38,7 @@ const { openChatSearch, closeMenuAndRemoveFromFolder } = useContextMenu(
         left: `${position.left}px`,
       }"
     >
-      <ContextMenuButton name="Add chat(s)" @click="openChatSearch" />
+      <ContextMenuButton name="Add chat(s)" @click="handleAddChats" />
       <ContextMenuButton
         name="New folder"
         @click="folderStore.onCreate('context-menu')"

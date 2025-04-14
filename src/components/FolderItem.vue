@@ -1,6 +1,7 @@
 <script setup>
 import { ref, inject } from "vue";
 import { useFolders } from "@/composables/useFolders";
+import { useContextMenuState } from "@/composables/useContextMenuState";
 import ContextMenu from "./ContextMenu/ContextMenu.vue";
 import IconArrow from "./icons/IconArrow.vue";
 import IconDots from "./icons/IconDots.vue";
@@ -21,42 +22,22 @@ const props = defineProps({
 });
 const emit = defineEmits(["update:isFolderOpen"]);
 
-const chatMenu = inject("chatMenu");
 const folderMenu = inject("folderMenu");
-const baseFolderNames = inject("baseFolderNames");
 const isEditingFolderName = inject("isEditingFolderName");
 
 const showDots = ref(false);
 const inputRef = ref(null);
 const folderRef = ref(null);
 
-const folderStore = useFolders(
-  baseFolderNames,
-  folderMenu,
-  isEditingFolderName
-);
+const folderStore = useFolders();
+const { open } = useContextMenuState();
 
 const toggleFolder = () => emit("update:isFolderOpen", !props.isFolderOpen);
-
-const openContextMenu = () => {
-  if (chatMenu.value.isOpen) {
-    chatMenu.value = { ...chatMenu.value, isOpen: false };
-  }
-  if (folderMenu.value.isOpen) {
-    folderMenu.value = { ...folderMenu.value, isOpen: false };
-    return;
-  }
-  folderMenu.value = {
-    ...folderMenu.value,
-    isOpen: true,
-    folderId: props.id,
-  };
-};
 </script>
 <template>
   <div class="folder-wrapper">
     <input
-      v-show="isEditingFolderName && id === folderMenu.folderId"
+      v-show="isEditingFolderName && id === folderMenu.id"
       ref="inputRef"
       class="folder-name__input"
       type="text"
@@ -67,7 +48,7 @@ const openContextMenu = () => {
       @keydown.enter="folderStore.onRename(inputRef.value.trim(), id)"
     />
     <div
-      v-show="!isEditingFolderName || id !== folderMenu.folderId"
+      v-show="!isEditingFolderName || id !== folderMenu.id"
       ref="folderRef"
       class="folder-name"
       :data-id="id"
@@ -77,7 +58,7 @@ const openContextMenu = () => {
     >
       <IconArrow :isFolderOpen="isFolderOpen" />
       <span class="folder-name__text">{{ name }}</span>
-      <div class="icon-dots" v-show="showDots" @click.stop="openContextMenu">
+      <div class="icon-dots" v-show="showDots" @click.stop="open('folder', id)">
         <IconDots />
       </div>
     </div>

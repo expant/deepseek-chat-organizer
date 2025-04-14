@@ -1,23 +1,20 @@
-import { watch } from "vue";
+import { watch, inject } from "vue";
 import { classNames } from "@/constants.js";
 import { isOutsideClick } from "@/utils/helpers";
 import { useChats } from "@/composables/useChats";
 
-export function useContextMenu(menus, props, showSearchChats, emit) {
+export function useContextMenuHandlers(props, emit) {
+  const chatMenu = inject("chatMenu");
+  const folderMenu = inject("folderMenu");
+  const showSearchChats = inject("showSearchChats");
+
   const { CHAT_LIST } = classNames;
   const scrollContainer = document.querySelector(`.${CHAT_LIST.BASE}`);
 
-  const { onDeleteFromFolder } = useChats(menus.chat);
-
-  const openChatSearch = () => {
-    showSearchChats.value = true;
-    menus.folder.value = { ...menus.folder.value, isOpen: false };
-  };
+  const { onDeleteFromFolder } = useChats();
 
   const getActiveContextMenuState = () =>
-    props.type === "chat"
-      ? menus.chat.value.isOpen
-      : menus.folder.value.isOpen;
+    props.type === "chat" ? chatMenu.value.isOpen : folderMenu.value.isOpen;
 
   const handleDocumentClick = (event) => {
     const selector = `${props.type === "chat" ? ".cm-chat" : ".cm-folder"}`;
@@ -25,10 +22,15 @@ export function useContextMenu(menus, props, showSearchChats, emit) {
     emit("close");
   };
 
+  const handleAddChats = () => {
+    showSearchChats.value = true;
+    folderMenu.value = { ...folderMenu.value, isOpen: false };
+  };
+
   const closeMenuAndRemoveFromFolder = async () => {
-    const id = menus.chat.value.chatId;
-  
-    menus.chat.value = { ...menus.chat.value, isOpen: false };
+    const id = chatMenu.value.id;
+
+    chatMenu.value = { ...chatMenu.value, isOpen: false };
     await onDeleteFromFolder(id);
   };
 
@@ -38,21 +40,21 @@ export function useContextMenu(menus, props, showSearchChats, emit) {
       top: rect.top + rect.height,
       left: rect.right - rect.height,
     };
-  
+
     if (props.type === "chat") {
-      menus.chat.value = { ...menus.chat.value, position };
+      chatMenu.value = { ...chatMenu.value, position };
       return;
     }
-    menus.folder.value = { ...menus.folder.value, position };
+    folderMenu.value = { ...folderMenu.value, position };
   };
-  
+
   watch(getActiveContextMenuState, (isOpen) => {
     const id = props.targetEl?.dataset.id || null;
-  
+
     const wrongEl =
-      (props.type === "chat" && id !== menus.chat.value.chatId) ||
-      (props.type === "folder" && id !== menus.folder.value.folderId);
-  
+      (props.type === "chat" && id !== chatMenu.value.id) ||
+      (props.type === "folder" && id !== folderMenu.value.id);
+
     if (wrongEl) return;
 
     if (isOpen) {
@@ -61,13 +63,13 @@ export function useContextMenu(menus, props, showSearchChats, emit) {
       document.addEventListener("click", handleDocumentClick);
       return;
     }
-  
+
     scrollContainer.removeEventListener("scroll", setPositions);
     document.removeEventListener("click", handleDocumentClick);
   });
 
   return {
-    openChatSearch,
+    handleAddChats,
     closeMenuAndRemoveFromFolder,
-  }
+  };
 }

@@ -2,6 +2,7 @@
 import _ from "lodash";
 import { ref, inject } from "vue";
 import { useChats } from "@/composables/useChats";
+import { useContextMenuState } from "@/composables/useContextMenuState";
 import { getDSChatEl } from "@/utils/helpers";
 import ContextMenu from "./ContextMenu/ContextMenu.vue";
 import IconDots from "./icons/IconDots.vue";
@@ -15,29 +16,14 @@ const props = defineProps({
 const emit = defineEmits(["click"]);
 
 const chatMenu = inject("chatMenu");
-const folderMenu = inject("folderMenu");
 const isEditingChatName = inject("isEditingChatName");
 
 const showDots = ref(false);
 const inputRef = ref(null);
 const chatRef = ref(null);
 
-const chatStore = useChats(chatMenu, isEditingChatName);
-
-const openContextMenu = () => {
-  if (folderMenu.value.isOpen) {
-    folderMenu.value = { ...folderMenu.value, isOpen: false };
-  }
-  if (chatMenu.value.isOpen) {
-    chatMenu.value = { ...chatMenu.value, isOpen: false };
-    return;
-  }
-  chatMenu.value = {
-    ...chatMenu.value,
-    isOpen: true,
-    chatId: props.chat.id,
-  };
-};
+const chatStore = useChats();
+const { open } = useContextMenuState();
 
 const openDialog = () => {
   emit("click");
@@ -49,7 +35,7 @@ const openDialog = () => {
 <template>
   <div class="chat-wrapper">
     <input
-      v-show="isEditingChatName && chat.id === chatMenu.chatId"
+      v-show="isEditingChatName && chat.id === chatMenu.id"
       ref="inputRef"
       class="chat-name__input"
       type="text"
@@ -62,7 +48,7 @@ const openDialog = () => {
       "
     />
     <div
-      v-show="!isEditingChatName || chat.id !== chatMenu.chatId"
+      v-show="!isEditingChatName || chat.id !== chatMenu.id"
       ref="chatRef"
       :class="`${chat.isActive ? 'chat-item chat-active' : 'chat-item'}`"
       :data-id="chat.id"
@@ -72,7 +58,11 @@ const openDialog = () => {
       @mouseleave="showDots = false"
     >
       <span class="chat-name">{{ chat.name }}</span>
-      <div class="icon-dots" v-show="showDots" @click.stop="openContextMenu">
+      <div
+        class="icon-dots"
+        v-show="showDots"
+        @click.stop="open('chat', chat.id)"
+      >
         <IconDots />
       </div>
     </div>
