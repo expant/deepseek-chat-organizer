@@ -8,6 +8,8 @@ export const getNewBaseFolderName = (arr) => {
     return match ? parseInt(match[0]) : 0;
   });
 
+  console.log(nums);
+
   let missingNum = 0;
   while (nums.includes(missingNum)) {
     missingNum += 1;

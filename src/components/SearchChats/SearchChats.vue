@@ -16,8 +16,13 @@ const folderMenu = inject("folderMenu");
 const showSearchChats = inject("showSearchChats");
 
 const { chats } = useChats();
-const { onSelected, selected, filteredChatsByQuery, searchQuery } =
-  useSearchChats(emit);
+const {
+  selected,
+  onSelected,
+  searchQuery,
+  removeEventListeners,
+  filteredChatsByQuery,
+} = useSearchChats(emit);
 </script>
 
 <template>

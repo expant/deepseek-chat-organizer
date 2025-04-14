@@ -35,6 +35,7 @@ export const createFolder = (folders, id, baseNames) => {
   let newParentFolderId = generateId();
 
   const name = getNewBaseFolderName(baseNames);
+
   const newFolder = {
     id: newFolderId,
     type: "folder",

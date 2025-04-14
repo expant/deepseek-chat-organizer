@@ -74,6 +74,7 @@ export function useSearchChats(emit) {
     selected,
     onSelected,
     searchQuery,
+    removeEventListeners,
     filteredChatsByQuery,
   };
 }
