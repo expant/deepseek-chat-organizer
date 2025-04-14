@@ -3,7 +3,7 @@ import { ref, onMounted } from "vue";
 import { getFolderNameById } from "@/utils/helpers.js";
 import { useChats } from "@/composables/useChats";
 import { useFolders } from "@/composables/useFolders";
-import IconReturn from "./icons/IconReturn.vue";
+import IconReturn from "../icons/IconReturn.vue";
 
 const props = defineProps({
   modelValue: {
@@ -40,13 +40,15 @@ const resetAndRemoveFromFolder = async () => {
   await onDeleteFromFolder(props.chat.id);
 };
 
-onMounted(() => setTimeout(() => {
-  const folderId = props.chat.folderId;
+onMounted(() =>
+  setTimeout(() => {
+    const folderId = props.chat.folderId;
 
-  if (folderId) {
-    folderName.value = getFolderNameById(folders.value, folderId) || "";
-  } 
-}, 100));
+    if (folderId) {
+      folderName.value = getFolderNameById(folders.value, folderId) || "";
+    }
+  }, 100)
+);
 </script>
 
 <template>

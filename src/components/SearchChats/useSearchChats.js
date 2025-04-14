@@ -1,5 +1,5 @@
 import { ref, onMounted, computed } from "vue";
-import { useStorage } from "./useStorage";
+import { useStorage } from "@/composables/useStorage";
 import { generateId, isOutsideClick } from "@/utils/helpers";
 import { addChatsToFolder } from "@/utils/chatAndFolderLogic";
 

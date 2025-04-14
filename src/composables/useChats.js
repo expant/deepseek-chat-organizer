@@ -1,22 +1,29 @@
-import { nextTick, computed } from "vue";
+import { nextTick, computed, inject } from "vue";
 import { classNames } from "@/constants";
 import { useStorage } from "./useStorage";
 import { renameDSChat } from "@/content_scripts/dom/handlers";
 import { handleChatDeletion } from "@/content_scripts/dom/handlers";
 import { setObservationType, setNames } from "@/content_scripts/dom/state";
-import { deleteChat, renameChat, deleteFolderIdFromChats } from "@/utils/chatAndFolderLogic";
+import {
+  deleteChat,
+  renameChat,
+  deleteFolderIdFromChats,
+} from "@/utils/chatAndFolderLogic";
 import {
   simulateContextMenuAction,
   getDSChatEl,
   getChatOrFolderInput,
 } from "@/utils/helpers";
 
-export function useChats(contextMenu, isEditing) {
+export function useChats(contextMenu = null, isEditing = null) {
+  const chatMenu = contextMenu || inject("chatMenu");
+  const isEditingChatName = isEditing || inject("isEditingChatName");
+
   const { data: folders, update: setFolders } = useStorage("folders", []);
   const { data: chats, update: setChats } = useStorage("chats", []);
 
   const onDelete = async () => {
-    const id = contextMenu.value.chatId;
+    const id = chatMenu.value.id;
     setObservationType("deleteFromFolder");
     await handleChatDeletion(id);
   };
@@ -36,7 +43,7 @@ export function useChats(contextMenu, isEditing) {
     const chatName = chats.value.some((item) => item.name === newName);
 
     if (chatName) {
-      isEditing.value = false;
+      isEditingChatName.value = false;
       return;
     }
 
@@ -59,14 +66,14 @@ export function useChats(contextMenu, isEditing) {
       simulateContextMenuAction(UI.RENAME_BTN);
       renameDSChat();
     }, 100);
-    isEditing.value = false;
+    isEditingChatName.value = false;
   };
 
   const prepareForRename = async () => {
-    const id = contextMenu.value.chatId;
+    const id = chatMenu.value.id;
 
-    isEditing.value = true;
-    contextMenu.value = { ...contextMenu.value, isOpen: false };
+    isEditingChatName.value = true;
+    chatMenu.value = { ...chatMenu.value, isOpen: false };
 
     await nextTick();
 
@@ -85,6 +92,6 @@ export function useChats(contextMenu, isEditing) {
     onRename,
     prepareForRename,
     onDeleteFromFolder,
-    isChatInFolder
+    isChatInFolder,
   };
 }

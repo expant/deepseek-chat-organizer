@@ -1,4 +1,4 @@
-import { nextTick } from "vue";
+import { nextTick, inject } from "vue";
 import { useStorage } from "./useStorage";
 import { isNameNotUnique, getChatOrFolderInput } from "@/utils/helpers.js";
 import { getBaseFolderNames, sortBaseNames } from "@/utils/baseFolderNames";
@@ -9,17 +9,25 @@ import {
   getFolder,
 } from "@/utils/chatAndFolderLogic";
 
-export function useFolders(baseNames, contextMenu, isEditing) {
+export function useFolders(
+  contextMenu = null,
+  baseNames = null,
+  isEditing = null
+) {
+  const folderMenu = contextMenu || inject("folderMenu");
+  const baseFolderNames = baseNames || inject("baseFolderNames");
+  const isEditingFolderName = isEditing || inject("isEditingFolderName");
+
   const { data: folders, update: setFolders } = useStorage("folders", []);
   const { data: chats, update: setChats } = useStorage("chats", []);
 
   const onCreate = async (callerContext) => {
-    const id = contextMenu.value.folderId;
+    const id = folderMenu.value.id;
 
     const [newFolders, newFolderId, newParentFolderId] = createFolder(
       folders.value,
       callerContext === "context-menu" ? id : 0,
-      baseNames.value
+      baseFolderNames.value
     );
 
     if (callerContext === "context-menu") {
@@ -29,21 +37,21 @@ export function useFolders(baseNames, contextMenu, isEditing) {
       setChats(newChats);
     }
 
-    contextMenu.value = {
-      ...contextMenu.value,
+    folderMenu.value = {
+      ...folderMenu.value,
       isOpen: false,
-      folderId: newFolderId,
+      id: newFolderId,
     };
 
     await setFolders(newFolders);
 
-    isEditing.value = true;
+    isEditingFolderName.value = true;
     await nextTick();
     getChatOrFolderInput("folder", newFolderId).focus();
   };
 
   const onDelete = async () => {
-    const id = contextMenu.value.folderId;
+    const id = folderMenu.value.id;
 
     const newFolders = deleteFolder(folders.value, id);
     const newChats = chats.value.map((item) =>
@@ -51,12 +59,12 @@ export function useFolders(baseNames, contextMenu, isEditing) {
     );
 
     const newNames = getBaseFolderNames(newFolders, []);
-    baseNames.value = newNames.sort(sortBaseNames);
+    baseFolderNames.value = newNames.sort(sortBaseNames);
 
     await setChats(newChats);
     await setFolders(newFolders);
 
-    contextMenu.value = { ...contextMenu.value, isOpen: false };
+    folderMenu.value = { ...folderMenu.value, isOpen: false };
   };
 
   const onRename = async (newName, id) => {
@@ -65,28 +73,30 @@ export function useFolders(baseNames, contextMenu, isEditing) {
     const newFolder = getFolder(folders.value, id);
 
     if (isNameNotUnique(folders.value, newName) && newName !== newFolder.name) {
-      isEditing.value = false;
+      isEditingFolderName.value = false;
       return;
     }
 
     const isBaseName = !!newName.match(/^Untitled( \d+)?$/)?.[0];
     if (isBaseName) {
-      baseNames.value = [...baseNames.value, newName].sort(sortBaseNames);
+      baseFolderNames.value = [...baseFolderNames.value, newName].sort(
+        sortBaseNames
+      );
     }
 
     const newFolders = renameFolder(folders.value, id, newName);
     const newNames = getBaseFolderNames(newFolders, []);
-    baseNames.value = newNames.sort(sortBaseNames);
+    baseFolderNames.value = newNames.sort(sortBaseNames);
 
     setFolders(newFolders);
-    isEditing.value = false;
+    isEditingFolderName.value = false;
   };
 
   const prepareForRename = async () => {
-    const id = contextMenu.value.folderId;
+    const id = folderMenu.value.id;
 
-    isEditing.value = true;
-    contextMenu.value = { ...contextMenu.value, isOpen: false };
+    isEditingFolderName.value = true;
+    folderMenu.value = { ...folderMenu.value, isOpen: false };
 
     await nextTick();
     getChatOrFolderInput("folder", id).focus();

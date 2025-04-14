@@ -11,7 +11,7 @@ import { useTheme } from "./composables/useTheme.js";
 import { useFolders } from "./composables/useFolders.js";
 
 import NestedList from "./components/NestedList.vue";
-import SearchChats from "./components/SearchChats.vue";
+import SearchChats from "./components/SearchChats/SearchChats.vue";
 import IconFolder from "./components/icons/IconFolder.vue";
 import SidebarResizing from "./components/SidebarResizing/SidebarResizing.vue";
 
@@ -22,26 +22,26 @@ const isEditingFolderName = ref(false);
 const folderMenu = ref({
   isOpen: false,
   position: { top: 0, left: 0 },
-  folderId: null,
+  id: null,
 });
 const chatMenu = ref({
   isOpen: false,
   position: { top: 0, left: 0 },
-  chatId: null,
+  id: null,
 });
 
-provide("folderMenu", folderMenu);
 provide("chatMenu", chatMenu);
+provide("folderMenu", folderMenu);
 provide("baseFolderNames", baseFolderNames);
 provide("showSearchChats", showSearchChats);
 provide("isEditingChatName", isEditingChatName);
 provide("isEditingFolderName", isEditingFolderName);
 
 const { theme } = useTheme();
-const { chats, setChats } = useChats();
+const { chats, setChats } = useChats(chatMenu, isEditingChatName);
 const { folders, setFolders, onCreate } = useFolders(
-  baseFolderNames,
   folderMenu,
+  baseFolderNames,
   isEditingFolderName
 );
 
