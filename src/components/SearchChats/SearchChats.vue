@@ -13,7 +13,6 @@ const props = defineProps({
 const emit = defineEmits(["close"]);
 
 const folderMenu = inject("folderMenu");
-const showSearchChats = inject("showSearchChats");
 
 const { chats } = useChats();
 const {

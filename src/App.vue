@@ -1,26 +1,25 @@
 <script setup>
 import { useTheme } from "./composables/useTheme.js";
 import { useFolders } from "./composables/useFolders.js";
-import { useAppInitialization } from "./composables/useAppInitialization.js";
 import { useSharedState } from "@/composables/useSharedState";
+import { useAppInitialization } from "./composables/useAppInitialization.js";
 
 import NestedList from "./components/NestedList.vue";
 import SearchChats from "./components/SearchChats/SearchChats.vue";
 import IconFolder from "./components/icons/IconFolder.vue";
 import SidebarResizing from "./components/SidebarResizing/SidebarResizing.vue";
 
-
 const sharedState = useSharedState();
 const { theme } = useTheme();
-const { folders, setFolders, onCreate } = useFolders(
+const { folders, onCreate } = useFolders(
   sharedState.folderMenu,
   sharedState.baseFolderNames,
   sharedState.isEditingFolderName
 );
 
-useAppInitialization(sharedState);
-
 const { showSearchChats } = sharedState;
+
+useAppInitialization(sharedState);
 </script>
 
 <template>

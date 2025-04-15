@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     notifyUser();
   } catch (err) {
-    console.error("Ошибка при проверке вкладки:", err);
+    console.error("Error checking tab: ", err);
     container.textContent = "Error checking page";
   }
 });
