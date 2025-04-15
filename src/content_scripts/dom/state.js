@@ -1,12 +1,10 @@
 import mitt from "mitt";
 
-export const emitter = mitt();
-
-// constants
 export let observationType = "";
+
+export const emitter = mitt();
 export const names = { prev: "", new: "" };
 
-// methods
 export const setObservationType = (type) => (observationType = type);
 export const setNames = (prevName, newName) => {
   names.prev = prevName;
