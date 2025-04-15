@@ -9,7 +9,7 @@ export const getChatsFromDomElements = (chats) => {
 
   return entries.map(([_, el]) => {
     const chat = chats.find((item) => item.name === el.textContent);
-    const isActive = el.closest(`.${CHAT.ACTIVE}`) ? true : false;
+    const isActive = !!el.closest(`.${CHAT.ACTIVE}`);
 
     if (chat) return chat;
     return {

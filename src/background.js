@@ -50,7 +50,7 @@ const trackExtensionState = (request, sender, sendResponse) => {
   if (action === "checkCurrentTab") {
     (async () => {
       const tab = await getActiveTargetTab();
-      const isDeepseek = tab ? true : false;
+      const isDeepseek = !!tab;
       sendResponse({ isDeepseek });
     })();
 
