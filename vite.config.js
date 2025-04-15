@@ -15,8 +15,12 @@ export default defineConfig({
           dest: ".",
         },
         {
-          src: "public/*",
-          dest: ".",
+          src: "src/assets/icon*.png",
+          dest: "assets",           
+        },
+        {
+          src: "src/popup/popup*",
+          dest: "popup", 
         },
       ],
     }),
@@ -33,7 +37,6 @@ export default defineConfig({
     rollupOptions: {
       input: {
         content: "src/content_scripts/main.js",
-        popup: "src/popup/popup.html",
         background: "src/background.js",
         styles: "src/styles.css",
       },

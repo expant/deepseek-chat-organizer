@@ -1,10 +1,14 @@
 {
   "manifest_version": 3,
   "name": "DeepSeek Chat Organizer",
+  "author": "Elagin Anton",
   "version": "1.0.0",
   "description": "Organize DeepSeek chat conversations into custom folders for easy navigation and management.",
   "permissions": ["webRequest", "storage"],
   "host_permissions": ["https://chat.deepseek.com/*"],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
   "background": {
     "service_worker": "background.js"
   },
@@ -21,14 +25,14 @@
     }
   ],
   "action": {
-    "default_popup": "src/popup/popup.html",
+    "default_popup": "popup/popup.html",
     "default_icon": {
-      "48": "icon48.png",
-      "128": "icon128.png"
+      "48": "assets/icon48.png",
+      "128": "assets/icon128.png"
     }
   },
   "icons": {
-    "48": "icon48.png",
-    "128": "icon128.png"
+    "48": "assets/icon48.png",
+    "128": "assets/icon128.png"
   }
 }

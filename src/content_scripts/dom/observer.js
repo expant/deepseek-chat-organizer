@@ -181,8 +181,6 @@ chrome.runtime.onMessage.addListener((message) => {
     case "chatDeleted":
       updateData();
       break;
-    case "chatRenamed":
-      break;
     default:
       throw new Error(`Unknown message.action: ${message.action}`);
   }
