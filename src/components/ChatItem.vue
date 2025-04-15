@@ -1,5 +1,4 @@
 <script setup>
-import _ from "lodash";
 import { ref, inject } from "vue";
 import { useChats } from "@/composables/useChats";
 import { useContextMenuState } from "@/composables/useContextMenuState";
