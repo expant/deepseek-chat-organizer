@@ -24,11 +24,11 @@ export const getDSContextMenu = () => {
   return menu;
 };
 
-export const isNameNotUnique = (items, name) =>
+export const isNameNotUnique = (items, name, id) =>
   items.some((item) => {
     if (item.type === "chat") return false;
-    if (item.name === name) return true;
-    if (item.children) return isNameNotUnique(item.children, name);
+    if (item.name === name && item.id !== id) return true;
+    if (item.children) return isNameNotUnique(item.children, name, id);
   });
 
 export const isOutsideClick = (event, selector) => {

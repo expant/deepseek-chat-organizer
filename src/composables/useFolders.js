@@ -43,9 +43,6 @@ export function useFolders(
       id: newFolderId,
     };
 
-    console.log("newFolders: ", newFolders);
-    console.log("new folder: ", newFolders?.[0].children);
-
     await setFolders(newFolders);
 
     isEditingFolderName.value = true;
@@ -73,27 +70,16 @@ export function useFolders(
   const onRename = async (newName, id) => {
     if (!newName) return;
 
-    // console.log("folders.value и id ------------");
-    // console.log(folders.value, id);
-  
-    const newFolder = getFolder(folders.value, id);
-
-    // console.log(newName, newFolder);
-
-    if (isNameNotUnique(folders.value, newName) && newName !== newFolder.name) {
+    if (isNameNotUnique(folders.value, newName, id)) {
       isEditingFolderName.value = false;
       return;
     }
-
-    console.log(`New name: `, newName);
 
     const isBaseName = !!newName.match(/^Untitled( \d+)?$/)?.[0];
     if (isBaseName) {
       baseFolderNames.value = [...baseFolderNames.value, newName].sort(
         sortBaseNames
       );
-
-      console.log("new baseFolderNames: ", baseFolderNames.value)
     }
 
     const newFolders = renameFolder(folders.value, id, newName);
