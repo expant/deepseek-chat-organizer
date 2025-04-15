@@ -10,16 +10,20 @@ export const getFolderNameById = (folders, id) =>
 
 export const getDSChatEl = (name) => {
   const { CHAT } = classNames;
+
   const elements = document.querySelectorAll(`.${CHAT.TITLE}`);
   const entries = Object.entries(elements);
+
   const [, el] = entries.find(([_, el]) => el.textContent === name);
   return el;
 };
 
 export const getDSContextMenu = () => {
   const { UI } = classNames;
+
   const menus = document.querySelectorAll(`.${UI.CONTEXT_MENU}`);
   const entries = Object.entries(menus);
+
   const [, menu] = entries.find(([, el]) => el.style.zIndex === "1024");
   return menu;
 };

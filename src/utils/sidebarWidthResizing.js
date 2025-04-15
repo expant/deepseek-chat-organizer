@@ -21,7 +21,9 @@ export const setCurrentWidth = async () => {
 export const setNewWidth = async (scale) => {
   const sidebar = document.querySelector(`.${SIDEBAR.BASE}`);
   const newWidth = baseWidth * scale;
+
   sidebar.style.setProperty(variableName, `${newWidth}px`);
+
   const sidebarResizing = { width: `${newWidth}px`, scale };
   await chrome.storage.sync.set({ sidebarResizing });
 };

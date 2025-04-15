@@ -27,7 +27,7 @@ export const renameDSChat = () =>
     const input = document.querySelector(
       `input.${CHAT.INPUT}[value="${names.prev}"]`
     );
-  
+
     input.value = names.new;
     input.blur();
 
