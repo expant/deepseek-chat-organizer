@@ -1,4 +1,4 @@
-import { classNames } from "@/variables.js";
+import { classNames } from "@/constants.js";
 
 export const getFolderNameById = (folders, id) =>
   folders.reduce((acc, item) => {
@@ -9,25 +9,30 @@ export const getFolderNameById = (folders, id) =>
   }, null);
 
 export const getDSChatEl = (name) => {
-  const elements = document.querySelectorAll(`.${classNames.CHAT_TEXT}`);
+  const { CHAT } = classNames;
+
+  const elements = document.querySelectorAll(`.${CHAT.TITLE}`);
   const entries = Object.entries(elements);
+
   const [, el] = entries.find(([_, el]) => el.textContent === name);
   return el;
 };
 
 export const getDSContextMenu = () => {
-  const { CONTEXT_MENU } = classNames;
-  const menus = document.querySelectorAll(`.${CONTEXT_MENU}`);
+  const { UI } = classNames;
+
+  const menus = document.querySelectorAll(`.${UI.CONTEXT_MENU}`);
   const entries = Object.entries(menus);
+
   const [, menu] = entries.find(([, el]) => el.style.zIndex === "1024");
   return menu;
 };
 
-export const isNameNotUnique = (items, name) =>
+export const isNameNotUnique = (items, name, id) =>
   items.some((item) => {
     if (item.type === "chat") return false;
-    if (item.name === name) return true;
-    if (item.children) return isNameNotUnique(item.children, name);
+    if (item.name === name && item.id !== id) return true;
+    if (item.children) return isNameNotUnique(item.children, name, id);
   });
 
 export const isOutsideClick = (event, selector) => {
@@ -40,6 +45,10 @@ export const isOutsideClick = (event, selector) => {
 };
 
 export const convertObjToArrDeep = (object, type) => {
+  if (typeof object !== "object") {
+    return object;
+  }
+
   const arr = Object.values(object);
 
   switch (type) {
@@ -70,3 +79,6 @@ export const simulateContextMenuAction = (btnClassName) => {
   const btn = menu.querySelector(`.${btnClassName}`);
   btn.click();
 };
+
+export const getChatOrFolderInput = (type, id) =>
+  document.querySelector(`.${type}-name__input[data-id='${id}']`);

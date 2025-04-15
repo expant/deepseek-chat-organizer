@@ -1,11 +1,11 @@
-import { classNames } from "@/variables";
+import { classNames } from "@/constants";
 
 const baseWidth = 260;
 const variableName = "--local-sider-width";
 const { SIDEBAR } = classNames;
 
 export const setCurrentWidth = async () => {
-  const sidebar = document.querySelector(`.${SIDEBAR}`);
+  const sidebar = document.querySelector(`.${SIDEBAR.BASE}`);
   const { sidebarResizing } = await chrome.storage.sync.get([
     "sidebarResizing",
   ]);
@@ -19,9 +19,11 @@ export const setCurrentWidth = async () => {
 };
 
 export const setNewWidth = async (scale) => {
-  const sidebar = document.querySelector(`.${SIDEBAR}`);
+  const sidebar = document.querySelector(`.${SIDEBAR.BASE}`);
   const newWidth = baseWidth * scale;
+
   sidebar.style.setProperty(variableName, `${newWidth}px`);
+
   const sidebarResizing = { width: `${newWidth}px`, scale };
   await chrome.storage.sync.set({ sidebarResizing });
 };

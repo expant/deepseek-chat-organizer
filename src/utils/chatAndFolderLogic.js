@@ -1,6 +1,13 @@
 import { generateId } from "./helpers";
 import { getNewBaseFolderName } from "./baseFolderNames";
 
+export const getFolder = (folders, id) =>
+  folders.reduce((acc, item) => {
+    if (item.type === "chat") return acc;
+    if (item.id === id) return item;
+    return getFolder(item.children, id);
+  }, {});
+
 export const renameFolder = (folders, id, name) =>
   folders.map((item) => {
     if (item.type === "chat") return item;
@@ -26,7 +33,9 @@ export const deleteFolder = (folders, id) =>
 export const createFolder = (folders, id, baseNames) => {
   let newFolderId = generateId();
   let newParentFolderId = generateId();
+
   const name = getNewBaseFolderName(baseNames);
+
   const newFolder = {
     id: newFolderId,
     type: "folder",
@@ -131,3 +140,18 @@ export const setActiveChatInChatList = (chats, name) =>
       ? { ...item, isActive: true }
       : { ...item, isActive: false }
   );
+
+export const filterFoldersByExistingChats = (folders, chats) =>
+  folders.filter((item) => {
+    if (item.type === "folder") {
+      if (!item.children) return true;
+      item.children = filterFoldersByExistingChats(item.children, chats);
+      return true;
+    }
+
+    const chat = chats.find((chat) => chat.id === item.id);
+    return chat ? true : false;
+  });
+
+export const deleteFolderIdFromChats = (id, chats) =>
+  chats.map((item) => (item.id === id ? { ...item, folderId: null } : item));

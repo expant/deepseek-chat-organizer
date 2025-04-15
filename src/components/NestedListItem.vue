@@ -1,8 +1,8 @@
 <script setup>
+import { ref } from "vue";
 import NestedList from "./NestedList.vue";
 import FolderItem from "./FolderItem.vue";
 import ChatItem from "./ChatItem.vue";
-import { ref, watch } from "vue";
 
 const props = defineProps({
   node: {
