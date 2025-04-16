@@ -7,6 +7,7 @@ import {
   deleteFolder,
   renameFolder,
   getFolder,
+  getChatsInFolders,
 } from "@/utils/chatAndFolderLogic";
 
 export function useFolders(
@@ -54,9 +55,19 @@ export function useFolders(
     const id = folderMenu.value.id;
 
     const newFolders = deleteFolder(folders.value, id);
-    const newChats = chats.value.map((item) =>
-      item.folderId === id ? { ...item, folderId: null } : item
-    );
+
+    const chatsInFolders = getChatsInFolders(newFolders);
+
+    const newChats = chats.value.map((item) => {
+      const chatInFolder = chatsInFolders.find((chat) => chat.id === item.id);
+      return chatInFolder
+        ? { ...item, folderId: chatInFolder.folderId }
+        : { ...item, folderId: null };
+    });
+
+    // const newChats = chats.value.map((item) =>
+    //   item.folderId === id ? { ...item, folderId: null } : item
+    // );
 
     const newNames = getBaseFolderNames(newFolders, []);
     baseFolderNames.value = newNames.sort(sortBaseNames);

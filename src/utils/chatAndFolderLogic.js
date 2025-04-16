@@ -8,6 +8,13 @@ export const getFolder = (folders, id) =>
     return getFolder(item.children, id);
   }, {});
 
+export const getChatsInFolders = (folders) =>
+  folders.reduce((acc, item) => {
+    if (item.type === "chat") return [...acc, item];
+    if (item.children) return getChatsInFolders(item.children);
+    return acc;
+  }, []);
+
 export const renameFolder = (folders, id, name) =>
   folders.map((item) => {
     if (item.type === "chat") return item;
