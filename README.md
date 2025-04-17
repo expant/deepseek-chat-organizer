@@ -4,7 +4,8 @@
 
 Organize DeepSeek chat conversations into custom folders for easy navigation and management.
 
-![Demo](docs/demo.gif) *▲ Core functionality in action*  
+![Demo](docs/demo.gif)<br>
+*▲ Core functionality in action*  
 
 ## 📖 Table of Contents
 
