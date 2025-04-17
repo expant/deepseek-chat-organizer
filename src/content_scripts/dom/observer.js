@@ -18,11 +18,12 @@ import App from "@/App.vue";
 const { CHAT, CHAT_LIST, SIDEBAR, UI } = classNames;
 const htmlElType = "[object HTMLDivElement]";
 const appContainer = document.createElement("div");
-appContainer.id = "folders-list";
 
 let debounceTimer = null;
 let vueApp = null;
 let isSidebarOpen = !document.querySelector(`.${SIDEBAR.CLOSED}`);
+
+appContainer.id = "folders-list";
 
 const insertAppToDeepseek = () => {
   const deepseekContainer = document.querySelector(`.${CHAT_LIST.BASE}`);
@@ -69,7 +70,7 @@ const handleMutationByType = (mutation) => {
       isSidebarOpen = false;
     }
   }
-}
+};
 
 const handleMutation = async (mutation) => {
   const added = mutation.addedNodes[0];
@@ -94,7 +95,7 @@ const handleMutation = async (mutation) => {
 
   if (removedType === htmlElType) {
     if (!removed.classList.contains(CHAT.BASE)) return;
- 
+
     switch (observationType) {
       case "renameFromFolder":
         const chatTextEl = removed.querySelector(`.${CHAT.TITLE}`);
@@ -128,20 +129,16 @@ const handleMutation = async (mutation) => {
   }
 
   if (mutation.target.className === SIDEBAR.BASE) {
-    if (mutation.addedNodes.length > 0) {
-      isSidebarOpen = true;
-      insertAppToDeepseek();
-    }
+    isSidebarOpen = true;
+    insertAppToDeepseek();
   }
 };
 
-const observer = new MutationObserver(
-  async (mutationsList, observer) => {
-    for (let mutation of mutationsList) {
-      await handleMutation(mutation);
-    }
+const observer = new MutationObserver(async (mutationsList, observer) => {
+  for (let mutation of mutationsList) {
+    await handleMutation(mutation);
   }
-);
+});
 const config = {
   childList: true,
   characterData: true,
@@ -180,6 +177,15 @@ chrome.runtime.onMessage.addListener((message) => {
       break;
     case "chatDeleted":
       updateData();
+      break;
+    case "pageLoaded":
+      setTimeout(() => {
+        const isSidebarOpen = !document.querySelector(`.${SIDEBAR.CLOSED}`);
+
+        if (isSidebarOpen) {
+          insertAppToDeepseek();
+        }
+      }, 500);
       break;
     default:
       throw new Error(`Unknown message.action: ${message.action}`);

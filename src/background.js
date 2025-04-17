@@ -65,3 +65,9 @@ chrome.runtime.onInstalled.addListener(clearStorage);
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>
   trackExtensionState(request, sender, sendResponse)
 );
+
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  if (changeInfo.status === "complete") {
+    await sendMessage({ action: "pageLoaded" });
+  }
+});
