@@ -63,7 +63,7 @@ const toggleFolder = () => emit("update:isFolderOpen", !props.isFolderOpen);
       </div>
     </div>
     <ContextMenu
-      v-show="folderMenu.isOpen"
+      v-show="folderMenu.isOpen && folderMenu.id === id"
       @close="folderMenu.isOpen = false"
       :type="'folder'"
       :position="folderMenu.position"
