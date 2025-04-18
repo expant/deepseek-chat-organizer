@@ -16,24 +16,16 @@ export default defineConfig({
         },
         {
           src: "src/assets/icon*.png",
-          dest: "assets",           
+          dest: "assets",
         },
         {
           src: "src/popup/popup*",
-          dest: "popup", 
+          dest: "popup",
         },
       ],
     }),
   ],
   build: {
-    // minify: "terser",
-    // terserOptions: {
-    //   mangle: false,
-    //   format: {
-    //     beautify: true,
-    //   },
-    //   compress: false,
-    // },
     rollupOptions: {
       input: {
         content: "src/content_scripts/main.js",
