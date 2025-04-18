@@ -68,6 +68,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete") {
+    const { extensionEnabled } = await chrome.storage.local.get([
+      "extensionEnabled",
+    ]);
+
+    if (!extensionEnabled) return;
     await sendMessage({ action: "pageLoaded" });
   }
 });
