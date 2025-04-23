@@ -24,6 +24,10 @@ Organize DeepSeek chat conversations into custom folders for easy navigation and
 
 ## ⚙️ Installation
 
+### Chrome Web Store
+
+[👉 Deepseek Chat Organizer](https://chromewebstore.google.com/detail/deepseek-chat-organizer/ajbfmjhmdhjoekmecolhelofdefepkdn?authuser=0&hl=ru)
+
 ### Manual Installation (Development)
 
 ```bash
