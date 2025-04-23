@@ -1,6 +1,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-# Deepseek Chat Organizer
+# [Deepseek Chat Organizer](https://chromewebstore.google.com/detail/deepseek-chat-organizer/ajbfmjhmdhjoekmecolhelofdefepkdn?authuser=0&hl=ru)
 
 Organize DeepSeek chat conversations into custom folders for easy navigation and management.
 
